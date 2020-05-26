@@ -1,0 +1,12 @@
+name: Dashboard-Covid19
+title: Dashboard-Covid19
+username:
+account: jbkunst
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2356531
+bundleId: 3189831
+url: https://jbkunst.shinyapps.io/Dashboard-Covid19/
+when: 1590472928.38285
+asMultiple: FALSE
+asStatic: FALSE
