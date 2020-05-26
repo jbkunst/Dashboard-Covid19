@@ -1,12 +1,8 @@
 grafico_casos_confirmados_diarios <- function(){
-  # ruta
-  rcasos_totales_cumulativos <-
-    "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv"
-  # lectura
-  dcasos_totales_cumulativos <- read_csv(rcasos_totales_cumulativos)
-  #grafico
-  dcasos_totales_cumulativos <-
-    dcasos_totales_cumulativos %>%
+  
+  dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
+  
+  dcasos_totales_cumulativos <- dcasos_totales_cumulativos %>%
     gather(fecha, casos, -Region) %>%
     filter(Region == "Total") %>%
     mutate(
@@ -18,8 +14,18 @@ grafico_casos_confirmados_diarios <- function(){
         n = 7,
         fill = NA,
         align = "right"))
-  dcasos_totales_cumulativos %>% 
-    hchart(hcaes(fecha, casos_nuevos), type = "column") %>% 
-    hc_add_series_times_values(dcasos_totales_cumulativos$fecha, dcasos_totales_cumulativos$media_movil,
-                               color = "red")
+  
+  hchart(
+    dcasos_totales_cumulativos,
+    type = "column",
+    hcaes(fecha, casos_nuevos),
+    name = "Casos confirmados diarios"
+    ) %>% 
+    hc_add_series(
+      dcasos_totales_cumulativos, "line",
+      hcaes(datetime_to_timestamp(fecha), media_movil),
+      name = "Media movil último 7 días"
+      ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0)
+  
 }
