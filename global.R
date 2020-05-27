@@ -7,6 +7,7 @@ library(lubridate)
 library(RcppRoll)
 library(readr)
 library(stringr)
+library(forcats)
 
 source("R/helpers.R")
 
