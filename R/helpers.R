@@ -88,12 +88,34 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
 grafico_casos_confirmados_rango_edad <- function(){
   dcasos_confirmados_rango_edad <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv") %>%
     gather(-`Grupo de edad`, -Sexo, key = "fecha", value="n") %>% 
-    mutate(fecha = as_date(fecha, format="%Y-%m-%d"))
+    mutate(fecha = as_date(fecha, format="%Y-%m-%d")) %>% 
+    separate(`Grupo de edad`, c("min","max")) %>% 
+    mutate_at(c("min", "max"), ~as.numeric(.)) %>% 
+    mutate(Grupo_edad = case_when(
+      max <= 39 ~ "<= 39",
+      max <= 49 ~ "40-49",
+      max <= 59 ~ "50-59",
+      max <= 69 ~ "60-69",
+      max <= 79 ~ "70-79",
+      min >= 80 ~ ">= 80",
+      TRUE ~ NA_character_
+    )) %>% 
+    group_by(fecha, Grupo_edad) %>% 
+    summarise(n = sum(n)) %>% 
+    ungroup()
   
   hchart(
     dcasos_confirmados_rango_edad,
     type = "column",
-    hcaes(x=fecha, y=n, group=`Grupo de edad`),
-    name = "n"
-  ) 
+    hcaes(x=fecha, y=n, group=Grupo_edad)
+  ) %>% 
+    hc_title(
+      text = "COVID-19 en Chile: Evolución de casos confirmados por rango de edad"
+    ) %>% 
+    hc_plotOptions(
+      series = list(
+        stacking = list(enabled = TRUE)  
+      )
+    ) %>% 
+    hc_tooltip(shared = TRUE)
 }
