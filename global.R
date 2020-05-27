@@ -6,6 +6,7 @@ library(tidyr)
 library(lubridate)
 library(RcppRoll)
 library(readr)
+library(stringr)
 
 source("R/helpers.R")
 
