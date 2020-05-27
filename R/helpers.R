@@ -85,3 +85,18 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
   
   }
 
+grafico_casos_confirmados_rango_edad <- function(){
+  dcasos_confirmados_rango_edad <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv") %>%
+    gather(-`Grupo de edad`, -Sexo, key = "fecha", value="n") %>% 
+    mutate(fecha = as_date(fecha, format="%Y-%m-%d"))
+  
+  hchart(
+    dcasos_confirmados_rango_edad,
+    type = "column",
+    hcaes(x=fecha, y=n, group=`Grupo de edad`),
+    name = "n"
+  ) %>% 
+    hc_title(
+      text = "COVID-19 en Chile: Evolución de casos confirmados por rango de edad"
+    )
+}
