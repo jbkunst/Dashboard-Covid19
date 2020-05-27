@@ -95,8 +95,5 @@ grafico_casos_confirmados_rango_edad <- function(){
     type = "column",
     hcaes(x=fecha, y=n, group=`Grupo de edad`),
     name = "n"
-  ) %>% 
-    hc_title(
-      text = "COVID-19 en Chile: Evolución de casos confirmados por rango de edad"
-    )
+  ) 
 }
