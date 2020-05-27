@@ -11,5 +11,11 @@ shinyServer(function(input, output) {
       grafico_examenes_informados_casos_fallecidos_confirmados()
       
     })
+    
+    output$hc_confirmados_rango_edad <- renderHighchart({
+      
+      grafico_casos_confirmados_rango_edad()
+      
+    })
 
 })
