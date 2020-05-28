@@ -5,8 +5,8 @@ account: hctor-sebastian-gonzlez-muoz
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2360468
-bundleId: 3193601
+bundleId: 3196347
 url: https://hctor-sebastian-gonzlez-muoz.shinyapps.io/Dashboard-Covid19/
-when: 1590548614.81878
+when: 1590596617.46281
 asMultiple: FALSE
 asStatic: FALSE

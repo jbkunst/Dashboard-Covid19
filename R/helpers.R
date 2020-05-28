@@ -119,3 +119,33 @@ grafico_casos_confirmados_rango_edad <- function(){
     ) %>% 
     hc_tooltip(shared = TRUE)
 }
+
+
+
+serie_nro_casos <- function(){
+  dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
+  dcasos_totales_cumulativos %>% 
+    filter(Region == "Total") %>% 
+    gather(dia, nro_casos, -Region) %>% 
+    select(-Region)
+  }
+
+serie_nro_examenes <- function(){
+  dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
+  dcasos_examenes %>% 
+    mutate_if(is.numeric, replace_na, 0) %>% 
+    summarise_if(is.numeric, sum) %>% 
+    select(-1) %>% 
+    gather(dia, nro_examenes)
+    }
+
+tabla_fallecidos_por_region <- function(){
+  dcasos_fallecidos <-  read_csv(paste0('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/', today()-1,'-CasosConfirmados-totalRegional.csv'))
+  dcasos_fallecidos
+  }
+
+tabla_poblacion_por_region <- function(){
+  dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
+  dcasos_examenes %>% 
+    select(1:3)
+  }
