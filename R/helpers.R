@@ -262,7 +262,6 @@ grafico_casos_confirmados_rango_edad <- function(){
     ) 
 }
 
-
 grafico_defunciones_anuales <- function(){
   
   dcasos_fallecidos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto32/Defunciones.csv")
@@ -307,7 +306,6 @@ grafico_defunciones_anuales <- function(){
   
   }
 
-
 serie_nro_casos <- function(){
   
   dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
@@ -332,13 +330,29 @@ serie_nro_examenes <- function(){
     mutate(dia = ymd(dia))
     }
 
+serie_nro_fallecidos <- function(){
+  
+  dfallecidos <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo_T.csv')
+  dfallecidos %>% 
+    select(dia = Region, nro_fallecidos  =Total)
+  
+}
+
+serie_nro_pascientes_UCI <- function(){
+  
+  dpascientes_UCI <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto8/UCI_T.csv')
+  
+  dpascientes_UCI %>% 
+    filter(!Region %in% c("Codigo region", "Poblacion")) %>% 
+    gather(ciudad, valor, -Region) %>% 
+    group_by(dia = Region) %>% 
+    summarise(nro_pascientes_uci = sum(as.numeric(valor)))
+}
+
 tabla_fallecidos_por_region <- function(){
   dcasos_fallecidos <-  read_csv(paste0('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/', today()-1,'-CasosConfirmados-totalRegional.csv'))
   dcasos_fallecidos
   }
-
-tabla_fallecidos_por_region() %>% 
-  filter(Region == "Total")
 
 tabla_poblacion_por_region <- function(){
   dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
@@ -346,9 +360,3 @@ tabla_poblacion_por_region <- function(){
     select(1:3)
 }
 
-# serie_nro_fallecidos <- function(){
-#   dfallecidos <- gs_read(
-#     "https://docs.google.com/spreadsheets/d/1N0iLu6dVBD5hr0i1Yk4d_gs9GQIYrvkuURe4ZX9_Hu4/edit?ts=5ea9fc88#gid=0",
-#     ws = "Avance coronavirus"
-#     )
-# }

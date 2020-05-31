@@ -13,7 +13,9 @@ dashboardPage(
         column(
             12,
             valueBoxOutput("vb_confirmados", 3),
-            valueBoxOutput("vb_examenes", 3)
+            valueBoxOutput("vb_examenes", 3),
+            valueBoxOutput("vb_fallecidos", 3),
+            valueBoxOutput("vb_uci", 3)
         ),
         
         
