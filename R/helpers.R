@@ -275,16 +275,19 @@ grafico_defunciones_anuales <- function(){
       anio = year(dia)) %>% 
     group_by(nro_semana, anio) %>% 
     summarise(nro_fallecidos = sum(nro_fallecidos)) %>% 
-    ungroup() 
+    ungroup() %>% 
+    arrange(-anio) %>% 
+    mutate(anio = as.character(anio)) %>% 
+    mutate( anio = fct_inorder(anio))
   
   d %>%
     group_by(anio) %>% 
     filter(nro_semana != max(nro_semana)) %>% 
     ungroup() %>% 
     hchart(
-      c(rep("line", 10), "area"),  
+      c("area", rep("line", 10)),  
       hcaes(nro_semana, nro_fallecidos, group = anio),
-      visible = c(rep(FALSE, 8), rep(TRUE, 3))
+      visible = c(rep(TRUE, 3), rep(FALSE, 8))
       # color = c(rep("grey", 10), "red")
       ) %>% 
     hc_title(
