@@ -100,7 +100,7 @@ grafico_casos_confirmados_diarios <- function(){
   
   data_plotLine <- evento %>% 
   transmute(
-    value = fecha,
+    value = datetime_to_timestamp(fecha),
     label = purrr::map(texto, ~ list(text = .x))
   ) %>% 
   mutate(color = "green", width = 2, zIndex = 10)
