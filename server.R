@@ -32,7 +32,7 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0("Evolutivo / +", nuevos_casos, " nuevos casos"),
+      subtitle = paste0(nuevos_casos, " nuevos casos"),
       color = "black",
       spark = hc,
       minititle = "Total Casos Confirmados"
@@ -71,7 +71,7 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0("Evolutivo / +",nuevos_examenes, " nuevos exámenes tomados" ),
+      subtitle = paste0(nuevos_examenes, " nuevos exámenes tomados" ),
       color = "black",
       spark = hc,
       minititle = "Total Exámenes Realizados"
