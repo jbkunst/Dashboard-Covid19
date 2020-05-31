@@ -3,6 +3,7 @@ shinyServer(function(input, output) {
   output$vb_confirmados <- renderValueBox({
     
     d <- serie_nro_casos()
+    f <- d %>% select(dia) %>% pull() %>% last()  
     
     d <- d %>% 
       mutate(dia = datetime_to_timestamp(dia)) %>% 
@@ -32,7 +33,7 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0(nuevos_casos, " nuevos casos"),
+      subtitle = paste0(nuevos_casos, " nuevos casos respecto el ", format(f-2, "%d de %b")),
       color = "black",
       spark = hc,
       minititle = "Total Casos Confirmados"
@@ -43,6 +44,7 @@ shinyServer(function(input, output) {
   output$vb_examenes <- renderValueBox({
     
     d <- serie_nro_examenes()
+    f <- d %>% select(dia) %>% pull() %>% last()  
     
     d <- d %>% 
       mutate(dia = datetime_to_timestamp(dia)) %>% 
@@ -71,7 +73,7 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0(nuevos_examenes, " nuevos exámenes tomados" ),
+      subtitle = paste0(nuevos_examenes, " nuevos exámenes respecto el ", format(f-2, "%d de %b")),
       color = "black",
       spark = hc,
       minititle = "Total Exámenes Realizados"
@@ -94,6 +96,12 @@ shinyServer(function(input, output) {
   output$hc_confirmados_rango_edad <- renderHighchart({
   
     grafico_casos_confirmados_rango_edad()
+    
+  })
+  
+  output$hc_fallecidos_por_anio <- renderHighchart({
+    
+    grafico_defunciones_anuales()
     
   })
 

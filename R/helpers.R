@@ -115,7 +115,7 @@ h1 <- hchart(
     hc_add_series(
       dcasos_totales_cumulativos, "line",
       hcaes(datetime_to_timestamp(fecha), media_movil),
-      name = "Media movil último 7 días",
+      name = "Media móvil últimos 7 días",
       showInLegend = TRUE
       ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) 
@@ -125,7 +125,7 @@ h2 <- h1 %>%
     plotLines = list_parse(data_plotLine)
     ) %>% 
   hc_yAxis(
-    title = list(text = "Número de Casos")
+    title = list(text = "Nº de Casos")
     ) %>% 
   hc_title(
     text = "Casos confirmados diarios"
@@ -136,18 +136,11 @@ h2 <- h1 %>%
   hc_exporting(
     enabled = TRUE)
 
-
-
 h2    
-  
-  
-   
-    
-
-  
 }
 
 grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
+  
   dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
   dcasos_fallecidos_0804 <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-04-08-CasosConfirmados-totalRegional.csv')
   dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
@@ -189,20 +182,20 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
     mutate(Region = fct_inorder(Region))
   
  
-   hchart(d, "bar",
+   hchart(d, "area",
           hcaes(Region, nro_examenes_x100mh),
-          name = "Nro de exámenes por 100 mil habitantes",
+          name = "Exámenes",
           showInLegend = TRUE) %>% 
      hc_add_series(
-       d, "bar",
+       d, "area",
        hcaes(Region, nro_casos_x100mh),
-       name = "Nro de casos por 100 mil habitantes",
+       name = "Casos",
        showInLegend = TRUE
      ) %>% 
      hc_add_series(
-       d, "bar",
+       d, "area",
        hcaes(Region, nro_fallecidos_x100mh),
-       name = "Nro de fallecidos por 100 mil habitantes",
+       name = "Fallecidos",
        showInLegend = TRUE
      ) %>% 
      hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
@@ -219,7 +212,7 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
        text = "Exámenes, casos confirmados, y fallecimientos confirmados por región por cada 100.000 habitantes desde el 9 de abril"
        ) %>% 
      hc_yAxis(
-       title = list(text = "Cantidad")
+       title = list(text = "Nº de Casos")
        ) 
     
     
@@ -262,9 +255,50 @@ grafico_casos_confirmados_rango_edad <- function(){
     hc_exporting(enabled = TRUE) %>% 
     hc_caption(
       text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Nº de Casos")
     ) 
 }
 
+
+grafico_defunciones_anuales <- function(){
+  
+  dcasos_fallecidos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto32/Defunciones.csv")
+  
+  d <- dcasos_fallecidos %>% 
+    gather(dia, nro_fallecidos, -Region, -`Codigo region`, -Comuna, -`Codigo comuna`) %>% 
+    mutate(
+      dia = ymd(dia),
+      nro_semana = week(dia),
+      anio = year(dia)) %>% 
+    group_by(nro_semana, anio) %>% 
+    summarise(nro_fallecidos = sum(nro_fallecidos)) %>% 
+    ungroup() 
+  
+  d %>% 
+    hchart(
+      c(rep("line", 10), "area"),  
+      hcaes(nro_semana, nro_fallecidos, group = anio),
+      visible = c(rep(FALSE, 8), rep(TRUE, 3))
+      # color = c(rep("grey", 10), "red")
+      ) %>% 
+    hc_title(
+      text = "Fallecimientos semanales según fecha de inscripción"
+    ) %>% 
+    hc_tooltip(split = TRUE) %>% 
+    hc_exporting(enabled = TRUE) %>% 
+    hc_caption(
+      text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Nº de defunciones")
+    )  %>% 
+    hc_xAxis(
+      title = list(text = "Semana")
+    ) 
+  
+  }
 
 
 serie_nro_casos <- function(){
