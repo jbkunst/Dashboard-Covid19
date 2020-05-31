@@ -5,6 +5,7 @@ library(tidyverse)
 library(lubridate)
 library(RcppRoll)
 library(scales)
+library(googlesheets)
 
 source("R/helpers.R")
 
@@ -24,7 +25,7 @@ newlang_opts <- getOption("highcharter.lang")
 # dput(as.character(lubridate::month(1:12, label = TRUE, abbr = FALSE)))
 # dput(as.character(lubridate::month(1:12, label = TRUE, abbr = TRUE)))
 
-newlang_opts$downloadPDF <- "Descargar la wah"
+# newlang_opts$downloadPDF <- "Descargar la wah"
 newlang_opts$weekdays <- c("domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado")
 newlang_opts$months <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", 
                          "agosto", "septiembre", "octubre", "noviembre", "diciembre") 

@@ -92,7 +92,20 @@ grafico_casos_confirmados_diarios <- function(){
            casos_nuevos = ifelse(is.na(casos_nuevos), casos, casos - casos_nuevos),
            media_movil = roll_mean(casos_nuevos, n = 7, fill = NA, align = "right"))
   
-  hchart(
+  
+  evento <- tibble(
+    fecha = ymd("2020-05-15"),
+    texto = "Empieza cuarentena en la RM"
+  )
+  
+  data_plotLine <- evento %>% 
+  transmute(
+    value = fecha,
+    label = purrr::map(texto, ~ list(text = .x))
+  ) %>% 
+  mutate(color = "green", width = 2, zIndex = 10)
+  
+h1 <- hchart(
     dcasos_totales_cumulativos,
     type = "column",
     hcaes(fecha, casos_nuevos),
@@ -105,11 +118,32 @@ grafico_casos_confirmados_diarios <- function(){
       name = "Media movil último 7 días",
       showInLegend = TRUE
       ) %>% 
-    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
-    hc_caption(
-      text = "Media movial es un sadfs df"
+    hc_tooltip(table = TRUE, valueDecimals = 0) 
+
+h2 <- h1 %>% 
+   hc_xAxis(
+    plotLines = list_parse(data_plotLine)
     ) %>% 
-    hc_exporting(enabled = TRUE)
+  hc_yAxis(
+    title = list(text = "Número de Casos")
+    ) %>% 
+  hc_title(
+    text = "Casos confirmados diarios"
+    ) %>% 
+  hc_caption(
+    text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+    ) %>%
+  hc_exporting(
+    enabled = TRUE)
+
+
+
+h2    
+  
+  
+   
+    
+
   
 }
 
@@ -157,18 +191,36 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
  
    hchart(d, "bar",
           hcaes(Region, nro_examenes_x100mh),
-          name = "Nro de exámenes por 100 mil habitantes") %>% 
+          name = "Nro de exámenes por 100 mil habitantes",
+          showInLegend = TRUE) %>% 
      hc_add_series(
        d, "bar",
        hcaes(Region, nro_casos_x100mh),
-       name = "Nro de casos por 100 mil habitantes"
+       name = "Nro de casos por 100 mil habitantes",
+       showInLegend = TRUE
      ) %>% 
      hc_add_series(
        d, "bar",
        hcaes(Region, nro_fallecidos_x100mh),
-       name = "Nro de fallecidos por 100 mil habitantes"
+       name = "Nro de fallecidos por 100 mil habitantes",
+       showInLegend = TRUE
      ) %>% 
-     hc_tooltip(table = TRUE, valueDecimals = 0)
+     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+     hc_caption(
+       text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+     ) %>% 
+     hc_exporting(enabled = TRUE) %>% 
+     hc_caption(
+       text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+     ) %>% 
+     hc_exporting(
+       enabled = TRUE) %>% 
+     hc_title(
+       text = "Exámenes, casos confirmados, y fallecimientos confirmados por región por cada 100.000 habitantes desde el 9 de abril"
+       ) %>% 
+     hc_yAxis(
+       title = list(text = "Cantidad")
+       ) 
     
     
   
@@ -199,14 +251,18 @@ grafico_casos_confirmados_rango_edad <- function(){
     hcaes(x=fecha, y=n, group=Grupo_edad)
   ) %>% 
     hc_title(
-      text = "COVID-19 en Chile: Evolución de casos confirmados por rango de edad"
+      text = "Evolución de casos confirmados por rango de edad"
     ) %>% 
     hc_plotOptions(
       series = list(
         stacking = list(enabled = TRUE)  
       )
     ) %>% 
-    hc_tooltip(shared = TRUE)
+    hc_tooltip(shared = TRUE) %>% 
+    hc_exporting(enabled = TRUE) %>% 
+    hc_caption(
+      text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+    ) 
 }
 
 
@@ -224,12 +280,15 @@ serie_nro_casos <- function(){
 }
 
 serie_nro_examenes <- function(){
+  
   dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
+  
   dcasos_examenes %>% 
     mutate_if(is.numeric, replace_na, 0) %>% 
     summarise_if(is.numeric, sum) %>% 
     select(-1) %>% 
-    gather(dia, nro_examenes)
+    gather(dia, nro_examenes) %>% 
+    mutate(dia = ymd(dia))
     }
 
 tabla_fallecidos_por_region <- function(){
@@ -237,8 +296,18 @@ tabla_fallecidos_por_region <- function(){
   dcasos_fallecidos
   }
 
+tabla_fallecidos_por_region() %>% 
+  filter(Region == "Total")
+
 tabla_poblacion_por_region <- function(){
   dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
   dcasos_examenes %>% 
     select(1:3)
-  }
+}
+
+# serie_nro_fallecidos <- function(){
+#   dfallecidos <- gs_read(
+#     "https://docs.google.com/spreadsheets/d/1N0iLu6dVBD5hr0i1Yk4d_gs9GQIYrvkuURe4ZX9_Hu4/edit?ts=5ea9fc88#gid=0",
+#     ws = "Avance coronavirus"
+#     )
+# }

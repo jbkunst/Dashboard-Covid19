@@ -9,7 +9,8 @@ dashboardPage(
         
         column(
             12,
-            valueBoxOutput("vb_confirmados", 3)
+            valueBoxOutput("vb_confirmados", 3),
+            valueBoxOutput("vb_examenes", 3)
         ),
         
         
