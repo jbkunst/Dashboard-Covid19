@@ -35,7 +35,8 @@ hc_theme_sparkline2 <- function(...) {
         marker = list(enabled = FALSE),
         lineWidth = 1,
         shadow = FALSE,
-        fillOpacity = 0.25
+        fillOpacity = 0.25,
+        color = "white"
       )
     )
   )
@@ -52,7 +53,7 @@ hc_theme_sparkline2 <- function(...) {
   theme
 }
 
-valueBoxSpark <- function(value, subtitle, icon = NULL, color = "aqua", 
+valueBoxSpark <- function(value, subtitle, icon = NULL, color = "blue", 
                           width = 4, href = NULL, spark = NULL, height_spark = "100px",minititle = NULL) {
   
   shinydashboard:::validateColor(color)
@@ -80,6 +81,184 @@ valueBoxSpark <- function(value, subtitle, icon = NULL, color = "aqua",
     paste0("col-sm-", width), boxContent)
 }
 
+grafico_vb_confirmados <- function(){
+  d <- serie_nro_casos()
+  f <- d %>% select(dia) %>% pull() %>% last()  
+  
+  d <- d %>% 
+    mutate(dia = datetime_to_timestamp(dia)) %>% 
+    select(x = dia, y = nro_casos)
+  
+  lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  aux <- d %>% 
+    tail(8) %>% 
+    mutate(z = lag(y)) %>% 
+    mutate(v = y-z) %>% 
+    select(v) %>% 
+    filter(!is.na(v)) %>% 
+    pull()
+  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  
+  hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
+    hc_xAxis(type = "datetime") %>% 
+    hc_add_theme(hc_theme_sparkline2()) %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_plotOptions(
+      series = list(
+        color = PARS$sparkline_color,
+        fillColor = list(
+          linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
+          stops = list(
+            list(0.0, "transparent"),
+            list(1.0, PARS$sparkline_color)
+          )
+        )
+      )
+    )
+  
+  valueBoxSpark(
+    value = lbl,
+    subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
+    spark = hc,
+    minititle = paste0("Total Casos Confirmados al ", format(f, "%d de %B del %Y"))
+  )
+}
+
+grafico_vb_examenes <- function(){
+  
+  d <- serie_nro_examenes()
+  f <- d %>% select(dia) %>% pull() %>% last()  
+  
+  d <- d %>% 
+    mutate(dia = datetime_to_timestamp(dia)) %>% 
+    select(x = dia, y = nro_examenes)
+  
+  lbl <- d %>% mutate(y = cumsum(y))  %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  aux <- d %>% 
+    tail(7) %>% 
+    select(y) %>% 
+    pull()
+  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")   
+  
+  
+  hc <- d %>% 
+    mutate(y = cumsum(y)) %>% 
+    hchart("area", color = PARS$sparkline_color) %>% 
+    hc_xAxis(type = "datetime") %>% 
+    hc_add_theme(hc_theme_sparkline2()) %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_plotOptions(
+      series = list(
+        color = PARS$sparkline_color,
+        fillColor = list(
+          linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
+          stops = list(
+            list(0.0, "transparent"),
+            list(1.0, PARS$sparkline_color)
+          )
+        )
+      )
+    )
+  
+  valueBoxSpark(
+    value = lbl,
+    subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
+    spark = hc,
+    minititle = paste0("Total Exámenes Realizados al ", format(f, "%d de %B del %Y"))
+  )
+}
+
+grafico_vb_fallecidos <- function(){
+  d <- serie_nro_fallecidos()
+  f <- d %>% select(dia) %>% pull() %>% last()  
+  
+  d <- d %>% 
+    mutate(dia = datetime_to_timestamp(dia)) %>% 
+    select(x = dia, y = nro_fallecidos)
+  
+  lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  aux <- d %>% 
+    tail(8) %>% 
+    mutate(z = lag(y)) %>% 
+    mutate(v = y-z) %>% 
+    select(v) %>% 
+    filter(!is.na(v)) %>% 
+    pull()
+  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  
+  hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
+    hc_xAxis(type = "datetime") %>% 
+    hc_add_theme(hc_theme_sparkline2()) %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_plotOptions(
+      series = list(
+        color = PARS$sparkline_color,
+        fillColor = list(
+          linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
+          stops = list(
+            list(0.0, "transparent"),
+            list(1.0, PARS$sparkline_color)
+          )
+        )
+      )
+    )
+  
+  valueBoxSpark(
+    value = lbl,
+    subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
+    spark = hc,
+    minititle = paste0("Total Fallecidos al ", format(f, "%d de %B del %Y"))
+  )
+}
+
+grafico_vb_uci <- function(){
+  d <- serie_nro_pascientes_UCI()
+  f <- d %>% select(dia) %>% mutate_all(date) %>% pull() %>% last()  
+  
+  d <- d %>%
+    mutate(dia = ymd(dia)) %>% 
+    mutate(dia = datetime_to_timestamp(dia)) %>% 
+    select(x = dia, y = nro_pascientes_uci)
+  
+  lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  aux <- d %>% 
+    tail(8) %>% 
+    mutate(z = lag(y)) %>% 
+    mutate(v = y-z) %>% 
+    select(v) %>% 
+    filter(!is.na(v)) %>% 
+    pull()
+  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  
+  hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
+    hc_xAxis(type = "datetime") %>% 
+    hc_add_theme(hc_theme_sparkline2()) %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_plotOptions(
+      series = list(
+        color = PARS$sparkline_color,
+        fillColor = list(
+          linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
+          stops = list(
+            list(0.0, "transparent"),
+            list(1.0, PARS$sparkline_color)
+          )
+        )
+      )
+    )
+  
+  valueBoxSpark(
+    value = lbl,
+    subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
+    spark = hc,
+    minititle = paste0("Total Pacientes en UCI al ",  format(f, "%d de %b"))
+  )
+}
+
 grafico_casos_confirmados_diarios <- function(){
   
   dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
@@ -99,44 +278,39 @@ grafico_casos_confirmados_diarios <- function(){
   )
   
   data_plotLine <- evento %>% 
-  transmute(
-    value = datetime_to_timestamp(fecha),
-    label = purrr::map(texto, ~ list(text = .x))
-  ) %>% 
-  mutate(color = "green", width = 2, zIndex = 10)
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x))
+    ) %>% 
+    mutate(color = "black", width = 2, zIndex = 10)
   
-h1 <- hchart(
+  h1 <- hchart(
     dcasos_totales_cumulativos,
-    type = "column",
+    type = "line",
     hcaes(fecha, casos_nuevos),
     name = "Casos confirmados diarios",
-    showInLegend = TRUE
-    ) %>% 
+    showInLegend = TRUE,
+    lineWidth = 5
+  ) %>% 
     hc_add_series(
       dcasos_totales_cumulativos, "line",
       hcaes(datetime_to_timestamp(fecha), media_movil),
       name = "Media móvil últimos 7 días",
       showInLegend = TRUE
-      ) %>% 
+    ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) 
-
-h2 <- h1 %>% 
-   hc_xAxis(
-    plotLines = list_parse(data_plotLine)
+  
+  h2 <- h1 %>% 
+    hc_xAxis(
+      plotLines = list_parse(data_plotLine)
     ) %>% 
-  hc_yAxis(
-    title = list(text = "Nº de Casos")
-    ) %>% 
-  hc_title(
-    text = "Casos confirmados"
-    ) %>% 
-  hc_caption(
-    text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+    hc_yAxis(
+      title = list(text = "Nº de Casos")
     ) %>%
-  hc_exporting(
-    enabled = TRUE)
-
-h2    
+    hc_exporting(
+      enabled = TRUE)
+  
+  h2    
 }
 
 grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
@@ -181,43 +355,32 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
     arrange(-nro_examenes_x100mh) %>% 
     mutate(Region = fct_inorder(Region))
   
- 
-   hchart(d, "area",
-          hcaes(Region, nro_examenes_x100mh),
-          name = "Exámenes",
-          showInLegend = TRUE) %>% 
-     hc_add_series(
-       d, "area",
-       hcaes(Region, nro_casos_x100mh),
-       name = "Casos",
-       showInLegend = TRUE
-     ) %>% 
-     hc_add_series(
-       d, "area",
-       hcaes(Region, nro_fallecidos_x100mh),
-       name = "Fallecidos",
-       showInLegend = TRUE
-     ) %>% 
-     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
-     hc_caption(
-       text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
-     ) %>% 
-     hc_exporting(enabled = TRUE) %>% 
-     hc_caption(
-       text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
-     ) %>% 
-     hc_exporting(
-       enabled = TRUE) %>% 
-     hc_title(
-       text = "Exámenes, casos y fallecimientos por cien mil habitantes"
-       ) %>% 
-     hc_yAxis(
-       title = list(text = "Nº de Casos")
-       ) 
-    
-    
   
-  }
+  hchart(d, "area",
+         hcaes(Region, nro_examenes_x100mh),
+         name = "Exámenes",
+         showInLegend = TRUE) %>% 
+    hc_add_series(
+      d, "area",
+      hcaes(Region, nro_casos_x100mh),
+      name = "Casos",
+      showInLegend = TRUE
+    ) %>% 
+    hc_add_series(
+      d, "area",
+      hcaes(Region, nro_fallecidos_x100mh),
+      name = "Fallecidos",
+      showInLegend = TRUE
+    ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+    hc_exporting(enabled = TRUE) %>% 
+    hc_yAxis(
+      title = list(text = "Nº de Casos")
+    ) 
+  
+  
+  
+}
 
 grafico_casos_confirmados_rango_edad <- function(){
   
@@ -244,18 +407,16 @@ grafico_casos_confirmados_rango_edad <- function(){
     type = "column",
     hcaes(x=fecha, y=n, group=Grupo_edad)
   ) %>% 
-    hc_title(
-      text = "Evolución de casos confirmados por rango de edad"
-    ) %>% 
     hc_plotOptions(
       series = list(
         stacking = list(enabled = TRUE)  
       )
     ) %>% 
-    hc_tooltip(shared = TRUE) %>% 
-    hc_exporting(enabled = TRUE) %>% 
-    hc_caption(
-      text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+    hc_tooltip(
+      shared = TRUE
+    ) %>% 
+    hc_exporting(
+      enabled = TRUE
     ) %>% 
     hc_yAxis(
       title = list(text = "Nº de Casos")
@@ -288,14 +449,12 @@ grafico_defunciones_anuales <- function(){
       hcaes(nro_semana, nro_fallecidos, group = anio),
       visible = c(rep(TRUE, 3), rep(FALSE, 8))
       # color = c(rep("grey", 10), "red")
-      ) %>% 
-    hc_title(
-      text = "Fallecimientos semanales"
     ) %>% 
-    hc_tooltip(split = TRUE) %>% 
-    hc_exporting(enabled = TRUE) %>% 
-    hc_caption(
-      text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
+    hc_tooltip(
+      split = TRUE
+    ) %>% 
+    hc_exporting(
+      enabled = TRUE
     ) %>% 
     hc_yAxis(
       title = list(text = "Nº de defunciones")
@@ -304,7 +463,7 @@ grafico_defunciones_anuales <- function(){
       title = list(text = "Semana")
     ) 
   
-  }
+}
 
 serie_nro_casos <- function(){
   
@@ -328,7 +487,7 @@ serie_nro_examenes <- function(){
     select(-1) %>% 
     gather(dia, nro_examenes) %>% 
     mutate(dia = ymd(dia))
-    }
+}
 
 serie_nro_fallecidos <- function(){
   
@@ -352,7 +511,7 @@ serie_nro_pascientes_UCI <- function(){
 tabla_fallecidos_por_region <- function(){
   dcasos_fallecidos <-  read_csv(paste0('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/', today()-1,'-CasosConfirmados-totalRegional.csv'))
   dcasos_fallecidos
-  }
+}
 
 tabla_poblacion_por_region <- function(){
   dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
