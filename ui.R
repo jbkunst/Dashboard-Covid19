@@ -51,11 +51,11 @@ bs4DashPage(
                             side = "left",
                             bs4TabPanel(
                                 tabName = "Confirmados Diarios",
-                                bs4CardHC(highchartOutput("hc_confirmados"))
+                                bs4CardHC(addSpinner(highchartOutput("hc_confirmados")))
                             ),
                             bs4TabPanel(
                                 tabName = "Fallecidos Semanales",
-                                bs4CardHC(highchartOutput("hc_fallecidos_por_anio"))
+                                bs4CardHC(addSpinner(highchartOutput("hc_fallecidos_por_anio")))
                             ),
                             bs4TabPanel(
                                 tabName = "Gran Santiago",

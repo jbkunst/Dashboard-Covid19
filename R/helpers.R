@@ -282,7 +282,7 @@ grafico_casos_confirmados_diarios <- function(){
       value = datetime_to_timestamp(fecha),
       label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
     ) %>% 
-    mutate(color = "gray", width = 1, zIndex = 10)
+    mutate(color = "gray", width = 1, zIndex = 5)
   
   h1 <- hchart(
     dcasos_totales_cumulativos,
