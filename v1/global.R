@@ -1,37 +1,35 @@
 library(shiny)
-library(bs4Dash)
+library(shinydashboard)
 library(highcharter)
 library(tidyverse)
 library(lubridate)
 library(RcppRoll)
 library(scales)
 library(googlesheets)
-library(shinycssloaders)
 
-source("R/helpers.R", encoding = "utf-8")
+source("R/helpers.R")
 
 PARS <- list(
   debug = FALSE,
   classcol = "col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12",
-  sparkline_color = "#FFFFFF",
-  primary_color = "#007bff",
+  sparkline_color = "#333333",
   font = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 )
 
-
-
-Sys.setlocale("LC_ALL", "Spanish_Spain.1252")
-# Sys.setlocale("LC_ALL","English")
-
-f <- Sys.Date()
-dias <- weekdays((f - lubridate::days(lubridate::wday(f) - 1)) + lubridate::days(0:6))
-
+# highcharter conf
 newlang_opts <- getOption("highcharter.lang")
 
+# f <- Sys.Date()
+# dias <- weekdays((f - lubridate::days(lubridate::wday(f) - 1)) + lubridate::days(0:6))
+# dput(dias)
+# dput(as.character(lubridate::month(1:12, label = TRUE, abbr = FALSE)))
+# dput(as.character(lubridate::month(1:12, label = TRUE, abbr = TRUE)))
 
-newlang_opts$weekdays <- dias
-newlang_opts$months <- as.character(lubridate::month(1:12, label = TRUE, abbr = FALSE))
-newlang_opts$shortMonths <- as.character(lubridate::month(1:12, label = TRUE, abbr = TRUE))
+# newlang_opts$downloadPDF <- "Descargar la wah"
+newlang_opts$weekdays <- c("domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado")
+newlang_opts$months <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", 
+                         "agosto", "septiembre", "octubre", "noviembre", "diciembre") 
+newlang_opts$shortMonths <- c("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic")
 newlang_opts$thousandsSep <- ","
 
 options(
@@ -51,29 +49,10 @@ options(
           animation = list(duration = 3000)
           )
         ),
-      
-      exporting = list(
-        buttons = list(
-          contextButton = list(
-            symbol = 'url(https://image.flaticon.com/icons/png/512/660/660474.png)',
-            symbolSize = 18,
-            symbolX = 21,
-            symbolY = 20,
-            titleKey = "Descargar",
-            y = -05
-          )
-        )
-      ),
-      
-
       legend = list(
-        verticalAlign = "top",
-        align = "left",
         itemStyle =  list(
           fontWeight = "normal"
           )
         )
       )
   )
-
-

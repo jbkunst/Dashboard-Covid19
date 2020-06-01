@@ -519,3 +519,14 @@ tabla_poblacion_por_region <- function(){
     select(1:3)
 }
 
+bs4CardHC <- function(...){
+  
+  bs4Card(
+    ...,
+    elevation = 1,
+    closable = FALSE,
+    width = 12,
+    collapsible = FALSE
+  )
+  
+}
