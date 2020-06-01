@@ -10,9 +10,15 @@ shinyServer(function(input, output) {
       select(x = dia, y = nro_casos)
     
     lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
-    nuevos_casos <- d %>% tail(2) %>% select(y) %>% mutate(c = row_number()) %>% spread(c, y) %>% 
-      mutate(nuevos_casos = `2` - `1`) %>% select(nuevos_casos) %>% pull() %>% comma(big.mark = ".", decimal.mark = ",")
-    
+    aux <- d %>% 
+      tail(8) %>% 
+      mutate(z = lag(y)) %>% 
+      mutate(v = y-z) %>% 
+      select(v) %>% 
+      filter(!is.na(v)) %>% 
+      pull()
+    nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+    total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
     
     hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
       hc_xAxis(type = "datetime") %>% 
@@ -33,10 +39,10 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0(nuevos_casos, " nuevos casos respecto el ", format(f-2, "%d de %b")),
+      subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
       color = "black",
       spark = hc,
-      minititle = "Total Casos Confirmados"
+      minititle = paste0("Total Casos Confirmados al ", format(f, "%d de %b del %Y"))
     )
     
   })
@@ -50,11 +56,18 @@ shinyServer(function(input, output) {
       mutate(dia = datetime_to_timestamp(dia)) %>% 
       select(x = dia, y = nro_examenes)
     
-    lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
-    nuevos_examenes <- d %>% tail(2) %>% select(y) %>% mutate(c = row_number()) %>% spread(c, y) %>% 
-      mutate(nuevos_examenes = `2` - `1`) %>% select(nuevos_examenes) %>% pull() %>% comma(big.mark = ".", decimal.mark = ",")
+    lbl <- d %>% mutate(y = cumsum(y))  %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+    aux <- d %>% 
+      tail(7) %>% 
+      select(y) %>% 
+      pull()
+    nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+    total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")   
     
-    hc <- hchart(d, "area", color = PARS$sparkline_color) %>% 
+    
+    hc <- d %>% 
+      mutate(y = cumsum(y)) %>% 
+      hchart("area", color = PARS$sparkline_color) %>% 
       hc_xAxis(type = "datetime") %>% 
       hc_add_theme(hc_theme_sparkline2()) %>% 
       hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
@@ -73,10 +86,10 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0(nuevos_examenes, " nuevos exámenes respecto el ", format(f-2, "%d de %b")),
+      subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
       color = "black",
       spark = hc,
-      minititle = "Total Exámenes Realizados"
+      minititle = paste0("Total Exámenes Realizados al ", format(f, "%d de %b del %Y"))
     )
     
   })
@@ -91,8 +104,15 @@ shinyServer(function(input, output) {
       select(x = dia, y = nro_fallecidos)
     
     lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
-    nuevos_fallecidos <- d %>% tail(2) %>% select(y) %>% mutate(c = row_number()) %>% spread(c, y) %>% 
-      mutate(nuevos_examenes = `2` - `1`) %>% select(nuevos_examenes) %>% pull() %>% comma(big.mark = ".", decimal.mark = ",")
+    aux <- d %>% 
+      tail(8) %>% 
+      mutate(z = lag(y)) %>% 
+      mutate(v = y-z) %>% 
+      select(v) %>% 
+      filter(!is.na(v)) %>% 
+      pull()
+    nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+    total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
     
     hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
       hc_xAxis(type = "datetime") %>% 
@@ -113,10 +133,10 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0(nuevos_examenes, " nuevos fallecidos respecto el ", format(f-2, "%d de %b")),
+      subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
       color = "black",
       spark = hc,
-      minititle = "Total Fallecidos"
+      minititle = paste0("Total Fallecidos al ", format(f, "%d de %b del %Y"))
     )
     
   })
@@ -132,8 +152,15 @@ shinyServer(function(input, output) {
       select(x = dia, y = nro_pascientes_uci)
     
     lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
-    nuevos_uci <- d %>% tail(2) %>% select(y) %>% mutate(c = row_number()) %>% spread(c, y) %>% 
-      mutate(nuevos_examenes = `2` - `1`) %>% select(nuevos_examenes) %>% pull() %>% comma(big.mark = ".", decimal.mark = ",")
+    aux <- d %>% 
+      tail(8) %>% 
+      mutate(z = lag(y)) %>% 
+      mutate(v = y-z) %>% 
+      select(v) %>% 
+      filter(!is.na(v)) %>% 
+      pull()
+    nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+    total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
     
     hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
       hc_xAxis(type = "datetime") %>% 
@@ -154,10 +181,10 @@ shinyServer(function(input, output) {
     
     valueBoxSpark(
       value = lbl,
-      subtitle = paste0(nuevos_uci, " nuevos pascientes en UCI respecto el ", format(f-2, "%d de %b")),
+      subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
       color = "black",
       spark = hc,
-      minititle = "Total Pascientes en UCI"
+      minititle = paste0("Total Pascientes en UCI al ",  format(f, "%d de %b"))
     )
     
   })
