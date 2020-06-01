@@ -128,7 +128,7 @@ h2 <- h1 %>%
     title = list(text = "Nº de Casos")
     ) %>% 
   hc_title(
-    text = "Casos confirmados diarios"
+    text = "Casos confirmados"
     ) %>% 
   hc_caption(
     text = "Fuente: <a href='https://github.com/MinCiencia/Datos-COVID19'> Ministerio de Ciencia</a>"
@@ -209,7 +209,7 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
      hc_exporting(
        enabled = TRUE) %>% 
      hc_title(
-       text = "Exámenes, casos confirmados, y fallecimientos confirmados por región por cada 100.000 habitantes desde el 9 de abril"
+       text = "Exámenes, casos y fallecimientos por cien mil habitantes"
        ) %>% 
      hc_yAxis(
        title = list(text = "Nº de Casos")
@@ -290,7 +290,7 @@ grafico_defunciones_anuales <- function(){
       # color = c(rep("grey", 10), "red")
       ) %>% 
     hc_title(
-      text = "Fallecimientos semanales según fecha de inscripción"
+      text = "Fallecimientos semanales"
     ) %>% 
     hc_tooltip(split = TRUE) %>% 
     hc_exporting(enabled = TRUE) %>% 
