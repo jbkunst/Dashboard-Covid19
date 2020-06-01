@@ -184,7 +184,7 @@ shinyServer(function(input, output) {
       subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
       color = "black",
       spark = hc,
-      minititle = paste0("Total Pascientes en UCI al ",  format(f, "%d de %b"))
+      minititle = paste0("Total Pacientes en UCI al ",  format(f, "%d de %b"))
     )
     
   })
