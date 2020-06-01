@@ -66,7 +66,7 @@ valueBoxSpark <- function(value, subtitle, icon = NULL, color = "blue",
     div(
       class = "inner",
       if(!is.null(minititle)) tags$small(minititle),
-      h3(value),
+      h1(value),
       # tags$span(style = paste0("height:", height_spark), hc_size(spark, height = "100vh")),
       tags$span(hc_size(spark, height = height_spark)),
       if (!is.null(subtitle)) p(subtitle)
@@ -100,10 +100,10 @@ grafico_vb_confirmados <- function(){
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   
-  hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
+  hc <- hchart(d, "areaspline", color = PARS$sparkline_color, fillColor = hex_to_rgba(PARS$sparkline_color, 0.5)) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
-    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}<br><b>{point.y}</b> confirmardos") %>% 
     hc_plotOptions(
       series = list(
         color = PARS$sparkline_color,
@@ -111,7 +111,7 @@ grafico_vb_confirmados <- function(){
           linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
           stops = list(
             list(0.0, "transparent"),
-            list(1.0, PARS$sparkline_color)
+            list(0.5, PARS$sparkline_color)
           )
         )
       )
@@ -119,7 +119,7 @@ grafico_vb_confirmados <- function(){
   
   valueBoxSpark(
     value = lbl,
-    subtitle = paste0("Nuevos: ", nuevos_casos, ". Ult. 7 días: ", total_casos_ult_7_dias),
+    subtitle = HTML(paste0(nuevos_casos, " nuevos casos", "<br>", total_casos_ult_7_dias, " en los útlimos 7 días")),
     spark = hc,
     minititle = paste0("Total Casos Confirmados al ", format(f, "%d de %B del %Y"))
   )
@@ -274,15 +274,15 @@ grafico_casos_confirmados_diarios <- function(){
   
   evento <- tibble(
     fecha = ymd("2020-05-15"),
-    texto = "Empieza cuarentena en la RM"
+    texto = "Cuarentena en la RM"
   )
   
   data_plotLine <- evento %>% 
     transmute(
       value = datetime_to_timestamp(fecha),
-      label = purrr::map(texto, ~ list(text = .x))
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
     ) %>% 
-    mutate(color = "black", width = 2, zIndex = 10)
+    mutate(color = "gray", width = 1, zIndex = 10)
   
   h1 <- hchart(
     dcasos_totales_cumulativos,
@@ -290,27 +290,27 @@ grafico_casos_confirmados_diarios <- function(){
     hcaes(fecha, casos_nuevos),
     name = "Casos confirmados diarios",
     showInLegend = TRUE,
-    lineWidth = 5
+    color = PARS$primary_color,
+    lineWidth = 4
   ) %>% 
     hc_add_series(
       dcasos_totales_cumulativos, "line",
       hcaes(datetime_to_timestamp(fecha), media_movil),
       name = "Media móvil últimos 7 días",
-      showInLegend = TRUE
+      color = "gray",
+      showInLegend = TRUE,
+      size = 2
     ) %>% 
-    hc_tooltip(table = TRUE, valueDecimals = 0) 
-  
-  h2 <- h1 %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
       plotLines = list_parse(data_plotLine)
     ) %>% 
     hc_yAxis(
-      title = list(text = "Nº de Casos")
+      title = list(text = "Número de casos")
     ) %>%
-    hc_exporting(
-      enabled = TRUE)
+    hc_exporting(enabled = TRUE)
   
-  h2    
+  h1
 }
 
 grafico_examenes_informados_casos_fallecidos_confirmados <- function(){

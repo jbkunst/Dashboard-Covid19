@@ -29,7 +29,8 @@ bs4CardHC <- function(...){
 PARS <- list(
   debug = FALSE,
   classcol = "col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12",
-  sparkline_color = "#333333",
+  sparkline_color = "#FFFFFF",
+  primary_color = "#007bff",
   font = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 )
 
@@ -74,13 +75,16 @@ options(
             symbolSize = 18,
             symbolX = 21,
             symbolY = 20,
-            titleKey = "Descargar"
+            titleKey = "Descargar",
+            y = -05
           )
         )
       ),
       
 
       legend = list(
+        verticalAlign = "top",
+        align = "left",
         itemStyle =  list(
           fontWeight = "normal"
           )
