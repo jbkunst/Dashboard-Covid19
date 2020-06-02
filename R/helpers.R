@@ -359,15 +359,18 @@ grafico_casos_confirmados_diarios <- function(){
   dcasos_totales_cumulativos <- dcasos_totales_cumulativos %>%
     gather(fecha, casos, -Region) %>%
     filter(Region == "Total") %>%
-    mutate(fecha = date(fecha),
-           casos_nuevos = lag(casos),
-           casos_nuevos = ifelse(is.na(casos_nuevos), casos, casos - casos_nuevos),
-           media_movil = roll_mean(casos_nuevos, n = 7, fill = NA, align = "right"))
+    mutate(
+      fecha = date(fecha),
+      casos_nuevos = lag(casos),
+      casos_nuevos = ifelse(is.na(casos_nuevos), casos, casos - casos_nuevos),
+      media_movil = roll_mean(casos_nuevos, n = 7, fill = NA, align = "right"),
+      media_movil = round(media_movil, 0)
+      )
   
   
   evento <- tibble(
     fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Se suman casos asintomáticos", "Cuarentena en la RM")
+    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
   )
   
   data_plotLine <- evento %>% 
@@ -400,6 +403,9 @@ grafico_casos_confirmados_diarios <- function(){
     ) %>% 
     hc_yAxis(
       title = list(text = "Número de casos")
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
     ) %>%
     hc_exporting(enabled = TRUE)
   
