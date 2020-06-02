@@ -24,6 +24,18 @@ shinyServer(function(input, output) {
     
   })
   
+  output$vb_letalidad <- renderValueBox({
+    
+    grafico_vb_letalidad()
+    
+  })
+  
+  output$vb_recuperados <- renderValueBox({
+    
+    grafico_vb_recuperados()
+    
+  })
+  
   output$hc_confirmados <- renderHighchart({
     
     grafico_casos_confirmados_diarios()

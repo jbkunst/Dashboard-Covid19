@@ -34,7 +34,10 @@ bs4DashPage(
                     valueBoxOutput("vb_confirmados", 2),
                     valueBoxOutput("vb_examenes", 2),
                     valueBoxOutput("vb_fallecidos", 2),
+                    valueBoxOutput("vb_recuperados", 2),
+                    valueBoxOutput("vb_letalidad", 2),
                     valueBoxOutput("vb_uci", 2)
+                    
                 ),
                 
                 fluidRow(
