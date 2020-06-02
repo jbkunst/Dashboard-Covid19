@@ -465,6 +465,38 @@ grafico_defunciones_anuales <- function(){
   
 }
 
+grafico_tasa_letalidad <- function(){
+  dfallecidos <- serie_nro_fallecidos()
+  dcontagiados <- serie_nro_casos()
+  dfallecidos_contagiados <- dfallecidos %>% 
+    full_join(
+      dcontagiados,
+      by="dia"
+    ) %>% 
+    mutate(porc=nro_fallecidos/nro_casos) 
+  
+  dfallecidos_contagiados %>% 
+    mutate(porc = porc*100) %>% 
+    hchart(., "line",
+           hcaes(dia, porc),
+           color = "black",
+           name = "Tasa de Letalidad"
+    ) %>% 
+    hc_yAxis(
+      allowDecimals = TRUE,
+      title = list(text="%")
+    ) %>% 
+    hc_xAxis(
+      title = list(text="")
+    ) %>% 
+    hc_tooltip(
+      valueDecimals = 2,
+      pointFormat = " {series.name}: <b>{point.y}</b> ({point.nro_fallecidos}/{point.nro_casos}) <br/>",
+      valueSuffix = " %",
+      split = TRUE
+    )
+}
+
 serie_nro_casos <- function(){
   
   dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
