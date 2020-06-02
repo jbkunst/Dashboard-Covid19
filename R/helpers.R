@@ -619,7 +619,7 @@ serie_letalidad <- function(){
 
 serie_nro_casos <- function(){
   
-  dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
+  dcasos_totales_cumulativos <- readRDS("data/producto3/CasosTotalesCumulativo.rds")
   
   dcasos_totales_cumulativos %>% 
     filter(Region == "Total") %>% 

@@ -19,6 +19,11 @@ bs4DashPage(
                 ),
             bs4SidebarMenuItem(
                 text = "Acerca de",
+                tabName = "itemx",
+                icon = "skull"
+            ),
+            bs4SidebarMenuItem(
+                text = "Acerca de",
                 tabName = "item3",
                 icon = "question-circle"
                 )

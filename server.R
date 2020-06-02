@@ -1,4 +1,7 @@
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
+  
+  figletr::figlet("Descargar datos")
+  descargar_datos()
   
   output$vb_confirmados <- renderValueBox({
     
