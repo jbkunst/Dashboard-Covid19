@@ -324,7 +324,7 @@ grafico_vb_letalidad <- function(){
   
   hc <- d %>% 
     mutate(y = y*100) %>% 
-    hchart("areaspline", color = PARS$sparkline_color) %>% 
+    hchart("line", color = PARS$sparkline_color) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
     hc_tooltip(
@@ -631,7 +631,7 @@ serie_nro_casos <- function(){
 
 serie_nro_examenes <- function(){
   
-  dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
+  dcasos_examenes <- readRDS('data/producto7/PCR.rds')
   
   dcasos_examenes %>% 
     mutate_if(is.numeric, replace_na, 0) %>% 
@@ -643,7 +643,7 @@ serie_nro_examenes <- function(){
 
 serie_nro_fallecidos <- function(){
   
-  dfallecidos <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto14/FallecidosCumulativo_T.csv')
+  dfallecidos <- readRDS('data/producto14/FallecidosCumulativo_T.rds')
   dfallecidos %>% 
     select(dia = Region, nro_fallecidos  =Total)
   
@@ -651,7 +651,7 @@ serie_nro_fallecidos <- function(){
 
 serie_nro_pascientes_UCI <- function(){
   
-  dpascientes_UCI <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto8/UCI_T.csv')
+  dpascientes_UCI <- readRDS('data/producto8/UCI_T.rds')
   
   dpascientes_UCI %>% 
     filter(!Region %in% c("Codigo region", "Poblacion")) %>% 
@@ -662,7 +662,7 @@ serie_nro_pascientes_UCI <- function(){
 
 serie_recuperados <- function(){
   
-  dtotales_nacionales <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales_T.csv')
+  dtotales_nacionales <- readRDS('data/producto5/TotalesNacionales_T.rds')
   
   dtotales_nacionales %>% 
     select(dia = Fecha, casos_recuperados = `Casos recuperados`) %>% 
@@ -675,19 +675,9 @@ tabla_fallecidos_por_region <- function(){
 }
 
 tabla_poblacion_por_region <- function(){
-  dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
+  dcasos_examenes <- readRDS('data/producto7/PCR.rds')
   dcasos_examenes %>% 
     select(1:3)
 }
 
-bs4CardHC <- function(...){
-  
-  bs4Card(
-    ...,
-    elevation = 1,
-    closable = FALSE,
-    width = 12,
-    collapsible = FALSE
-  )
-  
-}
+
