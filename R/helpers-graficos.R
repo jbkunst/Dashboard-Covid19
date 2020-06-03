@@ -287,17 +287,35 @@ grafico_tasa_letalidad <- function(){
     mutate(desest = 3*zoo::rollapplyr(porc, 7, sd, fill = 0)) %>% 
     mutate(desest = round(desest,2))
   
+  evento_100fallecidos <- dfallecidos_contagiados %>%
+    filter(nro_fallecidos>=100) %>%
+    slice(1) %>%
+    pull(dia)
+  
+  evento <- tibble(
+    fecha = c(ymd(evento_100fallecidos), ymd("2020-04-29"), ymd("2020-05-15")),
+    texto = c("Primeros 100 fallecidos", "Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+  )
+  
+  data_plotLine <- evento %>% 
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 10)))
+    ) %>% 
+    mutate(color = "gray", width = 1, zIndex = 5)
+  
   dfallecidos_contagiados %>% 
     hchart(., "line",
            hcaes(dia, porc),
            color = PARS$primary_color,
            name = "Tasa de Letalidad",
-           id = "fallecidos_contagiados"
+           id = "fallecidos_contagiados",
+           showInLegend = TRUE
     ) %>%
     hc_add_series(
       dfallecidos_contagiados,
       type = "arearange",
-      hcaes(x = dia, low = porc - desest, high = porc + desest),
+      hcaes(x = dia, low = round(porc,2) - desest, high = round(porc,2) + desest),
       color = hex_to_rgba("gray", 0.05), 
       linkedTo = "fallecidos_contagiados",
       zIndex = -3,
@@ -306,10 +324,12 @@ grafico_tasa_letalidad <- function(){
     ) %>% 
     hc_yAxis(
       allowDecimals = TRUE,
-      title = list(text="%")
+      title = list(text="%"),
+      min = 0
     ) %>% 
     hc_xAxis(
-      title = list(text="")
+      title = list(text=""),
+      plotLines = list_parse(data_plotLine)
     ) %>% 
     hc_tooltip(
       pointFormat = " {series.name}: <b>{point.y}</b> ({point.nro_fallecidos}/{point.nro_casos}) <br/>",
