@@ -1,54 +1,7 @@
 
-grafico_vb_letalidad <- function(){
-  d <- serie_letalidad()
-  f <- d %>% select(dia) %>% mutate_all(date) %>% pull() %>% last()  
-  
-  d <- d %>%
-    mutate(dia = ymd(dia)) %>% 
-    mutate(dia = datetime_to_timestamp(dia)) %>% 
-    select(x = dia, y = porc)
-  
-  lbl <- d %>% pull(y) %>% last() %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
-  aux <- d %>% 
-    tail(7) %>% 
-    select(y) %>% 
-    pull()
-  nuevos_casos <- last(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
-  total_casos_ult_7_dias <- mean(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
-  
-  hc <- d %>% 
-    mutate(y = y*100) %>% 
-    hchart("line", color = PARS$sparkline_color) %>% 
-    hc_xAxis(type = "datetime") %>% 
-    hc_add_theme(hc_theme_sparkline2()) %>% 
-    hc_tooltip(
-      valueDecimals = 2,
-      valueSuffix = " %",
-      pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
-    hc_plotOptions(
-      series = list(
-        color = PARS$sparkline_color,
-        fillColor = list(
-          linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
-          stops = list(
-            list(0.0, "transparent"),
-            list(1.0, PARS$sparkline_color)
-          )
-        )
-      )
-    )
-  
-  valueBoxSpark(
-    value = lbl,
-    subtitle = HTML(paste0(total_casos_ult_7_dias, " promedio tasa últimos 7 días")),
-    spark = hc,
-    minititle = paste0("Tasa de Letalidad")
-  )
-}
-
 grafico_casos_confirmados_diarios <- function(){
   
-  dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
+  dcasos_totales_cumulativos <- readRDS("data/producto3/CasosTotalesCumulativo.rds")
   
   dcasos_totales_cumulativos <- dcasos_totales_cumulativos %>%
     gather(fecha, casos, -Region) %>%
@@ -108,9 +61,9 @@ grafico_casos_confirmados_diarios <- function(){
 
 grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
   
-  dcasos_totales_cumulativos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto3/CasosTotalesCumulativo.csv")
-  dcasos_fallecidos_0804 <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-04-08-CasosConfirmados-totalRegional.csv')
-  dcasos_examenes <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv')
+  dcasos_totales_cumulativos <- readRDS("data/producto3/CasosTotalesCumulativo.rds")
+  dcasos_fallecidos_0804 <- readRDS('data/producto4/2020-04-08-CasosConfirmados-totalRegional.rds')
+  dcasos_examenes <- readRDS('data/producto7/PCR.rds')
   dcasos_fallecidos <-  read_csv(paste0('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/', today()-1,'-CasosConfirmados-totalRegional.csv'))
   
   dcasos_totales_hoy <- dcasos_totales_cumulativos %>% 
@@ -119,7 +72,7 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
     select(-dia)
   
   dcasos_fallecidos2 <- dcasos_fallecidos %>% 
-    select(Region, nro_fallecidos = Fallecidos) %>% 
+    select(Region, nro_fallecidos = `Fallecidos totales`) %>% 
     mutate(Region = case_when(
       str_detect(Region, "Arauca") ~ "Araucanía",
       str_detect(Region, "Arica") ~ "Arica y Parinacota",
@@ -177,7 +130,7 @@ grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
 
 grafico_casos_confirmados_rango_edad <- function(){
   
-  dcasos_confirmados_rango_edad <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto16/CasosGeneroEtario.csv") %>%
+  dcasos_confirmados_rango_edad <- readRDS("data/producto16/CasosGeneroEtario.rds") %>%
     gather(-`Grupo de edad`, -Sexo, key = "fecha", value="n") %>% 
     mutate(fecha = as_date(fecha, format="%Y-%m-%d")) %>% 
     separate(`Grupo de edad`, c("min","max")) %>% 
@@ -216,9 +169,9 @@ grafico_casos_confirmados_rango_edad <- function(){
     ) 
 }
 
-grafico_defunciones_anuales <- function(){
+grafico_defunciones_esperadas <- function(){
   
-  dcasos_fallecidos <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto32/Defunciones.csv")
+  dcasos_fallecidos <- readRDS("data/producto32/Defunciones.rds")
   
   d <- dcasos_fallecidos %>% 
     gather(dia, nro_fallecidos, -Region, -`Codigo region`, -Comuna, -`Codigo comuna`) %>% 
@@ -230,35 +183,84 @@ grafico_defunciones_anuales <- function(){
     summarise(nro_fallecidos = sum(nro_fallecidos)) %>% 
     ungroup() %>% 
     arrange(-anio) %>% 
-    mutate(anio = as.character(anio)) %>% 
-    mutate( anio = fct_inorder(anio))
-  # 
-  # d %>% 
-  #   group_by(anio) %>% 
-  #   summarise(nro_fallecidos = sum(nro_fallecidos))
+    mutate(anio = as.character(anio))
   
-  d %>%
+  gr <- d %>% 
     group_by(anio) %>% 
-    filter(nro_semana != max(nro_semana)) %>% 
-    ungroup() %>% 
+    summarise(nro_fallecidos = sum(nro_fallecidos)) %>% 
+    arrange(anio) %>% 
+    mutate(
+      g = (nro_fallecidos - lag(nro_fallecidos))/lag(nro_fallecidos)
+    ) %>% 
+    filter(anio != 2020) %>% 
+    filter(complete.cases(.)) %>% 
+    filter(anio > 2012) %>%
+    summarise(mean(g)) %>% 
+    pull()
+  
+  d <- d %>% 
+    group_by(anio) %>% 
+    filter(nro_semana != max(nro_semana))
+  
+  
+  d <- d %>% 
+    mutate(anio = as.numeric(anio)) %>% 
+    mutate(
+      nro_fallecidos_adj = round(nro_fallecidos * ((1 + gr)^(2020 - anio)), 0)
+    )
+  
+  
+  
+  desp <- d %>% 
+    filter(anio != 2020) %>% 
+    group_by(nro_semana) %>% 
+    summarise(
+      nro_fallecidos_esperados = mean(nro_fallecidos_adj),
+      desest = sd(nro_fallecidos_adj)
+    ) %>% 
+    mutate(fecha = ymd( "2020-01-01" ) + weeks( nro_semana - 1 )) 
+  
+  
+  d %>% 
+    mutate(fecha = ymd( "2020-01-01" ) + weeks( nro_semana - 1 )) %>% 
+    filter(anio == 2020) %>% 
     hchart(
-      c("area", rep("line", 10)),  
-      hcaes(nro_semana, nro_fallecidos, group = anio),
-      visible = c(rep(TRUE, 3), rep(FALSE, 8))
-      # color = c(rep("grey", 10), "red")
+      hcaes(fecha, nro_fallecidos_adj, group = factor(anio)),
+      type = "line", 
+      color = "red",
+      showInLegend = TRUE) %>% 
+    hc_add_series(
+      desp,
+      type = "line",
+      hcaes(x = fecha, y = nro_fallecidos_esperados),
+      name = "Número de fallecidos esperados",
+      id = "numero_fallecidos_esperados",
+      lineWidth = 1,
+      color = "blue"
+    ) %>% 
+    hc_add_series(
+      desp,
+      type = "arearange",
+      hcaes(x = fecha, low = nro_fallecidos_esperados - desest, high = nro_fallecidos_esperados + desest),
+      color = hex_to_rgba("gray", 0.05), 
+      linkedTo = "numero_fallecidos_esperados",
+      zIndex = -3,
+      showInLegend = FALSE, 
+      name = "Desviación estandar"
     ) %>% 
     hc_tooltip(
-      split = TRUE
-    ) %>% 
-    hc_exporting(
-      enabled = TRUE
-    ) %>% 
+      shared = TRUE,
+      valueDecimals = 0) %>% 
     hc_yAxis(
-      title = list(text = "Nº de defunciones")
-    )  %>% 
+      title = list(text = "Número de fallecidos"),
+      min = 0
+    ) %>%
     hc_xAxis(
-      title = list(text = "Semana")
-    ) 
+      title = list(text = "Fecha")
+    ) %>%
+    hc_exporting(enabled = TRUE)
+  
+  
   
 }
 
@@ -294,3 +296,9 @@ grafico_tasa_letalidad <- function(){
       split = TRUE
     )
 }
+
+
+
+
+
+

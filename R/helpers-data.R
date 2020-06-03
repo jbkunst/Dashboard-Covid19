@@ -3,6 +3,7 @@ descargar_datos <- function(){
   suppressWarnings({
     dir.create("data")
     dir.create("data/producto3")
+    dir.create("data/producto4")
     dir.create("data/producto5")
     dir.create("data/producto7")
     dir.create("data/producto8")
@@ -21,6 +22,17 @@ descargar_datos <- function(){
         )
       ),
     "data/producto3/CasosTotalesCumulativo.rds"
+  )
+  
+  saveRDS(
+    read_csv(
+      "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-04-08-CasosConfirmados-totalRegional.csv",
+      col_types = cols(
+        .default = col_double(),
+        Region = col_character()
+      )
+    ),
+    "data/producto4/2020-04-08-CasosConfirmados-totalRegional.rds"
   )
   
   saveRDS(

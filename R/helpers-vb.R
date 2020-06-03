@@ -179,7 +179,9 @@ grafico_vb_uci <- function(){
 }
 
 grafico_vb_recuperados <- function(){
+  
   d <- serie_recuperados()
+  
   f <- d %>% select(dia) %>% mutate_all(date) %>% pull() %>% last()  
   
   d <- d %>%
@@ -220,5 +222,52 @@ grafico_vb_recuperados <- function(){
     subtitle = HTML(paste0(nuevos_casos, " nuevos recuperado", "<br>", total_casos_ult_7_dias, " últimos 7 días")),
     spark = hc,
     minititle = paste0("Recuperados")
+  )
+}
+
+grafico_vb_letalidad <- function(){
+  d <- serie_letalidad()
+  f <- d %>% select(dia) %>% mutate_all(date) %>% pull() %>% last()  
+  
+  d <- d %>%
+    mutate(dia = ymd(dia)) %>% 
+    mutate(dia = datetime_to_timestamp(dia)) %>% 
+    select(x = dia, y = porc)
+  
+  lbl <- d %>% pull(y) %>% last() %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+  aux <- d %>% 
+    tail(7) %>% 
+    select(y) %>% 
+    pull()
+  nuevos_casos <- last(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+  total_casos_ult_7_dias <- mean(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+  
+  hc <- d %>% 
+    mutate(y = y*100) %>% 
+    hchart("line", color = PARS$sparkline_color) %>% 
+    hc_xAxis(type = "datetime") %>% 
+    hc_add_theme(hc_theme_sparkline2()) %>% 
+    hc_tooltip(
+      valueDecimals = 2,
+      valueSuffix = " %",
+      pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_plotOptions(
+      series = list(
+        color = PARS$sparkline_color,
+        fillColor = list(
+          linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
+          stops = list(
+            list(0.0, "transparent"),
+            list(1.0, PARS$sparkline_color)
+          )
+        )
+      )
+    )
+  
+  valueBoxSpark(
+    value = lbl,
+    subtitle = HTML(paste0(total_casos_ult_7_dias, " promedio tasa últimos 7 días")),
+    spark = hc,
+    minititle = paste0("Tasa de Letalidad")
   )
 }
