@@ -10,8 +10,8 @@ bs4CardHC <- function(...){
   
 }
 
-valueBoxSpark <- function(value, subtitle, icon = NULL, color = "blue", 
-                          width = 4, href = NULL, spark = NULL, height_spark = "75px",minititle = NULL) {
+valueBoxSpark <- function(value, subtitle, icon = NULL, color = "light-blue", 
+                          width = 4, href = NULL, spark = NULL, height_spark = "70px",minititle = NULL) {
   
   shinydashboard:::validateColor(color)
   
@@ -19,11 +19,11 @@ valueBoxSpark <- function(value, subtitle, icon = NULL, color = "blue",
     shinydashboard:::tagAssert(icon, type = "i")
   
   boxContent <- div(
-    class = paste0("small-box bg-", color),
+    class = paste0("small-box elevation-3 bg-", color),
     div(
       class = "inner",
-      if(!is.null(minititle)) tags$small(minititle),
-      h1(value),
+      if(!is.null(minititle)) tags$h6(minititle),
+      h1(value, style = "font-weight: 800"),
       # tags$span(style = paste0("height:", height_spark), hc_size(spark, height = "100vh")),
       tags$span(hc_size(spark, height = height_spark)),
       if (!is.null(subtitle)) p(subtitle)

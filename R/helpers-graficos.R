@@ -54,6 +54,12 @@ grafico_casos_confirmados_diarios <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
+    hc_caption(
+      text =  "Contagios por Coronavirus confirmados por exámenes de laboratorio 
+      y notificados por el sistema de vigilancia epidemiológica EPIVIGILA 
+      del Ministerio de Salud. Esta corresponde a la famosa curva de contagios,
+      que considera sólo a las personas activamente afectadas por el virus"
+    ) %>% 
     hc_exporting(enabled = TRUE)
   
   h1

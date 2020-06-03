@@ -46,7 +46,7 @@ options(
   highcharter.theme = 
     hc_theme_smpl(
       title = list(style = list(fontSize = "1.2em", fontFamily = PARS$font)),
-      subtitle = list(style = list(fontFamily = PARS$font, fontSize = "0.95em")),
+      subtitle = list(style = list(fontFamily = PARS$font, fontSize = "0.85em")),
       
       xAxis = list(
         title = list(

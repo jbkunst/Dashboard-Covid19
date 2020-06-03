@@ -9,7 +9,7 @@ bs4DashPage(
         bs4SidebarMenu(
             bs4SidebarMenuItem(
                 text = "Dashboard",
-                tabName = "item1",
+                tabName = "inicio",
                 icon =  "tachometer-alt"
                 ),
             bs4SidebarMenuItem(
@@ -19,7 +19,7 @@ bs4DashPage(
                 ),
             bs4SidebarMenuItem(
                 text = "Acerca de",
-                tabName = "itemx",
+                tabName = "fallecidos",
                 icon = "skull"
             ),
             bs4SidebarMenuItem(
@@ -32,13 +32,12 @@ bs4DashPage(
     body = bs4DashBody(
         bs4TabItems(
             bs4TabItem(
-                tabName = "item1",
-                tags$h2("COVID-19"),
-                
+                tabName = "inicio",
+                tags$h2(icon("tachometer-alt"), "COVID-19"),
                 fluidRow(
                     valueBoxOutput("vb_confirmados", 2),
-                    valueBoxOutput("vb_examenes", 2),
                     valueBoxOutput("vb_fallecidos", 2),
+                    valueBoxOutput("vb_examenes", 2),
                     valueBoxOutput("vb_recuperados", 2),
                     valueBoxOutput("vb_letalidad", 2),
                     valueBoxOutput("vb_uci", 2)
@@ -51,7 +50,7 @@ bs4DashPage(
                         solidHeader = TRUE, 
                         collapsible = FALSE,
                         closable = FALSE,
-                        elevation = 5,
+                        elevation = 4,
                         width = 12,
                         bs4TabSetPanel(
                             id = "tabcard",
@@ -83,6 +82,14 @@ bs4DashPage(
                             )
                             )
                         )
+                    )
+                ),
+            bs4TabItem(
+                tabName = "fallecidos",
+                tags$h2(icon("skull"), "Fallecidos"),
+                
+                fluidRow(
+                    bs4CardHC(addSpinner(highchartOutput("hc_defunciones_esperadas")))
                     )
                 )
             )

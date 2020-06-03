@@ -1,4 +1,3 @@
-
 grafico_vb_confirmados <- function(){
   
   d <- serie_nro_casos()
@@ -40,7 +39,8 @@ grafico_vb_confirmados <- function(){
     value = lbl,
     subtitle = HTML(paste0(nuevos_casos, " casos nuevos", "<br>", total_casos_ult_7_dias, " útlimos 7 días")),
     spark = hc,
-    minititle = paste0("Casos Confirmados")
+    minititle = paste0("Confirmados"),
+    color = "blue"
   )
 }
 
@@ -64,18 +64,17 @@ grafico_vb_examenes <- function(){
   
   hc <- d %>% 
     mutate(y = cumsum(y)) %>% 
-    hchart("area", color = PARS$sparkline_color) %>% 
+    hchart("areaspline", color = PARS$primary_color) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
     hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
     hc_plotOptions(
       series = list(
-        color = PARS$sparkline_color,
         fillColor = list(
           linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
           stops = list(
             list(0.0, "transparent"),
-            list(1.0, PARS$sparkline_color)
+            list(1.0, PARS$primary_color)
           )
         )
       )
@@ -85,7 +84,7 @@ grafico_vb_examenes <- function(){
     value = lbl,
     subtitle = HTML(paste0(nuevos_casos, " exámenes nuevos","<br>", total_casos_ult_7_dias, " últimos 7 días")),
     spark = hc,
-    minititle = paste0("Exámenes Realizados")
+    minititle = paste0("Exámenes")
   )
 }
 
@@ -129,7 +128,8 @@ grafico_vb_fallecidos <- function(){
     value = lbl,
     subtitle = HTML(paste0(nuevos_casos, " nuevos fallecidos", "<br>", total_casos_ult_7_dias, " últimos 7 días")),
     spark = hc,
-    minititle = paste0("Fallecidos")
+    minititle = paste0("Fallecidos"),
+    color = "blue"
   )
 }
 
@@ -153,13 +153,12 @@ grafico_vb_uci <- function(){
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   
-  hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
+  hc <- hchart(d, "areaspline", color = PARS$primary_color) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
     hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
     hc_plotOptions(
       series = list(
-        color = PARS$sparkline_color,
         fillColor = list(
           linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
           stops = list(
@@ -200,13 +199,12 @@ grafico_vb_recuperados <- function(){
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   
-  hc <- hchart(d, "areaspline", color = PARS$sparkline_color) %>% 
+  hc <- hchart(d, "areaspline", color = PARS$primary_color) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
     hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
     hc_plotOptions(
       series = list(
-        color = PARS$sparkline_color,
         fillColor = list(
           linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
           stops = list(
@@ -226,6 +224,7 @@ grafico_vb_recuperados <- function(){
 }
 
 grafico_vb_letalidad <- function(){
+  
   d <- serie_letalidad()
   f <- d %>% select(dia) %>% mutate_all(date) %>% pull() %>% last()  
   
@@ -244,7 +243,7 @@ grafico_vb_letalidad <- function(){
   
   hc <- d %>% 
     mutate(y = y*100) %>% 
-    hchart("line", color = PARS$sparkline_color) %>% 
+    hchart("spline", color = PARS$primary_color) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
     hc_tooltip(
@@ -253,7 +252,6 @@ grafico_vb_letalidad <- function(){
       pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
     hc_plotOptions(
       series = list(
-        color = PARS$sparkline_color,
         fillColor = list(
           linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
           stops = list(
@@ -263,11 +261,11 @@ grafico_vb_letalidad <- function(){
         )
       )
     )
-  
+
   valueBoxSpark(
     value = lbl,
-    subtitle = HTML(paste0(total_casos_ult_7_dias, " promedio tasa últimos 7 días")),
+    subtitle = HTML(paste0(round(100 * (d %>% pull(y) %>% last())), " de cada 100 personas<br>contagiadas fallece")),
     spark = hc,
-    minititle = paste0("Tasa de Letalidad")
+    minititle = paste0("Letalidad")
   )
 }
