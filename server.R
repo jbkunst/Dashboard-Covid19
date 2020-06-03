@@ -45,6 +45,36 @@ shinyServer(function(input, output, session) {
     
   })
   
+  output$hc_examenes_realizados <- renderHighchart({
+    
+    grafico_examenes_realizados()
+    
+  })
+  
+  output$hc_fallecidos_diarios <- renderHighchart({
+    
+    grafico_fallecidos_diarios()
+    
+  })
+  
+  output$hc_recuperados_diarios <- renderHighchart({
+    
+    grafico_recuperados_diarios()
+    
+  })
+  
+  output$hc_pacientes_uci <- renderHighchart({
+    
+    grafico_pacientes_uci()
+    
+  })
+  
+  output$hc_tasa_letalidad <- renderHighchart({
+    
+    grafico_tasa_letalidad()
+    
+  })
+  
   output$hc_casos_por100mh <- renderHighchart({
     
     grafico_examenes_informados_casos_fallecidos_confirmados()
@@ -57,9 +87,9 @@ shinyServer(function(input, output, session) {
     
   })
   
-  output$hc_fallecidos_por_anio <- renderHighchart({
+  output$hc_defunciones_esperadas <- renderHighchart({
     
-    grafico_defunciones_anuales()
+    grafico_defunciones_esperadas()
     
   })
   

@@ -273,14 +273,30 @@ grafico_tasa_letalidad <- function(){
       dcontagiados,
       by="dia"
     ) %>% 
-    mutate(porc=nro_fallecidos/nro_casos) 
+    mutate(nro_fallecidos = if_else(is.na(nro_fallecidos), 0, nro_fallecidos)) %>% 
+    mutate(porc=(nro_fallecidos/nro_casos)*100) 
+  
+  dfallecidos_contagiados <- dfallecidos_contagiados %>% 
+    arrange(dia) %>% 
+    mutate(desest = 3*zoo::rollapplyr(porc, 7, sd, fill = 0)) %>% 
+    mutate(desest = round(desest,2))
   
   dfallecidos_contagiados %>% 
-    mutate(porc = porc*100) %>% 
     hchart(., "line",
            hcaes(dia, porc),
-           color = "black",
-           name = "Tasa de Letalidad"
+           color = PARS$primary_color,
+           name = "Tasa de Letalidad",
+           id = "fallecidos_contagiados"
+    ) %>%
+    hc_add_series(
+      dfallecidos_contagiados,
+      type = "arearange",
+      hcaes(x = dia, low = porc - desest, high = porc + desest),
+      color = hex_to_rgba("gray", 0.05), 
+      linkedTo = "fallecidos_contagiados",
+      zIndex = -3,
+      showInLegend = FALSE, 
+      name = "Desviación estandar"
     ) %>% 
     hc_yAxis(
       allowDecimals = TRUE,
@@ -290,12 +306,186 @@ grafico_tasa_letalidad <- function(){
       title = list(text="")
     ) %>% 
     hc_tooltip(
-      valueDecimals = 2,
       pointFormat = " {series.name}: <b>{point.y}</b> ({point.nro_fallecidos}/{point.nro_casos}) <br/>",
       valueSuffix = " %",
-      split = TRUE
+      valueDecimals = 2,
+      shared = TRUE
     )
 }
+
+grafico_examenes_realizados <- function(){
+  
+  d <- serie_nro_examenes()
+  
+  
+  evento <- tibble(
+    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
+    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+  )
+  
+  data_plotLine <- evento %>% 
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    ) %>% 
+    mutate(color = "gray", width = 1, zIndex = 5)
+  
+  d %>% 
+    hchart(
+      hcaes(dia, nro_examenes),
+      type = "line",
+      name = "Exámenes",
+      showInLegend = TRUE,
+      color = PARS$primary_color,
+      lineWidth = 4
+    ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+    hc_xAxis(
+      plotLines = list_parse(data_plotLine)
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de exámenes")
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) %>%
+    hc_exporting(enabled = TRUE)
+  
+}
+
+grafico_fallecidos_diarios <- function(){
+  
+  d <- serie_nro_fallecidos()
+  
+  d <- d %>% 
+    mutate(v  = nro_fallecidos -  lag(nro_fallecidos)) %>% 
+    mutate(v = ifelse(is.na(v), nro_fallecidos, v)) %>% 
+    mutate(nro_fallecidos = v) %>% 
+    select(-v)
+  
+  evento <- tibble(
+    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
+    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+  )
+  
+  data_plotLine <- evento %>% 
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    ) %>% 
+    mutate(color = "gray", width = 1, zIndex = 5)
+  
+  d %>% 
+    hchart(
+      hcaes(dia, nro_fallecidos),
+      type = "line",
+      name = "Fallecidos",
+      showInLegend = TRUE,
+      color = PARS$primary_color,
+      lineWidth = 4
+    ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+    hc_xAxis(
+      plotLines = list_parse(data_plotLine)
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de fallecidos")
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) %>%
+    hc_exporting(enabled = TRUE)
+  
+}
+
+grafico_recuperados_diarios <- function(){
+  
+  d <- serie_recuperados()
+  
+  d <- d %>% 
+    mutate(v  = casos_recuperados -  lag(casos_recuperados)) %>% 
+    mutate(v = ifelse(is.na(v), casos_recuperados, v)) %>% 
+    mutate(casos_recuperados = v) %>% 
+    select(-v)
+
+  evento <- tibble(
+    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
+    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+  )
+  
+  data_plotLine <- evento %>% 
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    ) %>% 
+    mutate(color = "gray", width = 1, zIndex = 5)
+  
+  d %>% 
+    hchart(
+      hcaes(dia, casos_recuperados),
+      type = "line",
+      name = "Recuperados",
+      showInLegend = TRUE,
+      color = PARS$primary_color,
+      lineWidth = 4
+    ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+    hc_xAxis(
+      plotLines = list_parse(data_plotLine)
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de recuperados")
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) %>%
+    hc_exporting(enabled = TRUE)
+  
+}
+
+grafico_pacientes_uci <- function(){
+  
+  d <- serie_nro_pascientes_UCI()
+  
+  
+  
+  evento <- tibble(
+    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
+    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+  )
+  
+  data_plotLine <- evento %>% 
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    ) %>% 
+    mutate(color = "gray", width = 1, zIndex = 5)
+  
+  d %>% 
+    mutate(dia = ymd(dia)) %>% 
+    hchart(
+      hcaes(dia, nro_pascientes_uci),
+      type = "line",
+      name = "Pacientes UCI",
+      showInLegend = TRUE,
+      color = PARS$primary_color,
+      lineWidth = 4
+    ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+    hc_xAxis(
+      plotLines = list_parse(data_plotLine)
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de pacientes UCI")
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) %>%
+    hc_exporting(enabled = TRUE)
+  
+}
+
+
 
 
 

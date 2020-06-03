@@ -62,17 +62,25 @@ bs4DashPage(
                                 bs4CardHC(addSpinner(highchartOutput("hc_confirmados")))
                             ),
                             bs4TabPanel(
-                                tabName = "Fallecidos Semanales",
-                                bs4CardHC(addSpinner(highchartOutput("hc_fallecidos_por_anio")))
+                                tabName = "Exámenes Diarios",
+                                bs4CardHC(addSpinner(highchartOutput("hc_examenes_realizados")))
                             ),
                             bs4TabPanel(
-                                tabName = "Gran Santiago",
-                                bs4CardHC()
+                                tabName = "Fallecidos Diarios",
+                                bs4CardHC(addSpinner(highchartOutput("hc_fallecidos_diarios")))
                             ),
                             bs4TabPanel(
-                                tabName = "Tab 4",
-                                bs4CardHC()
-                                )
+                                tabName = "Recuperados",
+                                bs4CardHC(addSpinner(highchartOutput("hc_recuperados_diarios")))
+                                ),
+                            bs4TabPanel(
+                                tabName = "Tasa Letalidad",
+                                bs4CardHC(addSpinner(highchartOutput("hc_tasa_letalidad")))
+                            ),
+                            bs4TabPanel(
+                                tabName = "Pacientes UCI",
+                                bs4CardHC(addSpinner(highchartOutput("hc_pacientes_uci")))
+                            )
                             )
                         )
                     )
