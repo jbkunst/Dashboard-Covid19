@@ -310,10 +310,15 @@ grafico_tasa_letalidad <- function(){
     filter(nro_fallecidos>=100) %>%
     slice(1) %>%
     pull(dia)
+
+  evento_1000fallecidos <- dfallecidos_contagiados %>%
+    filter(nro_fallecidos>=1000) %>%
+    slice(1) %>%
+    pull(dia)
   
   evento <- tibble(
-    fecha = c(ymd(evento_100fallecidos), ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Primeros 100<br>fallecidos", "Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+    fecha = c(ymd(evento_100fallecidos), ymd(evento_1000fallecidos), ymd("2020-04-29")),
+    texto = c("Primeros 100<br>fallecidos", "Primeros 1000<br>fallecidos", "Se suman casos<br>asintomáticos")
   )
   
   data_plotLine <- evento %>% 
