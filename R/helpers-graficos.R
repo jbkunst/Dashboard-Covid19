@@ -1,4 +1,3 @@
-
 grafico_casos_confirmados_diarios <- function(){
   
   dcasos_totales_cumulativos <- readRDS("data/producto3/CasosTotalesCumulativo.rds")
@@ -207,35 +206,36 @@ grafico_defunciones_esperadas <- function(){
   
   d <- d %>% 
     group_by(anio) %>% 
-    filter(nro_semana != max(nro_semana))
-  
+    filter(nro_semana != max(nro_semana)) %>% 
+    ungroup()
   
   d <- d %>% 
-    mutate(anio = as.numeric(anio)) %>% 
     mutate(
+      anio = as.numeric(anio),
       nro_fallecidos_adj = round(nro_fallecidos * ((1 + gr)^(2020 - anio)), 0)
     )
-  
-  
   
   desp <- d %>% 
     filter(anio != 2020) %>% 
     group_by(nro_semana) %>% 
     summarise(
       nro_fallecidos_esperados = mean(nro_fallecidos_adj),
-      desest = sd(nro_fallecidos_adj)
+      amplitud = 2*sd(nro_fallecidos_adj)
+      ) %>% 
+    mutate(fecha = ymd("2020-01-01") + weeks(nro_semana - 1)) 
+  
+  d <- d %>% 
+    mutate(fecha = ymd("2020-01-01") + weeks(nro_semana - 1)) %>% 
+    filter(anio == 2020) 
+  
+  hchart(
+    d,
+    hcaes(fecha, nro_fallecidos_adj),
+    type = "line", 
+    color = "red",
+    name = "Fallecimientos semanales 2020",
+    showInLegend = TRUE
     ) %>% 
-    mutate(fecha = ymd( "2020-01-01" ) + weeks( nro_semana - 1 )) 
-  
-  
-  d %>% 
-    mutate(fecha = ymd( "2020-01-01" ) + weeks( nro_semana - 1 )) %>% 
-    filter(anio == 2020) %>% 
-    hchart(
-      hcaes(fecha, nro_fallecidos_adj, group = factor(anio)),
-      type = "line", 
-      color = "red",
-      showInLegend = TRUE) %>% 
     hc_add_series(
       desp,
       type = "line",
@@ -243,31 +243,32 @@ grafico_defunciones_esperadas <- function(){
       name = "Número de fallecidos esperados",
       id = "numero_fallecidos_esperados",
       lineWidth = 1,
-      color = "blue"
+      color = "blue",
+      showInLegend = TRUE
     ) %>% 
     hc_add_series(
       desp,
       type = "arearange",
-      hcaes(x = fecha, low = nro_fallecidos_esperados - desest, high = nro_fallecidos_esperados + desest),
-      color = hex_to_rgba("gray", 0.05), 
+      hcaes(x = fecha, low = nro_fallecidos_esperados - amplitud, high = nro_fallecidos_esperados + amplitud),
+      color = "#DCDCDC", 
+      fillOpacity = 0.25,
       linkedTo = "numero_fallecidos_esperados",
       zIndex = -3,
-      showInLegend = FALSE, 
-      name = "Desviación estandar"
-    ) %>% 
+      showInLegend = FALSE,
+      name = "2 desviaciones estándar"
+      ) %>% 
     hc_tooltip(
       shared = TRUE,
-      valueDecimals = 0) %>% 
+      valueDecimals = 0
+      ) %>% 
     hc_yAxis(
       title = list(text = "Número de fallecidos"),
       min = 0
-    ) %>%
+      ) %>%
     hc_xAxis(
       title = list(text = "Fecha")
-    ) %>%
+      ) %>%
     hc_exporting(enabled = TRUE)
-  
-  
   
 }
 

@@ -8,6 +8,7 @@ library(scales)
 library(googlesheets)
 library(shinyWidgets)
 library(figletr)
+library(shinipsum)
 
 
 source("R/helpers-shiny.R", encoding = "utf-8")

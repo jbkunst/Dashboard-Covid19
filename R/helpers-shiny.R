@@ -1,3 +1,12 @@
+bs4CardCustom <- purrr::partial(
+  bs4Card, status = "primary",
+  solidHeader = TRUE, 
+  collapsible = FALSE,
+  closable = FALSE,
+  elevation = 4,
+  width = 12
+  )
+
 bs4CardHC <- function(...){
   
   bs4Card(
