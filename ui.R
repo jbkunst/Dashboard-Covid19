@@ -10,7 +10,7 @@ bs4DashPage(
         skin = "light",
         bs4SidebarMenu(
             bs4SidebarMenuItem(
-                text = "Dashboard",
+                text = "Inicio",
                 tabName = "inicio",
                 icon =  "tachometer-alt"
                 ),
@@ -36,7 +36,7 @@ bs4DashPage(
         bs4TabItems(
             bs4TabItem(
                 tabName = "inicio",
-                tags$h2(icon("tachometer-alt"), "Dashboard", class = "titulo"),
+                tags$h2(icon("tachometer-alt"), "Inicio", class = "titulo"),
                 fluidRow(
                     valueBoxOutput("vb_confirmados", 2),
                     valueBoxOutput("vb_fallecidos", 2),

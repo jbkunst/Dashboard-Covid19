@@ -9,7 +9,7 @@ shinyServer(function(input, output, session) {
     
     tab <- switch(input$vb_chart,
       "confirmados" = "Confirmados Diarios",
-      "fallecidos" = "Fallecidos Diario",
+      "fallecidos" = "Fallecidos Diarios",
       "examenes" = "Exámenes Diarios",
       "letalidad" = "Tasa Letalidad",
       "ventiladores" = "Ventiladores",
