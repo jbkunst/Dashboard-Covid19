@@ -3,7 +3,6 @@ bs4DashPage(
     sidebar_collapsed = TRUE,
     navbar = bs4DashNavbar(),
     sidebar = bs4DashSidebar(
-        collapsed = TRUE,
         title = tags$small("COVID-19 Chile 20"),
         src = "virus (1).png",
         expand_on_hover = TRUE,
@@ -111,7 +110,7 @@ bs4DashPage(
                         title = "Alonso Silva",
                         subtitle = "CEO",
                         width = 3,
-                        shinipsum::random_text(nwords = 50)
+                        includeMarkdown("md/bio_alonso.md")
                     ),
                     bs4UserCard(
                         src = "https://avatars1.githubusercontent.com/u/4108139?s=400&v=4",

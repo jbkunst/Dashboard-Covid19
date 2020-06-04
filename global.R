@@ -20,8 +20,11 @@ source("R/helpers-series.R", encoding = "utf-8")
 PARS <- list(
   debug = FALSE,
   classcol = "col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12",
-  sparkline_color = "#FFFFFF",
-  primary_color = "#007bff",
+  color = list(
+    sparkline = "#F4F6F9", # color de fondo de value boxes "blancos"
+    primary = "#007bff",
+    gray = "#C0C0C0"
+  ),
   font = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 )
 

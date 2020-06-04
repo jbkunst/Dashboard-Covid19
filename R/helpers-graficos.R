@@ -26,22 +26,24 @@ grafico_casos_confirmados_diarios <- function(){
     ) %>% 
     mutate(color = "gray", width = 1, zIndex = 5)
   
-  h1 <- hchart(
+  hchart(
     dcasos_totales_cumulativos,
     type = "line",
     hcaes(fecha, casos_nuevos),
     name = "Casos confirmados diarios",
     showInLegend = TRUE,
-    color = PARS$primary_color,
-    lineWidth = 4
+    color = PARS$color$primary,
+    lineWidth = 4,
+    zIndex = 2
   ) %>% 
     hc_add_series(
       dcasos_totales_cumulativos, "line",
       hcaes(datetime_to_timestamp(fecha), media_movil),
       name = "Media móvil últimos 7 días",
-      color = "gray",
+      color = PARS$color$gray,
       showInLegend = TRUE,
-      size = 2
+      lineWidth = 3,
+      zIndex = 0
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -61,7 +63,6 @@ grafico_casos_confirmados_diarios <- function(){
     ) %>% 
     hc_exporting(enabled = TRUE)
   
-  h1
 }
 
 grafico_examenes_informados_casos_fallecidos_confirmados <- function(){
@@ -250,7 +251,7 @@ grafico_defunciones_esperadas <- function(){
       desp,
       type = "arearange",
       hcaes(x = fecha, low = nro_fallecidos_esperados - amplitud, high = nro_fallecidos_esperados + amplitud),
-      color = "#DCDCDC", 
+      color = PARS$color$gray,
       fillOpacity = 0.25,
       linkedTo = "numero_fallecidos_esperados",
       zIndex = -3,
@@ -309,7 +310,7 @@ grafico_tasa_letalidad <- function(){
   dfallecidos_contagiados %>% 
     hchart(., "line",
            hcaes(dia, porc),
-           color = PARS$primary_color,
+           color = PARS$color$primary,
            name = "Tasa de Letalidad",
            id = "fallecidos_contagiados",
            showInLegend = TRUE
@@ -364,7 +365,7 @@ grafico_examenes_realizados <- function(){
       type = "line",
       name = "Exámenes",
       showInLegend = TRUE,
-      color = PARS$primary_color,
+      color = PARS$color$primary,
       lineWidth = 4
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
@@ -409,7 +410,7 @@ grafico_fallecidos_diarios <- function(){
       type = "line",
       name = "Fallecidos",
       showInLegend = TRUE,
-      color = PARS$primary_color,
+      color = PARS$color$primary,
       lineWidth = 4
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
@@ -454,7 +455,7 @@ grafico_recuperados_diarios <- function(){
       type = "line",
       name = "Recuperados",
       showInLegend = TRUE,
-      color = PARS$primary_color,
+      color = PARS$color$primary,
       lineWidth = 4
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
@@ -494,7 +495,7 @@ grafico_pacientes_uci <- function(){
       type = "line",
       name = "Pacientes UCI",
       showInLegend = TRUE,
-      color = PARS$primary_color,
+      color = PARS$color$primary,
       lineWidth = 4
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
@@ -534,7 +535,7 @@ grafico_ventiladores <- function(){
       type = "line",
       name = "Disponibles",
       showInLegend = TRUE,
-      color = PARS$primary_color,
+      color = PARS$color$primary,
       lineWidth = 4
     ) %>% 
     hc_add_series(
