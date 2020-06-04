@@ -578,6 +578,12 @@ grafico_ventiladores <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
+    hc_caption(
+      text =  "Se muestra el número de ventiladores disponibles y número de ventiladores ocupados para
+      cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19.
+      Los datos oficiales son publicados por el Ministerio de Salud, y extraídos a partir del repositorio
+      de MinCiencia."
+    ) %>% 
     hc_exporting(enabled = TRUE)
   
 }
