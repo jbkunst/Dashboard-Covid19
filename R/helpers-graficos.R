@@ -233,7 +233,9 @@ grafico_defunciones_esperadas <- function(){
     type = "line", 
     color = "red",
     name = "Fallecimientos semanales 2020",
-    showInLegend = TRUE
+    showInLegend = TRUE,
+    states = list(inactive= list(opacity = 1)),
+    zIndex = 1,
     ) %>% 
     hc_add_series(
       desp,
