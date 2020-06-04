@@ -32,9 +32,7 @@ grafico_casos_confirmados_diarios <- function(){
     hcaes(fecha, casos_nuevos),
     name = "Casos confirmados diarios",
     showInLegend = TRUE,
-    color = PARS$color$primary,
-    lineWidth = 4,
-    zIndex = 2
+    color = PARS$color$primary
   ) %>% 
     hc_add_series(
       dcasos_totales_cumulativos, "line",
@@ -43,7 +41,7 @@ grafico_casos_confirmados_diarios <- function(){
       color = PARS$color$gray,
       showInLegend = TRUE,
       lineWidth = 3,
-      zIndex = 0
+      zIndex = -1
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -243,7 +241,6 @@ grafico_defunciones_esperadas <- function(){
       hcaes(x = fecha, y = nro_fallecidos_esperados),
       name = "Número de fallecidos esperados",
       id = "numero_fallecidos_esperados",
-      lineWidth = 1,
       color = "blue",
       showInLegend = TRUE
     ) %>% 
@@ -252,7 +249,6 @@ grafico_defunciones_esperadas <- function(){
       type = "arearange",
       hcaes(x = fecha, low = nro_fallecidos_esperados - amplitud, high = nro_fallecidos_esperados + amplitud),
       color = PARS$color$gray,
-      fillOpacity = 0.25,
       linkedTo = "numero_fallecidos_esperados",
       zIndex = -3,
       showInLegend = FALSE,
@@ -276,19 +272,39 @@ grafico_defunciones_esperadas <- function(){
 grafico_tasa_letalidad <- function(){
   
   dfallecidos <- serie_nro_fallecidos()
+  
   dcontagiados <- serie_nro_casos()
+  
   dfallecidos_contagiados <- dfallecidos %>% 
     full_join(
       dcontagiados,
       by="dia"
     ) %>% 
-    mutate(nro_fallecidos = if_else(is.na(nro_fallecidos), 0, nro_fallecidos)) %>% 
-    mutate(porc=(nro_fallecidos/nro_casos)*100) 
+    mutate(
+      nro_fallecidos = if_else(is.na(nro_fallecidos), 0, nro_fallecidos),
+      porc = (nro_fallecidos/nro_casos)*100
+      ) 
   
   dfallecidos_contagiados <- dfallecidos_contagiados %>% 
     arrange(dia) %>% 
     mutate(desest = 3*zoo::rollapplyr(porc, 7, sd, fill = 0)) %>% 
     mutate(desest = round(desest,2))
+  
+  dfallecidos_contagiados <- dfallecidos_contagiados %>% 
+    # filter(nro_fallecidos > 50) %>%
+    mutate(
+      ic = map2(
+        porc/100, 
+        nro_casos,
+        function(eval = 1.4410024, n = 14365){ 
+          # message("eval = ", eval, " n = ", n)
+          binom.test(round(n*c(eval, 1 - eval)), conf.level = .99)[["conf.int"]] 
+        }),
+      inferior = map_dbl(ic, first),
+      inferior = ifelse(inferior < 0, 0, inferior),
+      superior = map_dbl(ic, last),
+      superior = ifelse(superior > 1, 1, superior)
+    )
   
   evento_100fallecidos <- dfallecidos_contagiados %>%
     filter(nro_fallecidos>=100) %>%
@@ -297,49 +313,55 @@ grafico_tasa_letalidad <- function(){
   
   evento <- tibble(
     fecha = c(ymd(evento_100fallecidos), ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Primeros 100 fallecidos", "Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+    texto = c("Primeros 100<br>fallecidos", "Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
   )
   
   data_plotLine <- evento %>% 
     transmute(
       value = datetime_to_timestamp(fecha),
-      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 10)))
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
     ) %>% 
     mutate(color = "gray", width = 1, zIndex = 5)
   
-  dfallecidos_contagiados %>% 
-    hchart(., "line",
-           hcaes(dia, porc),
-           color = PARS$color$primary,
-           name = "Tasa de Letalidad",
-           id = "fallecidos_contagiados",
-           showInLegend = TRUE
+  
+  hchart(
+    dfallecidos_contagiados, 
+    "line",
+    hcaes(dia, porc),
+    color = PARS$color$primary,
+    name = "Tasa de Letalidad",
+    id = "fallecidos_contagiados",
+    showInLegend = TRUE
     ) %>%
     hc_add_series(
-      dfallecidos_contagiados,
+      dfallecidos_contagiados %>% filter(nro_fallecidos>=100),
       type = "arearange",
-      hcaes(x = dia, low = round(porc,2) - desest, high = round(porc,2) + desest),
-      color = hex_to_rgba("gray", 0.05), 
+      # hcaes(x = dia, low = round(porc,2) - desest, high = round(porc,2) + desest),
+      hcaes(x = dia, low = 100*inferior, high = 100*superior),
+      color = PARS$color$gray, 
       linkedTo = "fallecidos_contagiados",
       zIndex = -3,
       showInLegend = FALSE, 
-      name = "Desviación estandar"
+      name = "Intervalo de Confianza (99%)"
     ) %>% 
     hc_yAxis(
       allowDecimals = TRUE,
-      title = list(text="%"),
-      min = 0
+      labels = list(format = "{value}%"),
+      title = list(text = "Tasa de Letalidad"),
+      min = 0,
+      max = 4
     ) %>% 
     hc_xAxis(
-      title = list(text=""),
+      title = list(text = "Fecha"),
       plotLines = list_parse(data_plotLine)
     ) %>% 
     hc_tooltip(
-      pointFormat = " {series.name}: <b>{point.y}</b> ({point.nro_fallecidos}/{point.nro_casos}) <br/>",
+      # pointFormat = " {series.name}: <b>{point.y}</b> ({point.nro_fallecidos}/{point.nro_casos}) <br/>",
       valueSuffix = " %",
       valueDecimals = 2,
       shared = TRUE
     )
+  
 }
 
 grafico_examenes_realizados <- function(){
@@ -365,8 +387,7 @@ grafico_examenes_realizados <- function(){
       type = "line",
       name = "Exámenes",
       showInLegend = TRUE,
-      color = PARS$color$primary,
-      lineWidth = 4
+      color = PARS$color$primary
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -410,8 +431,7 @@ grafico_fallecidos_diarios <- function(){
       type = "line",
       name = "Fallecidos",
       showInLegend = TRUE,
-      color = PARS$color$primary,
-      lineWidth = 4
+      color = PARS$color$primary
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -455,8 +475,7 @@ grafico_recuperados_diarios <- function(){
       type = "line",
       name = "Recuperados",
       showInLegend = TRUE,
-      color = PARS$color$primary,
-      lineWidth = 4
+      color = PARS$color$primary
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -495,8 +514,7 @@ grafico_pacientes_uci <- function(){
       type = "line",
       name = "Pacientes UCI",
       showInLegend = TRUE,
-      color = PARS$color$primary,
-      lineWidth = 4
+      color = PARS$color$primary
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -535,8 +553,7 @@ grafico_ventiladores <- function(){
       type = "line",
       name = "Disponibles",
       showInLegend = TRUE,
-      color = PARS$color$primary,
-      lineWidth = 4
+      color = PARS$color$primary
     ) %>% 
     hc_add_series(
       data = d,
@@ -544,8 +561,7 @@ grafico_ventiladores <- function(){
       type = "line",
       name = "Ocupados",
       showInLegend = TRUE,
-      color = "red",
-      lineWidth = 4
+      color = "red"
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(

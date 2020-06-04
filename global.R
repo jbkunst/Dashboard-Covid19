@@ -74,12 +74,20 @@ options(
         backgroundColor = "white",
         style = list(fontFamily = PARS$font, fontSize = "1.0em")
         ),
+      
       plotOptions = list(
         series = list(
           dataLabels = list(color = "#222d32", style = list(fontWeight = "normal", textShadow = FALSE, textOutline = FALSE)),
           animation = list(duration = 3000)
-          )
+          ),
+        line = list(
+          lineWidth = 4
         ),
+        arearange = list(
+          lineWidth = 1,
+          fillOpacity = 0.25
+        )
+      ),
       
       exporting = list(
         buttons = list(
