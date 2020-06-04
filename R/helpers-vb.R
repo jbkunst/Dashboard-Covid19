@@ -305,7 +305,7 @@ grafico_vb_ventiladores<- function(){
   
   valueBoxSpark(
     value = lbl,
-    subtitle = HTML(paste0(round(100 * (d %>% pull(y) %>% last())), " ventiladorres disponibles<br> por cada 100")),
+    subtitle = HTML(paste0(round(100 * (d %>% pull(y) %>% last())), " ventiladores disponibles<br> por cada 100")),
     spark = hc,
     minititle = paste0("Ventiladores")
   )
