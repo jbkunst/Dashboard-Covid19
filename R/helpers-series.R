@@ -66,15 +66,5 @@ serie_recuperados <- function(){
     mutate(dia = ymd(dia))
 }
 
-# tabla_fallecidos_por_region <- function(){
-#   dcasos_fallecidos <-  read_csv(paste0('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/', today()-1,'-CasosConfirmados-totalRegional.csv'))
-#   dcasos_fallecidos
-# }
-# 
-# tabla_poblacion_por_region <- function(){
-#   dcasos_examenes <- readRDS('data/producto7/PCR.rds')
-#   dcasos_examenes %>% 
-#     select(1:3)
-# }
 
 

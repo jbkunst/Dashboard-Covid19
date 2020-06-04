@@ -38,8 +38,8 @@ bs4DashPage(
                     valueBoxOutput("vb_confirmados", 2),
                     valueBoxOutput("vb_fallecidos", 2),
                     valueBoxOutput("vb_examenes", 2),
-                    valueBoxOutput("vb_recuperados", 2),
                     valueBoxOutput("vb_letalidad", 2),
+                    valueBoxOutput("vb_ventiladores", 2),
                     valueBoxOutput("vb_uci", 2)
                     
                 ),
@@ -69,12 +69,12 @@ bs4DashPage(
                                 bs4CardHC(addSpinner(highchartOutput("hc_fallecidos_diarios")))
                             ),
                             bs4TabPanel(
-                                tabName = "Recuperados",
-                                bs4CardHC(addSpinner(highchartOutput("hc_recuperados_diarios")))
-                                ),
-                            bs4TabPanel(
                                 tabName = "Tasa Letalidad",
                                 bs4CardHC(addSpinner(highchartOutput("hc_tasa_letalidad")))
+                                ),
+                            bs4TabPanel(
+                                tabName = "Ventiladores",
+                                bs4CardHC(addSpinner(highchartOutput("hc_ventiladores")))
                             ),
                             bs4TabPanel(
                                 tabName = "Pacientes UCI",

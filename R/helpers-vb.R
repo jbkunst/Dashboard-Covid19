@@ -269,3 +269,47 @@ grafico_vb_letalidad <- function(){
     minititle = paste0("Letalidad")
   )
 }
+
+grafico_vb_ventiladores<- function(){
+  
+  d <- readRDS("data/producto20/NumeroVentiladores_T.rds")
+  
+  d <- d %>%
+    mutate(dia = ymd(Ventiladores)) %>% 
+    mutate(dia = datetime_to_timestamp(dia)) %>% 
+    mutate(porc = disponibles / total) %>% 
+    select(x = dia, y = porc)
+  
+  lbl <- d %>% pull(y) %>% last() %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+  
+  hc <- d %>% 
+    mutate(y = y*100) %>% 
+    hchart("spline", color = PARS$primary_color) %>% 
+    hc_xAxis(type = "datetime") %>% 
+    hc_add_theme(hc_theme_sparkline2()) %>% 
+    hc_tooltip(
+      valueDecimals = 2,
+      valueSuffix = " %",
+      pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_plotOptions(
+      series = list(
+        fillColor = list(
+          linearGradient = list(x1 = 0, y1 = 1, x2 = 0, y2 = 0),
+          stops = list(
+            list(0.0, "transparent"),
+            list(1.0, PARS$sparkline_color)
+          )
+        )
+      )
+    )
+  
+  valueBoxSpark(
+    value = lbl,
+    subtitle = HTML(paste0(round(100 * (d %>% pull(y) %>% last())), " disponibles por cada <br> 100 personas críticas")),
+    spark = hc,
+    minititle = paste0("Ventiladores")
+  )
+ 
+  
+  
+  }

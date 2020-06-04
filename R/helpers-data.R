@@ -9,6 +9,7 @@ descargar_datos <- function(){
     dir.create("data/producto8")
     dir.create("data/producto14")
     dir.create("data/producto16")
+    dir.create("data/producto20")
     dir.create("data/producto32")
   })
   
@@ -139,6 +140,23 @@ descargar_datos <- function(){
         )
       ),
     "data/producto5/TotalesNacionales_T.rds"
+  )
+  
+  saveRDS(
+    read_csv(
+      "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores_T.csv",
+      col_types = cols(
+        Fecha = col_date(format = ""),
+        `Casos nuevos con sintomas` = col_double(),
+        `Casos totales` = col_double(),
+        `Casos recuperados` = col_double(),
+        Fallecidos = col_double(),
+        `Casos activos` = col_double(),
+        `Casos nuevos sin sintomas` = col_double(),
+        `Casos nuevos totales` = col_double()
+      )
+    ),
+    "data/producto20/NumeroVentiladores_T.rds"
   )
 
 

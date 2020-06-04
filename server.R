@@ -39,6 +39,12 @@ shinyServer(function(input, output, session) {
     
   })
   
+  output$vb_ventiladores <- renderValueBox({
+    
+    grafico_vb_ventiladores()
+    
+  })
+  
   output$hc_confirmados <- renderHighchart({
     
     grafico_casos_confirmados_diarios()
@@ -90,6 +96,12 @@ shinyServer(function(input, output, session) {
   output$hc_defunciones_esperadas <- renderHighchart({
     
     grafico_defunciones_esperadas()
+    
+  })
+  
+  output$hc_ventiladores <- renderHighchart({
+    
+    grafico_ventiladores()
     
   })
   

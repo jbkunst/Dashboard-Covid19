@@ -195,6 +195,7 @@ grafico_defunciones_esperadas <- function(){
     group_by(anio) %>% 
     summarise(nro_fallecidos = sum(nro_fallecidos)) %>% 
     arrange(anio) %>% 
+    mutate(nro_fallecidos = ifelse(anio %in% c(2012, 2016), nro_fallecidos*365/366, nro_fallecidos)) %>% 
     mutate(
       g = (nro_fallecidos - lag(nro_fallecidos))/lag(nro_fallecidos)
     ) %>% 
@@ -325,8 +326,8 @@ grafico_examenes_realizados <- function(){
   
   
   evento <- tibble(
-    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+    fecha = ymd("2020-05-15"),
+    texto = "Inicio cuarentena<br>en la RM"
   )
   
   data_plotLine <- evento %>% 
@@ -370,8 +371,8 @@ grafico_fallecidos_diarios <- function(){
     select(-v)
   
   evento <- tibble(
-    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+    fecha = ymd("2020-05-15"),
+    texto = "Inicio cuarentena<br>en la RM"
   )
   
   data_plotLine <- evento %>% 
@@ -415,8 +416,8 @@ grafico_recuperados_diarios <- function(){
     select(-v)
 
   evento <- tibble(
-    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+    fecha = ymd("2020-05-15"),
+    texto = "Inicio cuarentena<br>en la RM"
   )
   
   data_plotLine <- evento %>% 
@@ -453,11 +454,9 @@ grafico_pacientes_uci <- function(){
   
   d <- serie_nro_pascientes_UCI()
   
-  
-  
   evento <- tibble(
-    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
+    fecha = ymd("2020-05-15"),
+    texto = "Inicio cuarentena<br>en la RM"
   )
   
   data_plotLine <- evento %>% 
@@ -483,6 +482,55 @@ grafico_pacientes_uci <- function(){
     ) %>% 
     hc_yAxis(
       title = list(text = "Número de pacientes UCI")
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) %>%
+    hc_exporting(enabled = TRUE)
+  
+}
+
+grafico_ventiladores <- function(){
+  
+  d <- readRDS("data/producto20/NumeroVentiladores_T.rds") %>% 
+    mutate(dia = ymd(Ventiladores))
+  
+  evento <- tibble(
+    fecha = ymd("2020-05-15"),
+    texto = "Inicio cuarentena<br>en la RM"
+  )
+  
+  data_plotLine <- evento %>% 
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    ) %>% 
+    mutate(color = "gray", width = 1, zIndex = 5)
+  
+  d %>% 
+    hchart(
+      hcaes(dia, total),
+      type = "line",
+      name = "Disponibles",
+      showInLegend = TRUE,
+      color = PARS$primary_color,
+      lineWidth = 4
+    ) %>% 
+    hc_add_series(
+      data = d,
+      hcaes(dia, ocupados),
+      type = "line",
+      name = "Ocupados",
+      showInLegend = TRUE,
+      color = "red",
+      lineWidth = 4
+    ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+    hc_xAxis(
+      plotLines = list_parse(data_plotLine)
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de Ventiladores")
     ) %>%
     hc_xAxis(
       title = list(text = "Fecha")
