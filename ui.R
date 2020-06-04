@@ -32,10 +32,11 @@ bs4DashPage(
             )
         ),
     body = bs4DashBody(
+        tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")),
         bs4TabItems(
             bs4TabItem(
                 tabName = "inicio",
-                tags$h2(icon("tachometer-alt"), "COVID-19"),
+                tags$h2(icon("tachometer-alt"), "Dashboard", class = "titulo"),
                 fluidRow(
                     valueBoxOutput("vb_confirmados", 2),
                     valueBoxOutput("vb_fallecidos", 2),
@@ -82,7 +83,7 @@ bs4DashPage(
                 ),
             bs4TabItem(
                 tabName = "fallecidos",
-                tags$h2(icon("skull"), "Fallecidos"),
+                tags$h2(icon("skull"), "Fallecidos", class = "titulo"),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
@@ -94,7 +95,7 @@ bs4DashPage(
                 ),
             bs4TabItem(
                 tabName = "acerca",
-                tags$h2(icon("question-circle"), "Acerca de esta aplicación"),
+                tags$h2(icon("question-circle"), "Acerca de esta aplicación", class = "titulo"),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(

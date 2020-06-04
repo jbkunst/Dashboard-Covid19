@@ -18,6 +18,8 @@ grafico_vb_confirmados <- function(){
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   
+  jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'confirmados') }")
+  
   hc <- hchart(d, "area", color = PARS$color$sparkline) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
@@ -33,7 +35,8 @@ grafico_vb_confirmados <- function(){
           )
         )
       )
-    )
+    ) %>% 
+    hc_plotOptions(series = list(point = list(events = list(mouseOver = jsev))))
   
   valueBoxSpark(
     value = lbl,
@@ -61,13 +64,14 @@ grafico_vb_examenes <- function(){
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")   
   
+  jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'examenes') }")
   
   hc <- d %>% 
     mutate(y = cumsum(y)) %>% 
     hchart("area", color = PARS$color$primary) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
-    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}<br>{point.y}") %>% 
     hc_plotOptions(
       series = list(
         fillColor = list(
@@ -78,7 +82,8 @@ grafico_vb_examenes <- function(){
           )
         )
       )
-    )
+    ) %>% 
+    hc_plotOptions(series = list(point = list(events = list(mouseOver = jsev))))
   
   valueBoxSpark(
     value = lbl,
@@ -107,10 +112,12 @@ grafico_vb_fallecidos <- function(){
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   
+  jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'fallecidos') }")
+  
   hc <- hchart(d, "area", color = PARS$color$sparkline) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
-    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}<br>{point.y}") %>% 
     hc_plotOptions(
       series = list(
         color = PARS$color$sparkline,
@@ -122,7 +129,8 @@ grafico_vb_fallecidos <- function(){
           )
         )
       )
-    )
+    ) %>% 
+    hc_plotOptions(series = list(point = list(events = list(mouseOver = jsev))))
   
   valueBoxSpark(
     value = lbl,
@@ -153,10 +161,12 @@ grafico_vb_uci <- function(){
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   
+  jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'uci') }")
+  
   hc <- hchart(d, "area", color = PARS$color$primary) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
-    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}<br>{point.y}") %>% 
     hc_plotOptions(
       series = list(
         fillColor = list(
@@ -167,7 +177,8 @@ grafico_vb_uci <- function(){
           )
         )
       )
-    )
+    ) %>% 
+    hc_plotOptions(series = list(point = list(events = list(mouseOver = jsev))))
   
   valueBoxSpark(
     value = lbl,
@@ -202,7 +213,7 @@ grafico_vb_recuperados <- function(){
   hc <- hchart(d, "area", color = PARS$color$primary) %>% 
     hc_xAxis(type = "datetime") %>% 
     hc_add_theme(hc_theme_sparkline2()) %>% 
-    hc_tooltip(pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+    hc_tooltip(pointFormat = "{point.x:%A %e de %B}<br>{point.y}") %>% 
     hc_plotOptions(
       series = list(
         fillColor = list(
@@ -241,6 +252,8 @@ grafico_vb_letalidad <- function(){
   nuevos_casos <- last(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
   total_casos_ult_7_dias <- mean(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
   
+  jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'letalidad') }")
+  
   hc <- d %>% 
     mutate(y = y*100) %>% 
     hchart("", color = PARS$color$primary) %>% 
@@ -249,7 +262,7 @@ grafico_vb_letalidad <- function(){
     hc_tooltip(
       valueDecimals = 2,
       valueSuffix = " %",
-      pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+      pointFormat = "{point.x:%A %e de %B}<br>{point.y}") %>% 
     hc_plotOptions(
       series = list(
         fillColor = list(
@@ -260,7 +273,8 @@ grafico_vb_letalidad <- function(){
           )
         )
       )
-    )
+    ) %>% 
+    hc_plotOptions(series = list(point = list(events = list(mouseOver = jsev))))
 
   valueBoxSpark(
     value = lbl,
@@ -282,6 +296,8 @@ grafico_vb_ventiladores<- function(){
   
   lbl <- d %>% pull(y) %>% last() %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
   
+  jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'ventiladores') }")
+  
   hc <- d %>% 
     mutate(y = y*100) %>% 
     hchart("", color = PARS$color$primary) %>% 
@@ -290,7 +306,7 @@ grafico_vb_ventiladores<- function(){
     hc_tooltip(
       valueDecimals = 2,
       valueSuffix = " %",
-      pointFormat = "{point.x:%A %e de %B}: {point.y}") %>% 
+      pointFormat = "{point.x:%A %e de %B}<br>{point.y}") %>% 
     hc_plotOptions(
       series = list(
         fillColor = list(
@@ -301,7 +317,8 @@ grafico_vb_ventiladores<- function(){
           )
         )
       )
-    )
+    ) %>% 
+    hc_plotOptions(series = list(point = list(events = list(mouseOver = jsev))))
   
   valueBoxSpark(
     value = lbl,
@@ -309,7 +326,5 @@ grafico_vb_ventiladores<- function(){
     spark = hc,
     minititle = paste0("Ventiladores")
   )
- 
-  
-  
-  }
+
+}

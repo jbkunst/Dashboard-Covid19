@@ -252,7 +252,7 @@ grafico_defunciones_esperadas <- function(){
       linkedTo = "numero_fallecidos_esperados",
       zIndex = -3,
       showInLegend = FALSE,
-      name = "2 desviaciones estándar"
+      name = "Itervalo de 2 desviaciones estándar"
       ) %>% 
     hc_tooltip(
       shared = TRUE,

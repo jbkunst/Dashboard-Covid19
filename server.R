@@ -3,6 +3,29 @@ shinyServer(function(input, output, session) {
   figletr::figlet("Descargar datos")
   descargar_datos()
   
+  observeEvent(input$vb_chart,{
+    
+    # print(input$vb_chart)
+    
+    tab <- switch(input$vb_chart,
+      "confirmados" = "Confirmados Diarios",
+      "fallecidos" = "Fallecidos Diario",
+      "examenes" = "Exámenes Diarios",
+      "letalidad" = "Tasa Letalidad",
+      "ventiladores" = "Ventiladores",
+      "uci" = "Pacientes UCI",
+    )
+    
+    # message(tab)
+    
+    updatebs4TabItems(
+      session,
+      inputId = "tabcard",
+      selected = tab
+    )
+    
+  })
+  
   output$vb_confirmados <- renderValueBox({
     
     grafico_vb_confirmados()

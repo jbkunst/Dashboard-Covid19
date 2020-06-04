@@ -75,9 +75,14 @@ hc_theme_sparkline2 <- function(...) {
       startOnTick = FALSE
     ),
     tooltip = list(
-      outside = TRUE,
+      outside = FALSE,
       headerFormat = "",
-      pointFormat = "{point.x}: <b>{point.y}</b>"
+      pointFormat = "{point.x}: <b>{point.y}</b>",
+      shadow = FALSE,
+      borderColor = "transparent",
+      botderWidth = 0,
+      backgroundColor = "transparent",
+      style = list(textOutline = "5px white")
     ),
     plotOptions = list(
       series = list(
