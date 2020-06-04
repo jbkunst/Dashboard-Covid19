@@ -3,6 +3,7 @@ bs4DashPage(
     sidebar_collapsed = TRUE,
     navbar = bs4DashNavbar(),
     sidebar = bs4DashSidebar(
+        collapsed = TRUE,
         title = tags$small("COVID-19 Chile 20"),
         src = "virus (1).png",
         expand_on_hover = TRUE,
