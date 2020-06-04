@@ -25,6 +25,8 @@ descargar_datos <- function(){
     "data/producto3/CasosTotalesCumulativo.rds"
   )
   
+  suppressWarnings({
+    
   saveRDS(
     read_csv(
       "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto4/2020-04-08-CasosConfirmados-totalRegional.csv",
@@ -36,6 +38,8 @@ descargar_datos <- function(){
     "data/producto4/2020-04-08-CasosConfirmados-totalRegional.rds"
   )
   
+  })
+    
   saveRDS(
     read_csv(
       "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto7/PCR.csv",
@@ -146,19 +150,14 @@ descargar_datos <- function(){
     read_csv(
       "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto20/NumeroVentiladores_T.csv",
       col_types = cols(
-        Fecha = col_date(format = ""),
-        `Casos nuevos con sintomas` = col_double(),
-        `Casos totales` = col_double(),
-        `Casos recuperados` = col_double(),
-        Fallecidos = col_double(),
-        `Casos activos` = col_double(),
-        `Casos nuevos sin sintomas` = col_double(),
-        `Casos nuevos totales` = col_double()
-      )
+        Ventiladores = col_date(format = ""),
+        total = col_double(),
+        disponibles = col_double(),
+        ocupados = col_double()
+        )
     ),
     "data/producto20/NumeroVentiladores_T.rds"
   )
-
 
 }
 
