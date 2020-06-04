@@ -110,7 +110,7 @@ bs4DashPage(
                         title = "Alonso Silva",
                         subtitle = "CEO",
                         width = 3,
-                        includeMarkdown("md/bio_alonso.md")
+                        shinipsum::random_text(nwords = 50)
                     ),
                     bs4UserCard(
                         src = "https://avatars1.githubusercontent.com/u/4108139?s=400&v=4",
