@@ -33,6 +33,7 @@ bs4DashPage(
         ),
     body = bs4DashBody(
         tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")),
+        tags$script(src = "js/custom.js"),
         bs4TabItems(
             bs4TabItem(
                 tabName = "inicio",
@@ -114,21 +115,24 @@ bs4DashPage(
                         includeMarkdown("md/bio_alonso.md")
                     ),
                     bs4UserCard(
+                        status = "success",
                         src = "https://avatars1.githubusercontent.com/u/56481?s=400&u=1d71bf2f7744313929cd0ad18936065c2a06286e&v=4",
                         title = "Joshua Kunst",
                         width = 3,
                         includeMarkdown("md/bio_joshua.md")
                     ),
                     bs4UserCard(
+                        status = "warning",
                         src = "https://avatars0.githubusercontent.com/u/4108139?s=400&u=f25684d4ce34d3d9d109d00ce9de9c8ded869742&v=4",
                         title = HTML("Héctor González"),
                         width = 3,
                         shinipsum::random_text(nwords = 50)
                     ),
                     bs4UserCard(
-                        src = "https://pbs.twimg.com/profile_images/1246097605521793024/4CcubJFq_400x400.jpg",
-                        title = "Alonso Silva",
-                        subtitle = "CEO",
+                        status = "danger",
+                        src = "https://avatars1.githubusercontent.com/u/31071412?s=400&u=d76cfe73d64ed32d046b2de603b80fc69d05149b&v=4",
+                        title = "Ignacio Rossi",
+                        subtitle = "",
                         width = 3,
                         shinipsum::random_text(nwords = 50)
                         )

@@ -14,7 +14,7 @@ library(shinyjs)
 
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")
-source("R/helpers-graficos.R", encoding = "utf-8")
+source("R/helpers-graficos.R", encoding = "UTF-8")
 source("R/helpers-vb.R", encoding = "utf-8")
 source("R/helpers-series.R", encoding = "utf-8")
 
@@ -103,6 +103,10 @@ options(
         )
       ),
       
+      tooltip = list(
+        useHTML = TRUE
+      ),
+      
 
       legend = list(
         verticalAlign = "top",
@@ -113,5 +117,4 @@ options(
         )
       )
   )
-
 
