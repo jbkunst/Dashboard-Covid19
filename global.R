@@ -14,7 +14,7 @@ library(shinyjs)
 
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")
-source("R/helpers-graficos.R", encoding = "utf-8")
+source("R/helpers-graficos.R", encoding = "UTF-8")
 source("R/helpers-vb.R", encoding = "utf-8")
 source("R/helpers-series.R", encoding = "utf-8")
 
@@ -101,6 +101,10 @@ options(
             y = -05
           )
         )
+      ),
+      
+      tooltip = list(
+        useHTML = TRUE
       ),
       
 

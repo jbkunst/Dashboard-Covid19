@@ -227,6 +227,44 @@ grafico_defunciones_esperadas <- function(){
     mutate(fecha = ymd("2020-01-01") + weeks(nro_semana - 1)) %>% 
     filter(anio == 2020) 
   
+  dexc <- d %>%
+    left_join(desp, by = c("nro_semana", "fecha")) %>%
+    filter(nro_semana >= 19) %>% 
+    # filter(nro_fallecidos > nro_fallecidos_esperados) %>% 
+    mutate(
+      # limlow = pmin(nro_fallecidos, nro_fallecidos_esperados),
+      # limhigh = pmax(nro_fallecidos, nro_fallecidos_esperados),
+      limlow = nro_fallecidos,
+      limhigh = nro_fallecidos_esperados,
+      diff = nro_fallecidos - nro_fallecidos_esperados,
+      diffacum = round(cumsum(diff))
+    )
+  
+  dexclbl <- dexc %>% 
+    summarise(
+      nro_semanas = dplyr::n(),
+      excestot_tot = max(diffacum),
+      nro_semana = ifelse(
+        dplyr::n() %% 2 == 0,
+        nth(nro_semana, dplyr::n() / 2 + 1),
+        nth(nro_semana, dplyr::n() / 2 + 0)
+        ),
+      nro_fallecidos = ifelse(
+        dplyr::n() %% 2 == 0,
+        nth(nro_fallecidos, dplyr::n() / 2 + 1), 
+        nth(nro_fallecidos, dplyr::n() / 2 + 0)
+        )
+    ) %>% 
+    left_join(dexc %>% select(nro_semana, fecha), by = "nro_semana") %>% 
+    mutate(
+      x = datetime_to_timestamp(fecha),
+      y = nro_fallecidos,
+      text = str_c("Exceso de fallecimiento<br>en ", nro_semanas, " semanas<br><b>", comma(excestot_tot) ,"</b>")
+    ) %>% 
+    rowwise() %>% 
+    mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
+    select(-x, -y)
+  
   hchart(
     d,
     hcaes(fecha, nro_fallecidos_adj),
@@ -256,6 +294,16 @@ grafico_defunciones_esperadas <- function(){
       showInLegend = FALSE,
       name = "Itervalo de 2 desviaciones estándar"
       ) %>% 
+    hc_add_series(
+      dexc,
+      type = "arearange",
+      hcaes(x = fecha, low = limlow, high = limhigh),
+      color = "red",
+      zIndex = -2,
+      showInLegend = TRUE,
+      name = "Exceso de fallecidos por COVID-19",
+      tooltip = list(pointFormat = "<span style='color:{point.color};'>&#9679;</span> {series.name}: <b>{point.diffacum:,.0f}</b><br/>")
+    ) %>% 
     hc_tooltip(
       shared = TRUE,
       valueDecimals = 0
@@ -267,7 +315,19 @@ grafico_defunciones_esperadas <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
       ) %>%
-    hc_exporting(enabled = TRUE)
+    hc_exporting(enabled = TRUE) %>% 
+    hc_annotations(
+      list(
+        labelOptions = list(
+          shape = "connector",
+          align = "center",
+          justify = FALSE,
+          crop = TRUE,
+          style = list(fontSize = "0.7em", textOutline = "1px white")
+        ),
+        labels = list_parse(dexclbl)
+      )
+    )
   
 }
 
