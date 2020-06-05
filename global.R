@@ -9,6 +9,7 @@ library(googlesheets)
 library(shinyWidgets)
 library(figletr)
 library(shinipsum)
+library(shinyjs)
 
 
 source("R/helpers-shiny.R", encoding = "utf-8")
@@ -19,7 +20,7 @@ source("R/helpers-series.R", encoding = "utf-8")
 
 PARS <- list(
   debug = FALSE,
-  classcol = "col-lg-offset-1 col-lg-10 col-md-offset-0 col-md-12 col-sm-offset-0 col-sm-12",
+  classcol = "col-xg-2 col-lg-2 col-md-6 col-sm-12",
   color = list(
     sparkline = "#F4F6F9", # color de fondo de value boxes "blancos"
     primary = "#007bff",
@@ -78,7 +79,7 @@ options(
       plotOptions = list(
         series = list(
           dataLabels = list(color = "#222d32", style = list(fontWeight = "normal", textShadow = FALSE, textOutline = FALSE)),
-          animation = list(duration = 3000)
+          animation = list(duration = 2000)
           ),
         line = list(
           lineWidth = 4

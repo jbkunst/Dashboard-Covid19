@@ -3,7 +3,7 @@ bs4DashPage(
     sidebar_collapsed = TRUE,
     navbar = bs4DashNavbar(),
     sidebar = bs4DashSidebar(
-        title = tags$small("COVID-19 Chile 20"),
+        title = tags$small("COVID-19 · Chile2020", class = "titulo"),
         src = "virus (1).png",
         expand_on_hover = TRUE,
         fixed = FALSE,
@@ -38,12 +38,13 @@ bs4DashPage(
                 tabName = "inicio",
                 tags$h2(icon("tachometer-alt"), "Inicio", class = "titulo"),
                 fluidRow(
-                    valueBoxOutput("vb_confirmados", 2),
-                    valueBoxOutput("vb_fallecidos", 2),
-                    valueBoxOutput("vb_examenes", 2),
-                    valueBoxOutput("vb_letalidad", 2),
-                    valueBoxOutput("vb_ventiladores", 2),
-                    valueBoxOutput("vb_uci", 2)
+                    
+                    htmltools::tagAppendAttributes(valueBoxOutput("vb_confirmados", 12), class  = PARS$classcol),
+                    htmltools::tagAppendAttributes(valueBoxOutput("vb_fallecidos", 12), class  = PARS$classcol),
+                    htmltools::tagAppendAttributes(valueBoxOutput("vb_examenes", 12), class  = PARS$classcol),
+                    htmltools::tagAppendAttributes(valueBoxOutput("vb_letalidad", 12), class  = PARS$classcol),
+                    htmltools::tagAppendAttributes(valueBoxOutput("vb_ventiladores", 12), class  = PARS$classcol),
+                    htmltools::tagAppendAttributes(valueBoxOutput("vb_uci", 12), class  = PARS$classcol)
                     
                 ),
                 
