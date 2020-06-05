@@ -110,21 +110,18 @@ bs4DashPage(
                     bs4UserCard(
                         src = "https://pbs.twimg.com/profile_images/1246097605521793024/4CcubJFq_400x400.jpg",
                         title = "Alonso Silva",
-                        subtitle = "CEO",
                         width = 3,
                         includeMarkdown("md/bio_alonso.md")
                     ),
                     bs4UserCard(
-                        src = "https://avatars1.githubusercontent.com/u/4108139?s=400&v=4",
-                        title = HTML("Héctor <i>Tito</i> González"),
-                        subtitle = "CEO",
+                        src = "https://avatars1.githubusercontent.com/u/56481?s=400&u=1d71bf2f7744313929cd0ad18936065c2a06286e&v=4",
+                        title = "Joshua Kunst",
                         width = 3,
-                        shinipsum::random_text(nwords = 50)
+                        includeMarkdown("md/bio_joshua.md")
                     ),
                     bs4UserCard(
-                        src = "https://pbs.twimg.com/profile_images/1246097605521793024/4CcubJFq_400x400.jpg",
-                        title = "Alonso Silva",
-                        subtitle = "CEO",
+                        src = "https://avatars0.githubusercontent.com/u/4108139?s=400&u=f25684d4ce34d3d9d109d00ce9de9c8ded869742&v=4",
+                        title = HTML("Héctor González"),
                         width = 3,
                         shinipsum::random_text(nwords = 50)
                     ),
