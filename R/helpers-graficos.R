@@ -367,6 +367,11 @@ grafico_tasa_letalidad <- function(){
       valueSuffix = " %",
       valueDecimals = 2,
       shared = TRUE
+    ) %>% 
+    hc_caption(
+      text =  str_c("La tasa de letalidad corresponde a la razón entre el número de fallecidos totales registrados
+      hasta la fecha, sobre el número de casos totales reportados hasta la fecha. Ambas informaciones son 
+      entregadas por Ministerio de Salud y extraídas a partir del repositorio de MinCiencia.")
     )
   
 }
@@ -406,6 +411,10 @@ grafico_examenes_realizados <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
+    hc_caption(
+      text =  "Se muestra el total de exámenes PCR diarios reportados a nivel nacional. La información es
+      provista por el Ministerio de Salud y extraída a partir del repositorio de MinCiencia."
+    ) %>% 
     hc_exporting(enabled = TRUE)
   
 }
@@ -450,6 +459,10 @@ grafico_fallecidos_diarios <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
+    hc_caption(
+      text =  "Se muestra el total de fallecidos diarios reportados a nivel nacional. La información es
+      provista por el Ministerio de Salud, y extraídos a partir del repositorio de MinCiencia."
+    ) %>% 
     hc_exporting(enabled = TRUE)
   
 }
@@ -533,6 +546,11 @@ grafico_pacientes_uci <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
+    hc_caption(
+      text =  "Se muestra el número diario de pacientes en UCI a nivel nacional. Los reportes diarios 
+      son generados por el Ministerio de Salud y la información es extraída a partir del repositorio
+      de MinCiencia."
+    ) %>% 
     hc_exporting(enabled = TRUE)
   
 }

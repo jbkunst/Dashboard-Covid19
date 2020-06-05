@@ -128,9 +128,9 @@ bs4DashPage(
                         shinipsum::random_text(nwords = 50)
                     ),
                     bs4UserCard(
-                        src = "https://pbs.twimg.com/profile_images/1246097605521793024/4CcubJFq_400x400.jpg",
-                        title = "Alonso Silva",
-                        subtitle = "CEO",
+                        src = "https://avatars1.githubusercontent.com/u/31071412?s=400&u=d76cfe73d64ed32d046b2de603b80fc69d05149b&v=4",
+                        title = "Ignacio Rossi",
+                        subtitle = "",
                         width = 3,
                         shinipsum::random_text(nwords = 50)
                         )
