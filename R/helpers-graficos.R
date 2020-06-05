@@ -229,7 +229,7 @@ grafico_defunciones_esperadas <- function(){
   
   dexc <- d %>%
     left_join(desp, by = c("nro_semana", "fecha")) %>%
-    filter(nro_semana >= 19) %>% 
+    filter(nro_semana >= 18) %>% 
     # filter(nro_fallecidos > nro_fallecidos_esperados) %>% 
     mutate(
       # limlow = pmin(nro_fallecidos, nro_fallecidos_esperados),
