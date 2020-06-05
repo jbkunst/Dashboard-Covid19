@@ -1,10 +1,11 @@
- document.addEventListener("DOMContentLoaded", function() {
+/*
+document.addEventListener("DOMContentLoaded", function() {
+
+  var t = setInterval(function(){
+    var resizeEvent = new Event('resize');
+    window.dispatchEvent(resizeEvent);  
     
-    
-    var t = setInterval(function(){
-      var resizeEvent = new Event('resize');
-      window.dispatchEvent(resizeEvent);  
-    }, 1000);
- 
-    
-  });
+  }, 1000);
+  
+});
+*/

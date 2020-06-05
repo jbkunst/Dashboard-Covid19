@@ -1,5 +1,11 @@
+highchartOutput <- partial(
+  highcharter::highchartOutput,
+  height = "500px"
+)
+
 bs4CardCustom <- purrr::partial(
-  bs4Card, status = "primary",
+  bs4Card,
+  status = "primary",
   solidHeader = TRUE, 
   collapsible = FALSE,
   closable = FALSE,
@@ -7,17 +13,14 @@ bs4CardCustom <- purrr::partial(
   width = 12
   )
 
-bs4CardHC <- function(...){
-  
-  bs4Card(
-    ...,
-    elevation = 1,
-    closable = FALSE,
-    width = 12,
-    collapsible = FALSE
-  )
-  
-}
+
+bs4CardHC <- purrr::partial(
+  bs4Card,
+  elevation = 1,
+  closable = FALSE,
+  width = 12,
+  collapsible = FALSE
+)
 
 valueBoxSpark <- function(value, subtitle, icon = NULL, color = "light-blue", 
                           width = 4, href = NULL, spark = NULL, height_spark = "70px",minititle = NULL) {

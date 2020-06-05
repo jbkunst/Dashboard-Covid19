@@ -41,7 +41,8 @@ grafico_casos_confirmados_diarios <- function(){
       color = PARS$color$gray,
       showInLegend = TRUE,
       lineWidth = 3,
-      zIndex = -1
+      zIndex = -1,
+      visible = FALSE
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -53,13 +54,14 @@ grafico_casos_confirmados_diarios <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
-    hc_caption(
+    hc_subtitle(
       text =  "Contagios por Coronavirus confirmados por exámenes de laboratorio 
       y notificados por el sistema de vigilancia epidemiológica EPIVIGILA 
       del Ministerio de Salud. Esta corresponde a la famosa curva de contagios,
       que considera sólo a las personas activamente afectadas por el virus"
     ) %>% 
-    hc_exporting(enabled = TRUE)
+    hc_exporting(enabled = TRUE) %>% 
+    hc_navigator(enabled = TRUE)
   
 }
 
@@ -229,7 +231,7 @@ grafico_defunciones_esperadas <- function(){
   
   dexc <- d %>%
     left_join(desp, by = c("nro_semana", "fecha")) %>%
-    filter(nro_semana >= 19) %>% 
+    filter(nro_semana >= 18) %>% 
     # filter(nro_fallecidos > nro_fallecidos_esperados) %>% 
     mutate(
       # limlow = pmin(nro_fallecidos, nro_fallecidos_esperados),
@@ -247,12 +249,12 @@ grafico_defunciones_esperadas <- function(){
       nro_semana = ifelse(
         dplyr::n() %% 2 == 0,
         nth(nro_semana, dplyr::n() / 2 + 1),
-        nth(nro_semana, dplyr::n() / 2 + 0)
+        nth(nro_semana, dplyr::n() / 2 + 1)
         ),
       nro_fallecidos = ifelse(
         dplyr::n() %% 2 == 0,
         nth(nro_fallecidos, dplyr::n() / 2 + 1), 
-        nth(nro_fallecidos, dplyr::n() / 2 + 0)
+        nth(nro_fallecidos, dplyr::n() / 2 + 1)
         )
     ) %>% 
     left_join(dexc %>% select(nro_semana, fecha), by = "nro_semana") %>% 
@@ -416,7 +418,7 @@ grafico_tasa_letalidad <- function(){
       labels = list(format = "{value}%"),
       title = list(text = "Tasa de Letalidad"),
       min = 0,
-      max = 4
+      max = 3.5
     ) %>% 
     hc_xAxis(
       title = list(text = "Fecha"),
@@ -428,11 +430,12 @@ grafico_tasa_letalidad <- function(){
       valueDecimals = 2,
       shared = TRUE
     ) %>% 
-    hc_caption(
-      text =  str_c("La tasa de letalidad corresponde a la razón entre el número de fallecidos totales registrados
+    hc_subtitle(
+      text =  str_c("La <b>Tasa de Letalidad</b> corresponde a la razón entre el número de fallecidos totales registrados
       hasta la fecha, sobre el número de casos totales reportados hasta la fecha. Ambas informaciones son 
       entregadas por Ministerio de Salud y extraídas a partir del repositorio de MinCiencia.")
-    )
+    ) %>% 
+    hc_exporting(enabled = TRUE)
   
 }
 
@@ -471,7 +474,7 @@ grafico_examenes_realizados <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
-    hc_caption(
+    hc_subtitle(
       text =  "Se muestra el total de exámenes PCR diarios reportados a nivel nacional. La información es
       provista por el Ministerio de Salud y extraída a partir del repositorio de MinCiencia."
     ) %>% 
@@ -519,7 +522,7 @@ grafico_fallecidos_diarios <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
-    hc_caption(
+    hc_subtitle(
       text =  "Se muestra el total de fallecidos diarios reportados a nivel nacional. La información es
       provista por el Ministerio de Salud, y extraídos a partir del repositorio de MinCiencia."
     ) %>% 
@@ -606,7 +609,7 @@ grafico_pacientes_uci <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
-    hc_caption(
+    hc_subtitle(
       text =  "Se muestra el número diario de pacientes en UCI a nivel nacional. Los reportes diarios 
       son generados por el Ministerio de Salud y la información es extraída a partir del repositorio
       de MinCiencia."
@@ -658,7 +661,7 @@ grafico_ventiladores <- function(){
     hc_xAxis(
       title = list(text = "Fecha")
     ) %>%
-    hc_caption(
+    hc_subtitle(
       text =  "Se muestra el número de ventiladores disponibles y número de ventiladores ocupados para
       cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19.
       Los datos oficiales son publicados por el Ministerio de Salud, y extraídos a partir del repositorio
