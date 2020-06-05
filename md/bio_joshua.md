@@ -1,4 +1,3 @@
 Joshua Kunst es un ser humano al que le gustan los datos, las estadísticas,
 programación y visualización y los temas afín.
-Disfruto compartiendo ideas y códigos y me uno a todos los proyectos que puedo.
-Amo y uso mucho R
+Disfruta compartiendo ideas y códigos; y se une a todos los proyectos que puede.
