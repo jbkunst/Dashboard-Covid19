@@ -11,7 +11,6 @@ library(figletr)
 library(shinipsum)
 library(shinyjs)
 
-
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")
 source("R/helpers-graficos.R", encoding = "UTF-8")
@@ -28,7 +27,6 @@ PARS <- list(
   ),
   font = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 )
-
 
 
 Sys.setlocale("LC_ALL", "Spanish_Spain.1252")
