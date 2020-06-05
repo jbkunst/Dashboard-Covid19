@@ -88,7 +88,7 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(width = 4, shinipsum::random_text(nwords = 50)),
+                            column(width = 4, includeMarkdown("md/descripcion_grafico_exceso_mortalidad.md")),
                             column(width = 8, bs4CardHC(addSpinner(highchartOutput("hc_defunciones_esperadas"))))
                             )
                         )
