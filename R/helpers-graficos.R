@@ -248,8 +248,8 @@ grafico_defunciones_esperadas <- function(){
       excestot_tot = max(diffacum),
       nro_semana = ifelse(
         dplyr::n() %% 2 == 0,
-        nth(nro_semana, dplyr::n() / 2 + 1),
-        nth(nro_semana, dplyr::n() / 2 + 1)
+        nth(nro_semana, dplyr::n() / 2 + 2),
+        nth(nro_semana, dplyr::n() / 2 + 2)
         ),
       nro_fallecidos = ifelse(
         dplyr::n() %% 2 == 0,
@@ -261,7 +261,7 @@ grafico_defunciones_esperadas <- function(){
     mutate(
       x = datetime_to_timestamp(fecha),
       y = nro_fallecidos,
-      text = str_c("Exceso de fallecimiento<br>en ", nro_semanas, " semanas<br><b>", comma(excestot_tot) ,"</b>")
+      text = str_c("Diferencia entre fallecimientos<br> reales y esperados en ", nro_semanas, " semanas<br><b>", comma(excestot_tot) ,"</b>")
     ) %>% 
     rowwise() %>% 
     mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
@@ -300,10 +300,11 @@ grafico_defunciones_esperadas <- function(){
       dexc,
       type = "arearange",
       hcaes(x = fecha, low = limlow, high = limhigh),
-      color = "red",
+      color = "black",
       zIndex = -2,
       showInLegend = TRUE,
-      name = "Exceso de fallecidos por COVID-19",
+      fillOpacity = 0.35,
+      name = "Exceso de fallecidos",
       tooltip = list(pointFormat = "<span style='color:{point.color};'>&#9679;</span> {series.name}: <b>{point.diffacum:,.0f}</b><br/>")
     ) %>% 
     hc_tooltip(
@@ -322,10 +323,12 @@ grafico_defunciones_esperadas <- function(){
       list(
         labelOptions = list(
           shape = "connector",
-          align = "center",
+          align = "right",
+          y = 200,
+          x = 125,
           justify = FALSE,
           crop = TRUE,
-          style = list(fontSize = "0.7em", textOutline = "1px white")
+          style = list(fontSize = "0.75em", textOutline = "1px white")
         ),
         labels = list_parse(dexclbl)
       )
