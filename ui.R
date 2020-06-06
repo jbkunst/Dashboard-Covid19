@@ -3,7 +3,7 @@ bs4DashPage(
     sidebar_collapsed = TRUE,
     navbar = bs4DashNavbar(),
     sidebar = bs4DashSidebar(
-        title = tags$small("COVID-19 · Chile2020", class = "titulo"),
+        title = tags$small("COVID-19 · Chile2020"),
         src = "virus (1).png",
         expand_on_hover = TRUE,
         fixed = FALSE,
@@ -37,7 +37,7 @@ bs4DashPage(
         bs4TabItems(
             bs4TabItem(
                 tabName = "inicio",
-                tags$h2(icon("tachometer-alt"), "Inicio", class = "titulo"),
+                tags$h2(icon("tachometer-alt"), "Inicio"),
                 fluidRow(
                     
                     htmltools::tagAppendAttributes(valueBoxOutput("vb_confirmados", 12), class  = PARS$classcol),
@@ -78,14 +78,14 @@ bs4DashPage(
                             bs4TabPanel(
                                 tabName = "Pacientes UCI",
                                 bs4CardHC(addSpinner(highchartOutput("hc_pacientes_uci")))
-                            )
+                                )
                             )
                         )
                     )
                 ),
             bs4TabItem(
                 tabName = "fallecidos",
-                tags$h2(icon("skull"), "Fallecidos", class = "titulo"),
+                tags$h2(icon("skull"), "Fallecidos"),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
@@ -97,7 +97,7 @@ bs4DashPage(
                 ),
             bs4TabItem(
                 tabName = "acerca",
-                tags$h2(icon("question-circle"), "Acerca de esta aplicación", class = "titulo"),
+                tags$h2(icon("question-circle"), "Acerca de esta aplicación"),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(

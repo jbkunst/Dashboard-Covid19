@@ -1,5 +1,8 @@
-/*
 document.addEventListener("DOMContentLoaded", function() {
+
+  $("br").remove();
+  
+  /*
 
   var t = setInterval(function(){
     var resizeEvent = new Event('resize');
@@ -7,5 +10,6 @@ document.addEventListener("DOMContentLoaded", function() {
     
   }, 1000);
   
+  */
+  
 });
-*/

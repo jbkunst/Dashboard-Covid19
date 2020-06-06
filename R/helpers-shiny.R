@@ -1,6 +1,6 @@
 highchartOutput <- partial(
   highcharter::highchartOutput,
-  height = "500px"
+  height = "450px"
 )
 
 bs4CardCustom <- purrr::partial(
@@ -38,7 +38,7 @@ valueBoxSpark <- function(value, subtitle, icon = NULL, color = "light-blue",
       h1(value, style = "font-weight: 800"),
       # tags$span(style = paste0("height:", height_spark), hc_size(spark, height = "100vh")),
       tags$span(hc_size(spark, height = height_spark)),
-      if (!is.null(subtitle)) p(subtitle)
+      if (!is.null(subtitle)) tags$p(subtitle)
     ),
     if (!is.null(icon)) div(class = "icon-large", icon)
   )
