@@ -126,7 +126,7 @@ bs4DashPage(
                         src = "https://avatars0.githubusercontent.com/u/4108139?s=400&u=f25684d4ce34d3d9d109d00ce9de9c8ded869742&v=4",
                         title = HTML("Héctor González"),
                         width = 3,
-                        shinipsum::random_text(nwords = 50)
+                        includeMarkdown("md/bio_hector.md")
                     ),
                     bs4UserCard(
                         status = "danger",
@@ -134,7 +134,7 @@ bs4DashPage(
                         title = "Ignacio Rossi",
                         subtitle = "",
                         width = 3,
-                        shinipsum::random_text(nwords = 50)
+                        includeMarkdown("md/bio_ignacio.md")
                         )
                     )
                 )

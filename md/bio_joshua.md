@@ -1,3 +1,1 @@
-Joshua Kunst es un ser humano al que le gustan los datos, las estadísticas,
-programación y visualización y los temas afín.
-Disfruta compartiendo ideas y códigos; y se une a todos los proyectos que puede.
+Joshua Kunst lidera el grupo de riesgo de crédito de banco Ripley en Chile. Tiene un amplio recorrido en el mundo de modelos de riesgo de crédito en distintas instituciones financieras del país. Es un evangelizador de R en Chile, aficionnado al código, desarrollador de disintos paquetes y anfitrión de comunidades ligadas a este lenguaje. Se formo como estadístico en la Ponticia Universidad Católica de Chile. Actualmente trabaja en varios proyectos independientes. Es director del grupo de investigación y desarrollo **Con R**. 
