@@ -5,11 +5,7 @@ library(tidyverse)
 library(lubridate)
 library(RcppRoll)
 library(scales)
-library(googlesheets)
-library(shinyWidgets)
-library(figletr)
-library(shinipsum)
-library(shinyjs)
+library(shinyWidgets) # spinner
 
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")

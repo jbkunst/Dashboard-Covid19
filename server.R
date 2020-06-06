@@ -1,6 +1,5 @@
 shinyServer(function(input, output, session) {
   
-  figletr::figlet("Descargar datos")
   descargar_datos()
   
   observeEvent(input$vb_chart,{
