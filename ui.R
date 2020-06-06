@@ -101,15 +101,13 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(width = 4, shinipsum::random_text(nwords = 50)),
-                            column(width = 4, shinipsum::random_text(nwords = 50)),
-                            column(width = 4, shinipsum::random_text(nwords = 50))
+                            includeMarkdown("md/acerca_de_esta_app.md")
                             )
                         ),
                     ),
                 fluidRow(
                     bs4UserCard(
-                        src = "https://pbs.twimg.com/profile_images/1246097605521793024/4CcubJFq_400x400.jpg",
+                        src = "http://www.dim.uchile.cl/~alsilva/Images/Foto.jpg",
                         title = "Alonso Silva",
                         width = 3,
                         includeMarkdown("md/bio_alonso.md")
