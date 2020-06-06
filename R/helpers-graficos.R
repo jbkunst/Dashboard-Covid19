@@ -678,38 +678,35 @@ grafico_ventiladores <- function(){
   d <- readRDS("data/producto20/NumeroVentiladores_T.rds") %>% 
     mutate(dia = ymd(Ventiladores))
   
-  evento <- tibble(
-    fecha = ymd("2020-05-15"),
-    texto = "Inicio cuarentena<br>en la RM"
-  )
+  # evento <- tibble(
+  #   fecha = ymd("2020-05-15"),
+  #   texto = "Inicio cuarentena<br>en la RM"
+  # )
+  # 
+  # data_plotLine <- evento %>% 
+  #   transmute(
+  #     value = datetime_to_timestamp(fecha),
+  #     label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+  #   ) %>% 
+  #   mutate(color = "gray", width = 1, zIndex = 5)
   
-  data_plotLine <- evento %>% 
-    transmute(
-      value = datetime_to_timestamp(fecha),
-      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
-    ) %>% 
-    mutate(color = "gray", width = 1, zIndex = 5)
-  
-  d %>% 
-    hchart(
-      hcaes(dia, total),
+  hchart(
+    d,
+    hcaes(dia, ocupados),
       type = "line",
-      name = "Disponibles",
+      name = "Ocupados",
       showInLegend = TRUE,
       color = PARS$color$primary
     ) %>% 
     hc_add_series(
       data = d,
-      hcaes(dia, ocupados),
+      hcaes(dia, total),
       type = "line",
-      name = "Ocupados",
+      name = "Ventiladores Totales",
       showInLegend = TRUE,
       color = "red"
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
-    hc_xAxis(
-      plotLines = list_parse(data_plotLine)
-    ) %>% 
     hc_yAxis(
       title = list(text = "Número de Ventiladores")
     ) %>%
@@ -717,10 +714,9 @@ grafico_ventiladores <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "Se muestra el número de ventiladores disponibles y número de ventiladores ocupados para
+      text =  "El número de ventiladores disponibles y número de ventiladores ocupados para
       cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19.
-      Los datos oficiales son publicados por el Ministerio de Salud, y extraídos a partir del repositorio
-      de MinCiencia."
+      Los datos oficiales son publicados por el Ministerio de Salud."
     ) %>% 
     hc_exporting(enabled = TRUE)
   

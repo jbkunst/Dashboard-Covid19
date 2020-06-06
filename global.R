@@ -31,16 +31,16 @@ PARS <- list(
 
 Sys.setlocale("LC_ALL", "Spanish_Spain.1252")
 # Sys.setlocale("LC_ALL","English")
-
-f <- Sys.Date()
-dias <- weekdays((f - lubridate::days(lubridate::wday(f) - 1)) + lubridate::days(0:6))
+# f <- Sys.Date()
+# dias <- weekdays((f - lubridate::days(lubridate::wday(f) - 1)) + lubridate::days(0:6))
 
 newlang_opts <- getOption("highcharter.lang")
 
-
-newlang_opts$weekdays <- dias
-newlang_opts$months <- as.character(lubridate::month(1:12, label = TRUE, abbr = FALSE))
-newlang_opts$shortMonths <- as.character(lubridate::month(1:12, label = TRUE, abbr = TRUE))
+newlang_opts$weekdays <- c("domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado")
+newlang_opts$months <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", 
+                         "agosto", "septiembre", "octubre", "noviembre", "diciembre")
+newlang_opts$shortMonths <- c("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", 
+                              "oct", "nov", "dic")
 newlang_opts$thousandsSep <- ","
 
 options(
