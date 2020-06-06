@@ -20,8 +20,8 @@ bs4DashPage(
                 icon = "map-marker-alt"
                 ),
             bs4SidebarMenuItem(
-                text = "Fallecidos",
-                tabName = "fallecidos",
+                text = "Exceso de Muertes",
+                tabName = "exceso_muerte",
                 icon = "skull"
             ),
             bs4SidebarMenuItem(
@@ -96,8 +96,8 @@ bs4DashPage(
                 )
             ),
             bs4TabItem(
-                tabName = "fallecidos",
-                tags$h2(icon("skull"), "Fallecidos"),
+                tabName = "exceso_muerte",
+                tags$h2(icon("skull"), "Exceso de Muerte"),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
