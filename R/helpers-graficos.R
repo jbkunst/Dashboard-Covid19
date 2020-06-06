@@ -13,6 +13,13 @@ grafico_casos_confirmados_diarios <- function(){
       media_movil = round(media_movil, 0)
     )
   
+  peak <- dcasos_totales_cumulativos %>% 
+    filter(casos_nuevos == max(casos_nuevos) | fecha==max(fecha)) %>% 
+    mutate(texto = str_c(format(fecha, "%d"), " de ",format(fecha, "%B"), " del ", format(fecha,"%Y"))) %>% 
+    select(fecha, casos_nuevos, texto) %>% 
+    filter(row_number()==n() | row_number()==1) %>% 
+    arrange(desc(fecha))
+  
   
   evento <- tibble(
     fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
@@ -55,11 +62,13 @@ grafico_casos_confirmados_diarios <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "Contagios por Coronavirus confirmados por exámenes de laboratorio 
+      text =  str_c("Contagios por Coronavirus confirmados por exámenes de laboratorio 
       y notificados por el sistema de vigilancia epidemiológica EPIVIGILA 
       del Ministerio de Salud. Esta corresponde a la famosa curva de contagios,
-      que considera sólo a las personas activamente afectadas por el virus"
-    ) %>% 
+      que considera sólo a las personas activamente afectadas por el virus <br><br>",
+                    "La cifra mas reciente es de ", peak[1,]$casos_nuevos, " (al ", peak[1,]$texto, "), mientras que ",
+                    "el máximo registrado es de ", peak[2,]$casos_nuevos," el ", peak[2,]$texto,".")
+      ) %>% 
     hc_exporting(enabled = TRUE) %>% 
     hc_navigator(enabled = TRUE)
   
@@ -388,6 +397,16 @@ grafico_tasa_letalidad <- function(){
     texto = c("Primeros 100<br>fallecidos", "Primeros 1000<br>fallecidos", "Se suman casos<br>asintomáticos")
   )
   
+  peak <- dfallecidos_contagiados %>% 
+    filter(porc == max(porc)) %>% 
+    mutate(texto = str_c(format(dia, "%A"), " ",format(dia, "%d")," de ",format(dia, "%B"))) %>% 
+    select(dia, porc, texto) %>% 
+    arrange(desc(dia)) %>% 
+    slice(1)
+
+  texto <- str_c("La mayor tasa de letalidad registrada ocurrió el ", peak$texto, " con una tasa de ", round(peak$porc,2), "%.")
+  
+  
   data_plotLine <- evento %>% 
     transmute(
       value = datetime_to_timestamp(fecha),
@@ -436,7 +455,8 @@ grafico_tasa_letalidad <- function(){
     hc_subtitle(
       text =  str_c("La <b>Tasa de Letalidad</b> corresponde a la razón entre el número de fallecidos totales registrados
       hasta la fecha, sobre el número de casos totales reportados hasta la fecha. Ambas informaciones son 
-      entregadas por Ministerio de Salud y extraídas a partir del repositorio de MinCiencia.")
+      entregadas por Ministerio de Salud y extraídas a partir del repositorio de MinCiencia. <br>",
+                    texto)
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -459,6 +479,20 @@ grafico_examenes_realizados <- function(){
     ) %>% 
     mutate(color = "gray", width = 1, zIndex = 5)
   
+  peak <- d %>% 
+    filter(nro_examenes == max(nro_examenes)) %>% 
+    mutate(texto = str_c(format(dia, "%A"), " ",format(dia, "%d")," de ",format(dia, "%B"))) %>% 
+    select(dia, nro_examenes, texto) %>% 
+    arrange(desc(dia)) %>% 
+    slice(1)
+  ultimos_7_dias <- d %>% 
+    arrange(desc(dia)) %>% 
+    slice(1:7) %>% 
+    pull(nro_examenes) %>% 
+    mean
+  
+  texto <- str_c("El mayor registro en cantidad de toma de exámenes fue el ", peak$texto, " con ", peak$nro_examenes, " test realizados")
+  
   d %>% 
     hchart(
       hcaes(dia, nro_examenes),
@@ -478,8 +512,11 @@ grafico_examenes_realizados <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "Se muestra el total de exámenes PCR diarios reportados a nivel nacional. La información es
-      provista por el Ministerio de Salud y extraída a partir del repositorio de MinCiencia."
+      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. <br>",
+      texto,
+      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.",
+      " <br>La información es
+      provista por el Ministerio de Salud y extraída a partir del repositorio de MinCiencia.")
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -507,6 +544,19 @@ grafico_fallecidos_diarios <- function(){
     ) %>% 
     mutate(color = "gray", width = 1, zIndex = 5)
   
+  peak <- d %>% 
+    filter(nro_fallecidos == max(nro_fallecidos) | dia==max(dia)) %>% 
+    mutate(texto = str_c(format(dia, "%d"), " de ",format(dia, "%B"), " del ", format(dia,"%Y"))) %>% 
+    select(dia, nro_fallecidos, texto) %>% 
+    filter(row_number()==n() | row_number()==1) %>% 
+    arrange(desc(dia))
+  texto <- if_else(
+    nrow(peak)==1,
+    str_c("La mayor cifra de fallecidos registrada es de ", peak$nro_fallecidos, ", correspondiente a la última actualización informada."),
+    str_c("La mayor cantidad de fallecidos registrada a la fecha es de ", peak[2,]$nro_fallecidos, ", que ocurrió el ", peak[2,]$texto,".",
+          " La última cifra informada al ",peak[1,]$texto, " corresponde a ", peak[1,]$nro_fallecidos, " fallecidos.")
+  )
+  
   d %>% 
     hchart(
       hcaes(dia, nro_fallecidos),
@@ -526,8 +576,10 @@ grafico_fallecidos_diarios <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "Se muestra el total de fallecidos diarios reportados a nivel nacional. La información es
-      provista por el Ministerio de Salud, y extraídos a partir del repositorio de MinCiencia."
+      text =  str_c("Total de fallecidos diarios reportados a nivel nacional. ",
+                    texto,
+                    "\nLa información es
+      provista por el Ministerio de Salud, y extraídos a partir del repositorio de MinCiencia. ")
     ) %>% 
     hc_exporting(enabled = TRUE)
   
