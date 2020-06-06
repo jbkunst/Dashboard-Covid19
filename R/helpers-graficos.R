@@ -722,6 +722,37 @@ grafico_ventiladores <- function(){
   
 }
 
+grafico_map_chile <- function(variable = "variable"){
+  
+  dta <- download_map_data("https://code.highcharts.com/mapdata/countries/cl/cl-all.js")
+  
+  daux <- get_data_from_map(dta) %>% 
+    mutate(value = row_number())
+  
+  # glimpse(daux)
+  
+  hcmap(
+    map = "countries/cl/cl-all",
+    data = daux,
+    joinBy = "hc-a2",
+    value = "value",
+    name = "Variable",
+    dataLabels = list(enabled = TRUE, format = "{point.name}", style = "")
+    ) %>% 
+    hc_colorAxis(
+      stops = color_stops(n = 10, colors = viridis_pal(option = "B")(10)),
+      startOnTick = FALSE,
+      endOnTick =  FALSE
+      ) %>%
+    hc_legend(
+      align = "right",
+      layout = "vertical",
+      verticalAlign = "middle",
+      symbolHeight = 500
+    )
+  
+}
+
 
 
 

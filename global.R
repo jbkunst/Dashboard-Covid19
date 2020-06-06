@@ -91,7 +91,7 @@ options(
       exporting = list(
         buttons = list(
           contextButton = list(
-            symbol = 'url(https://image.flaticon.com/icons/png/512/660/660474.png)',
+            symbol = 'url(https://cdn.icon-icons.com/icons2/936/PNG/512/download-to-storage-drive_icon-icons.com_73590.png)',
             symbolSize = 18,
             symbolX = 21,
             symbolY = 20,

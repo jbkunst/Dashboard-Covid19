@@ -16,7 +16,7 @@ bs4DashPage(
                 ),
             bs4SidebarMenuItem(
                 text = "Geográfico",
-                tabName = "item2",
+                tabName = "geografico",
                 icon = "map-marker-alt"
                 ),
             bs4SidebarMenuItem(
@@ -83,6 +83,18 @@ bs4DashPage(
                         )
                     )
                 ),
+            bs4TabItem(
+                tabName = "geografico",
+                tags$h2(icon("map-marker-alt"), "Geográfico"),
+                fluidRow(
+                    bs4CardCustom(
+                        fluidRow(
+                            column(offset = 2, width = 6, tableOutput("tbl_chile")),
+                            column(width =  2, bs4CardHC(addSpinner(highchartOutput("hc_map_chile"))))
+                        )
+                    )
+                )
+            ),
             bs4TabItem(
                 tabName = "fallecidos",
                 tags$h2(icon("skull"), "Fallecidos"),
