@@ -290,7 +290,7 @@ grafico_defunciones_esperadas <- function(){
       desp,
       type = "line",
       hcaes(x = fecha, y = nro_fallecidos_esperados),
-      name = "Número de fallecidos esperados",
+      name = "Número de fallecidos esperados en año normal",
       id = "numero_fallecidos_esperados",
       color = "blue",
       showInLegend = TRUE

@@ -4,7 +4,34 @@ body{
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, .brand-text > small {
   font-family: 'Alegreya Sans SC', sans-serif;
 }
 
+
+/**/
+/* CREATING SPACE */
+/**/
+/* hay un leve cambio de gris entre el wrapper y el nav-bar*/
+/* original  .content-wrapper { background: #f4f6f9; } */
+.navbar-light { background-color: #f4f6f9; }
+
+/* reducir espacio al bottom del smal lbox*/
+.small-box > .inner {
+  padding-bottom: 1px;
+}
+
+/* reducir tamañao del navbar hamburguesa 
+.navbar {
+  padding: 2px;
+}
+*/
+
+.inner > h6, .inner > h1 {
+  margin-bottom: 1px;
+}
+
+.inner > p {
+  margin-bottom: 5px;
+  font-size: 0.8em;
+}
