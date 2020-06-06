@@ -41,7 +41,8 @@ shinyServer(function(input, output, session) {
   
   output$hc_fallecidos_diarios <- renderHighchart(grafico_fallecidos_diarios())
   
-  output$hc_examenes_realizados <- renderHighchart(grafico_examenes_realizados())
+  #output$hc_examenes_realizados <- renderHighchart(grafico_examenes_realizados())
+  output$hc_examenes_realizados <- renderHighchart(grafico_examenes_realizados_establecimiento())
   
   output$hc_pacientes_uci <- renderHighchart(grafico_pacientes_uci())
   

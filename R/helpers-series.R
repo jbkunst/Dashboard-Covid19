@@ -38,6 +38,15 @@ serie_nro_examenes <- function(){
     mutate(dia = ymd(dia))
 }
 
+serie_nro_examenes_establecimiento <- function(){
+  
+  dcasos_examenes <- readRDS('data/producto17/PCREstablecimiento.rds')
+  
+  dcasos_examenes %>% 
+    mutate_if(is.numeric, replace_na, 0) %>% 
+    mutate(dia = ymd(fecha))
+}
+
 serie_nro_fallecidos <- function(){
   
   dfallecidos <- readRDS('data/producto14/FallecidosCumulativo_T.rds')

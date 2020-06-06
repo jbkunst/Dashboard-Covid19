@@ -9,6 +9,7 @@ descargar_datos <- function(){
     dir.create("data/producto8")
     dir.create("data/producto14")
     dir.create("data/producto16")
+    dir.create("data/producto17")
     dir.create("data/producto20")
     dir.create("data/producto32")
   })
@@ -157,6 +158,18 @@ descargar_datos <- function(){
         )
     ),
     "data/producto20/NumeroVentiladores_T.rds"
+  )
+
+  saveRDS(
+    read_csv(
+      "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto17/PCREstablecimiento.csv",
+      col_types = cols(
+        Establecimiento = col_character(),
+        Examenes = col_character()
+      )
+    ) %>% 
+      gather(key="fecha",value="nro_examenes", -Establecimiento, -Examenes),
+    "data/producto17/PCREstablecimiento.rds"
   )
 
 }

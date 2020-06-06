@@ -522,6 +522,104 @@ grafico_examenes_realizados <- function(){
   
 }
 
+grafico_examenes_realizados_establecimiento <- function(){
+  
+  d <- serie_nro_examenes_establecimiento()
+  
+  evento <- tibble(
+    fecha = ymd("2020-05-15"),
+    texto = "Inicio cuarentena<br>en la RM"
+  )
+  
+  data_plotLine <- evento %>% 
+    transmute(
+      value = datetime_to_timestamp(fecha),
+      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    ) %>% 
+    mutate(color = "gray", width = 1, zIndex = 5)
+  
+  peak <- d %>% 
+    filter(Establecimiento=="Total informados ultimo dia") %>% 
+    filter(nro_examenes == max(nro_examenes)) %>% 
+    mutate(texto = str_c(format(dia, "%A"), " ",format(dia, "%d")," de ",format(dia, "%B"))) %>% 
+    select(dia, nro_examenes, texto) %>% 
+    arrange(desc(dia)) %>% 
+    slice(1)
+  ultimos_7_dias <- d %>% 
+    filter(Establecimiento=="Total informados ultimo dia") %>% 
+    arrange(desc(dia)) %>% 
+    slice(1:7) %>% 
+    pull(nro_examenes) %>% 
+    mean
+  
+  texto <- str_c("El mayor registro en cantidad de toma de exámenes fue el ", peak$texto, " con ", peak$nro_examenes, " test realizados")
+  
+  d %>%
+    filter(Establecimiento=="Total informados ultimo dia") %>% 
+    hchart(
+      hcaes(dia, nro_examenes),
+      type = "line",
+      name = "Exámenes",
+      showInLegend = TRUE,
+      color = PARS$color$primary
+    ) %>%
+    hc_add_series(
+      d %>% 
+        filter(Establecimiento=="Hospitales público", Examenes == "informados ultimo dia"),
+      type = "line",
+      hcaes(x = dia, y = nro_examenes),
+      name = "Exámenes Hospitales públicos",
+      id = "numero_examenes_hospital_publico",
+      linkedTo = "numero_examenes_hospital_publico",
+      color = "blue",
+      showInLegend = TRUE,
+      visible = FALSE
+    ) %>%
+    hc_add_series(
+      d %>% 
+        filter(Establecimiento=="Instituto de salud pública", Examenes == "informados ultimo dia"),
+      type = "line",
+      hcaes(x = dia, y = nro_examenes),
+      name = "Exámenes Instituto Salud Pública",
+      id = "numero_examenes_hospital_publico",
+      linkedTo = "numero_examenes_hospital_publico",
+      color = "lightblue",
+      showInLegend = TRUE,
+      visible = FALSE
+    ) %>% 
+    hc_add_series(
+      d %>% 
+        filter(Establecimiento=="Privados", Examenes == "informados ultimo dia"),
+      type = "line",
+      hcaes(x = dia, y = nro_examenes),
+      name = "Exámenes Privados",
+      id = "numero_examenes_hospital_publico",
+      linkedTo = "numero_examenes_hospital_publico",
+      color = "darkblue",
+      showInLegend = TRUE,      
+      visible = FALSE
+    ) %>% 
+    hc_tooltip(table = TRUE, valueDecimals = 0, shared = TRUE) %>% 
+    hc_xAxis(
+      plotLines = list_parse(data_plotLine)
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de exámenes")
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) %>%
+    hc_subtitle(
+      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. <br>",
+      texto,
+      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.",
+      " <br>La información es
+      provista por el Ministerio de Salud y extraída a partir del repositorio de MinCiencia.")
+    ) %>% 
+    hc_exporting(enabled = TRUE)
+  
+}
+
 grafico_fallecidos_diarios <- function(){
   
   d <- serie_nro_fallecidos()
@@ -665,7 +763,7 @@ grafico_pacientes_uci <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "Se muestra el número diario de pacientes en UCI a nivel nacional. Los reportes diarios 
+      text =  "Número diario de pacientes en <b>UCI</b> a nivel nacional. Los reportes diarios 
       son generados por el Ministerio de Salud y la información es extraída a partir del repositorio
       de MinCiencia."
     ) %>% 
