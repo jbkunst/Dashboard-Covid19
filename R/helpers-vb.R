@@ -49,7 +49,11 @@ grafico_vb_confirmados <- function(){
 
 grafico_vb_examenes <- function(){
   
-  d <- serie_nro_examenes()
+  d <- serie_nro_examenes_establecimiento()
+  d <- d %>% 
+    filter(Establecimiento=="Total informados ultimo dia") %>% 
+    select(dia, nro_examenes)
+  
   f <- d %>% select(dia) %>% pull() %>% last()  
   
   d <- d %>% 

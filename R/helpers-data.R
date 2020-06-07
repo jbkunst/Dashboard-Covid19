@@ -8,6 +8,7 @@ descargar_datos <- function(){
     dir.create("data/producto7")
     dir.create("data/producto8")
     dir.create("data/producto14")
+    dir.create("data/producto13")
     dir.create("data/producto16")
     dir.create("data/producto17")
     dir.create("data/producto20")
@@ -170,6 +171,18 @@ descargar_datos <- function(){
     ) %>% 
       gather(key="fecha",value="nro_examenes", -Establecimiento, -Examenes),
     "data/producto17/PCREstablecimiento.rds"
+  )
+  
+  saveRDS(
+    read_csv(
+      "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto13/CasosNuevosCumulativo_std.csv",
+      col_types = cols(
+        Region = col_character(),
+        Fecha = col_date(),
+        Total = col_double()
+      ),
+    ),
+    "data/producto13/CasosNuevosCumulativo_std.rds"
   )
 
 }

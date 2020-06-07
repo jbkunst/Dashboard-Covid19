@@ -75,5 +75,47 @@ serie_recuperados <- function(){
     mutate(dia = ymd(dia))
 }
 
-
+serie_consolidado_region <- function(){
+  examenes <- readRDS("data/producto7/PCR.rds")
+  
+  examenes_nuevos <- examenes %>% 
+    mutate_if(is.numeric, replace_na, 0) %>% 
+    gather(Fecha, examenes, -Region, -`Codigo region`, -Poblacion) %>% 
+    mutate(Fecha = ymd(Fecha))
+  
+  fallecidos <- readRDS("data/producto14/FallecidosCumulativo_T.rds")
+  
+  fallecidos_nuevos <- fallecidos %>% 
+    select(-Total) %>% 
+    rename(Fecha = Region) %>% 
+    gather(Region, Total, - Fecha) %>% 
+    group_by(Region) %>% 
+    mutate(
+      fallecidos = ifelse(
+        is.na(Total - lag(Total)), 
+        Total,
+        Total - lag(Total))
+    ) %>% 
+    select(-Total) %>% 
+    ungroup() 
+  
+  casos_nuevos<- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
+  
+  casos_nuevos <- casos_nuevos %>% rename(casos_nuevos = Total)
+  
+  dpascientes_UCI <- readRDS('data/producto8/UCI_T.rds')
+  
+  uci_nuevos <- dpascientes_UCI %>% 
+    filter(!Region %in% c("Codigo region", "Poblacion")) %>% 
+    rename(Fecha = Region) %>% 
+    gather(Region, nro_pacientes_uci, - Fecha) %>% 
+    mutate(Fecha = ymd(Fecha))
+  
+  d <- examenes_nuevos %>% 
+    left_join(casos_nuevos, by = c("Region", "Fecha")) %>% 
+    left_join(fallecidos_nuevos, by = c("Region", "Fecha")) %>% 
+    left_join(uci_nuevos, by = c("Region", "Fecha"))
+  
+  d
+}
 
