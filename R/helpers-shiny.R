@@ -1,7 +1,6 @@
-highchartOutput <- partial(
-  highcharter::highchartOutput,
-  height = "450px"
-)
+highchartOutput <- function(outputId, width = "100%", height = "450px"){
+  highcharter::highchartOutput(outputId = outputId, width = width, height = height)
+}
 
 bs4CardCustom <- purrr::partial(
   bs4Card,

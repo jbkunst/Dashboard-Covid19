@@ -57,7 +57,14 @@ shinyServer(function(input, output, session) {
 
   # geografico --------------------------------------------------------------
 
-  output$tbl_chile <- renderTable({ shinipsum::random_table(nrow = 15, ncol = 5) })
+  output$tbl_chile <- renderTable({ 
+    
+    serie_consolidado_region() %>% 
+      filter(Fecha == max(Fecha)) %>% 
+      arrange(`Codigo region`) %>% 
+      select(-`Codigo region`, -Fecha)
+      
+  })
   
   output$hc_map_chile <- renderHighchart({ grafico_map_chile("variable") })
   

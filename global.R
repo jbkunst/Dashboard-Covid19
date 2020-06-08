@@ -112,3 +112,8 @@ options(
       )
   )
 
+x <- bs4CardHC(addSpinner(highchartOutput("hc_map_chile")))
+x <- tagAppendAttributes(x, style = "height:99%")
+x$children[[1]] <- tagAppendAttributes(x$children[[1]], style = "height:99%")
+x
+

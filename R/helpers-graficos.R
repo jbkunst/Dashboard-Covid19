@@ -827,6 +827,15 @@ grafico_map_chile <- function(variable = "variable"){
   daux <- get_data_from_map(dta) %>% 
     mutate(value = row_number())
   
+  daux <- daux %>% 
+    # select(name) %>% 
+    mutate(
+      name_fmt = name,
+      name_fmt = str_replace(name_fmt, "General ", "General<br>"),
+      name_fmt = str_replace(name_fmt, "y ", "y<br>"),
+      name_fmt = str_remove(name_fmt, " de Santiago")
+      )
+  
   # glimpse(daux)
   
   hcmap(
@@ -835,7 +844,13 @@ grafico_map_chile <- function(variable = "variable"){
     joinBy = "hc-a2",
     value = "value",
     name = "Variable",
-    dataLabels = list(enabled = TRUE, format = "{point.name}", style = "")
+    borderWidth = 0,
+    dataLabels = list(
+      enabled = FALSE,
+      format = "{point.name_fmt}", 
+      align = "center",
+      x = -100,
+      style = list(fontSize = "0.6em"))
     ) %>% 
     hc_colorAxis(
       stops = color_stops(n = 10, colors = viridis_pal(option = "B")(10)),
