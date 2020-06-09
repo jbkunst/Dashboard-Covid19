@@ -59,7 +59,7 @@ shinyServer(function(input, output, session) {
 
   # geografico --------------------------------------------------------------
 
-  output$tbl_chile <- renderDataTable({ 
+  output$tbl_chile <- DT::renderDataTable({ 
     
     d <- serie_consolidado_region() %>% 
       filter(Fecha == max(Fecha)) %>% 
