@@ -63,7 +63,7 @@ serie_nro_pascientes_UCI <- function(){
     filter(!Region %in% c("Codigo region", "Poblacion")) %>% 
     gather(ciudad, valor, -Region) %>% 
     group_by(dia = Region) %>% 
-    summarise(nro_pascientes_uci = sum(as.numeric(valor)))
+    summarise(nro_pascientes_uci = sum(as.numeric(valor))) 
 }
 
 serie_recuperados <- function(){

@@ -162,7 +162,9 @@ grafico_vb_uci <- function(){
     select(v) %>% 
     filter(!is.na(v)) %>% 
     pull()
+  
   nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  
   total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
   
   jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'uci') }")
@@ -184,9 +186,17 @@ grafico_vb_uci <- function(){
     ) %>% 
     hc_plotOptions(series = list(point = list(events = list(mouseOver = jsev))))
   
+  
+  text_vb <- ifelse(
+    nuevos_casos > 0,
+    paste0(nuevos_casos, " nuevos pacientes UCI", "<br>", total_casos_ult_7_dias, " últimos 7 días"),
+    paste0(abs(as.numeric(nuevos_casos)), " pacientes menos en UCI", "<br>", total_casos_ult_7_dias, " últimos 7 días")
+  )
+  
+  
   valueBoxSpark(
     value = lbl,
-    subtitle = HTML(paste0(nuevos_casos, " nuevos pacientes UCI", "<br>", total_casos_ult_7_dias, " últimos 7 días")),
+    subtitle = HTML(text_vb),
     spark = hc,
     minititle = paste0("Pacientes UCI")
   )
