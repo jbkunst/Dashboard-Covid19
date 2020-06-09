@@ -53,16 +53,41 @@ shinyServer(function(input, output, session) {
   # fallecidos --------------------------------------------------------------
   
   output$hc_defunciones_esperadas <- renderHighchart(grafico_defunciones_esperadas())
+  
+  output$hc_fallecidos_por_region <- renderHighchart(grafico_fallecidos_por_region())
 
 
   # geografico --------------------------------------------------------------
 
-  output$tbl_chile <- renderTable({ 
+  output$tbl_chile <- renderDataTable({ 
     
-    serie_consolidado_region() %>% 
+    d <- serie_consolidado_region() %>% 
       filter(Fecha == max(Fecha)) %>% 
       arrange(`Codigo region`) %>% 
-      select(-`Codigo region`, -Fecha)
+      select(-`Codigo region`, -Fecha,
+             `Exámenes` = examenes,
+             `Casos Nuevos` = casos_nuevos,
+             Fallecidos = fallecidos, 
+             `Nº Pacientes UCI` = nro_pacientes_uci) %>% 
+      as.data.frame()
+    
+    total <- d %>% summarise_if(is.numeric, sum) %>% 
+      mutate(Region = "Total")
+    
+    d <- d %>% 
+      bind_rows(total)
+    
+    DT::datatable(
+      d, 
+      rownames = FALSE,
+      selection = "single",
+      options = list(
+        searching = FALSE,
+        bPaginate = FALSE
+        )
+      ) %>% 
+      DT::formatRound(2:6, mark = ".", digits = 0)
+      
       
   })
   

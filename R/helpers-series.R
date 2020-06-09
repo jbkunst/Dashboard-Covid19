@@ -81,23 +81,25 @@ serie_consolidado_region <- function(){
   examenes_nuevos <- examenes %>% 
     mutate_if(is.numeric, replace_na, 0) %>% 
     gather(Fecha, examenes, -Region, -`Codigo region`, -Poblacion) %>% 
-    mutate(Fecha = ymd(Fecha))
+    mutate(Fecha = ymd(Fecha)) %>% 
+    group_by(Region, Poblacion) %>% 
+    mutate(examenes = cumsum(examenes))
   
   fallecidos <- readRDS("data/producto14/FallecidosCumulativo_T.rds")
   
   fallecidos_nuevos <- fallecidos %>% 
     select(-Total) %>% 
     rename(Fecha = Region) %>% 
-    gather(Region, Total, - Fecha) %>% 
-    group_by(Region) %>% 
-    mutate(
-      fallecidos = ifelse(
-        is.na(Total - lag(Total)), 
-        Total,
-        Total - lag(Total))
-    ) %>% 
-    select(-Total) %>% 
-    ungroup() 
+    gather(Region, fallecidos, - Fecha)
+    # group_by(Region) %>% 
+    # mutate(
+    #   fallecidos = ifelse(
+    #     is.na(Total - lag(Total)), 
+    #     Total,
+    #     Total - lag(Total))
+    # ) %>% 
+    # select(-Total) %>% 
+    # ungroup() 
   
   casos_nuevos<- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
   
@@ -116,6 +118,11 @@ serie_consolidado_region <- function(){
     left_join(fallecidos_nuevos, by = c("Region", "Fecha")) %>% 
     left_join(uci_nuevos, by = c("Region", "Fecha"))
   
-  d
+  d %>% tail(10)
 }
 
+# serie_consolidado_comunas <- function(){
+# 
+#   casos_nuevos<- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
+#   
+# }

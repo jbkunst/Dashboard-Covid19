@@ -806,7 +806,10 @@ grafico_ventiladores <- function(){
       showInLegend = TRUE,
       color = "red"
     ) %>% 
-    hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
+    hc_tooltip(
+      table = TRUE, 
+      valueDecimals = 0,
+      sort = TRUE) %>% 
     hc_yAxis(
       title = list(text = "Número de Ventiladores")
     ) %>%
@@ -868,7 +871,58 @@ grafico_map_chile <- function(variable = "variable"){
   
 }
 
+grafico_fallecidos_por_region <- function(){
+  
+  d <- serie_consolidado_region()
+  
+  hchart(
+    d,
+    "line",
+    hcaes(Fecha, fallecidos, group = Region)
+         ) %>% 
+    hc_tooltip(
+      table = TRUE,
+      sort = TRUE,
+      valueDecimal = 2
+    ) %>% 
+    hc_legend(
+      layout = "proximate",
+      verticalAlign = "top",
+      align = "right"
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de Fallecidos"),
+      type = "logarithmic",
+      min = 1,
+      plotBands = list(
+        list(
+          from = 100,
+          to = 1000,
+          color = "rgba(100, 0, 0, 0.1)",
+          label = list(
+            text = "Primeros 100 fallecidos",
+            verticalAlign = "bottom",
+            y = -10,
+            style = list(zIndex = 5))
+        ),
+        list(
+          from = 1000,
+          to = 10000,
+          color = "rgba(100, 0, 0, 0.2)",
+          label = list(
+            text = "Primeros 1000 fallecidos",
+            verticalAlign = "bottom",
+            y = -10,
+            style = list(zIndex = 5))
+        )
+      )
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) 
 
+  
+}
 
 
 

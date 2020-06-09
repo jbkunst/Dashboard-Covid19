@@ -89,7 +89,7 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(width = 6, tableOutput("tbl_chile")),
+                            column(width = 6, dataTableOutput("tbl_chile")),
                             # column(width =  2, bs4CardHC(addSpinner(highchartOutput("hc_map_chile"))))
                             column(4, x)
                         )
