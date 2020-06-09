@@ -623,7 +623,7 @@ grafico_examenes_realizados_establecimiento <- function(){
 grafico_fallecidos_diarios <- function(){
   
   d <- serie_nro_fallecidos()
-  
+
   d <- d %>% 
     mutate(v  = nro_fallecidos -  lag(nro_fallecidos)) %>% 
     mutate(v = ifelse(is.na(v), nro_fallecidos, v)) %>% 
@@ -648,12 +648,14 @@ grafico_fallecidos_diarios <- function(){
     select(dia, nro_fallecidos, texto) %>% 
     filter(row_number()==n() | row_number()==1) %>% 
     arrange(desc(dia))
+  
+  text_cond1 <- str_c("La mayor cifra de fallecidos registrada es de ", peak$nro_fallecidos, ", correspondiente a la última actualización informada.")
+  text_cond2 <- str_c("La mayor cantidad de fallecidos registrada a la fecha es de ", peak[2,]$nro_fallecidos, ", que ocurrió el ", peak[2,]$texto,".",
+                      " La última cifra informada al ",peak[1,]$texto, " corresponde a ", peak[1,]$nro_fallecidos, " fallecidos.")
   texto <- if_else(
-    nrow(peak)==1,
-    str_c("La mayor cifra de fallecidos registrada es de ", peak$nro_fallecidos, ", correspondiente a la última actualización informada."),
-    str_c("La mayor cantidad de fallecidos registrada a la fecha es de ", peak[2,]$nro_fallecidos, ", que ocurrió el ", peak[2,]$texto,".",
-          " La última cifra informada al ",peak[1,]$texto, " corresponde a ", peak[1,]$nro_fallecidos, " fallecidos.")
-  )
+    nrow(peak) == 1,
+    text_cond1[1],
+    text_cond2)
   
   d %>% 
     hchart(
