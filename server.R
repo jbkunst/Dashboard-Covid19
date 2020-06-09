@@ -62,28 +62,35 @@ shinyServer(function(input, output, session) {
   output$tbl_chile <- DT::renderDataTable({ 
     
     d <- serie_consolidado_region() %>% 
-      filter(Fecha == max(Fecha)) %>% 
-      arrange(`Codigo region`) %>% 
-      select(-`Codigo region`, -Fecha,
-             `Exámenes` = examenes,
-             `Casos Nuevos` = casos_nuevos,
-             Fallecidos = fallecidos, 
-             `Nº Pacientes UCI` = nro_pacientes_uci) %>% 
-      as.data.frame()
+      group_by(Region, `Codigo region`, Poblacion) %>% 
+      summarise_if(is.numeric, sum) %>% 
+      ungroup() %>% 
+      arrange(desc(casos_nuevos)) %>% 
+      rename(
+        `Exámenes` = examenes,
+        `Casos Nuevos` = casos_nuevos,
+        Fallecidos = fallecidos, 
+        `Pacientes UCI` = nro_pacientes_uci
+        )
     
-    total <- d %>% summarise_if(is.numeric, sum) %>% 
-      mutate(Region = "Total")
+    total <- d %>% 
+      summarise_if(is.numeric, sum) %>% 
+      mutate(Region = "Chile")
     
-    d <- d %>% 
-      bind_rows(total)
+    d <- bind_rows(total, d) %>% 
+      select(-`Codigo region`) %>% 
+      select(Region, everything())
     
     DT::datatable(
       d, 
-      rownames = FALSE,
+      caption = "Click sobre una fila para ver detalles en el mapa",
+      rownames = FALSE, # para negrita formatStyle
       selection = "single",
       options = list(
         searching = FALSE,
-        bPaginate = FALSE
+        bPaginate = FALSE,
+        bInfo = FALSE,
+        columnDefs = list(list(className = 'dt-right', targets = 1:5))
         )
       ) %>% 
       DT::formatRound(2:6, mark = ".", digits = 0)
@@ -91,6 +98,10 @@ shinyServer(function(input, output, session) {
       
   })
   
-  output$hc_map_chile <- renderHighchart({ grafico_map_chile("variable") })
+  output$hc_map <- renderHighchart({
+    
+    grafico_map_chile("variable") 
+  
+    })
   
 })

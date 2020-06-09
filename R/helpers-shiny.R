@@ -1,7 +1,3 @@
-highchartOutput <- function(outputId, width = "100%", height = "450px"){
-  highcharter::highchartOutput(outputId = outputId, width = width, height = height)
-}
-
 bs4CardCustom <- purrr::partial(
   bs4Card,
   status = "primary",
@@ -12,7 +8,6 @@ bs4CardCustom <- purrr::partial(
   width = 12
   )
 
-
 bs4CardHC <- purrr::partial(
   bs4Card,
   elevation = 1,
@@ -20,6 +15,16 @@ bs4CardHC <- purrr::partial(
   width = 12,
   collapsible = FALSE
 )
+
+bs4CardHC2 <- function(...) {
+  
+  x <- bs4CardHC(addSpinner(...))
+  x <- tagAppendAttributes(x, style = "height:99%")
+  x$children[[1]] <- tagAppendAttributes(x$children[[1]], style = "height:99%")
+  x
+  
+}
+
 
 valueBoxSpark <- function(value, subtitle, icon = NULL, color = "light-blue", 
                           width = 4, href = NULL, spark = NULL, height_spark = "70px",minititle = NULL) {
