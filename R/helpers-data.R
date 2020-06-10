@@ -7,6 +7,7 @@ descargar_datos <- function(){
     dir.create("data/producto5")
     dir.create("data/producto7")
     dir.create("data/producto8")
+    dir.create("data/producto15")
     dir.create("data/producto14")
     dir.create("data/producto13")
     dir.create("data/producto16")
@@ -183,6 +184,22 @@ descargar_datos <- function(){
       ),
     ),
     "data/producto13/CasosNuevosCumulativo_std.rds"
+  )
+  
+  saveRDS(
+    read_csv(
+      "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto15/FechaInicioSintomas_std.csv",
+      col_types = cols(
+        Region = col_character(),
+        `Codigo region` = col_character(),
+        Comuna = col_character(),
+        `Codigo comuna` = col_character(),
+        Poblacion = col_double(),
+        `Semana Epidemiologica` = col_character(),
+        `Casos confirmados` = col_double()
+      ),
+    ),
+    "data/producto15/FechaInicioSintomas_std.rds"
   )
 
 }

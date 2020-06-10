@@ -116,6 +116,19 @@ serie_consolidado_region <- function(){
   
 }
 
+serie_nro_casos_comuna <- function(){
+  
+  d <- readRDS("data/producto15/FechaInicioSintomas_std.rds")
+  
+  d %>% 
+    mutate(
+      `Semana Epidemiologica` = as.numeric(
+        str_remove(`Semana Epidemiologica`, "SE"))) %>% 
+    mutate(fecha = ymd("2020-01-01") + weeks(`Semana Epidemiologica` - 1)) %>% 
+    glimpse()
+  
+}
+
 # serie_consolidado_comunas <- function(){
 # 
 #   casos_nuevos<- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
