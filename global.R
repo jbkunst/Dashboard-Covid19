@@ -6,6 +6,7 @@ library(lubridate)
 library(RcppRoll)
 library(scales)
 library(shinyWidgets) # spinner
+library(geojsonio)
 
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")

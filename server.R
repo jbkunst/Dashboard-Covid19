@@ -105,15 +105,70 @@ shinyServer(function(input, output, session) {
     print(input$click_tbl_chile)
     
     reg <- input$click_tbl_chile[1]
+    if(is.null(reg)) reg <- "Metropolitana"
+    # reg <- "Ñuble"
     
     d <- serie_nro_casos_comuna()
     
-    d <- d %>% filter(Region == reg)
+    cod_region <- d %>% distinct(Region, `Codigo region`)
+    
+    d <- d %>% 
+      filter(Region == reg) %>% 
+      mutate(`Codigo comuna` = as.character(as.numeric(`Codigo comuna`))) %>% 
+      group_by(Comuna, `Codigo comuna`) %>% 
+      summarise(value = sum(`Casos confirmados`)) %>% 
+      ungroup()
+    
+    get_dir_json_region<- function(reg = "Metropolitana"){
+      
+      cod_reg <- cod_region %>% 
+        filter(Region == reg) %>% 
+        select(`Codigo region`) %>% 
+        pull()
 
+      dir("data/geojson/", full.names = TRUE) %>% 
+        str_subset(cod_reg)
+    }
     
-    grafico_map_chile("variable") %>% 
-      hc_title(text = reg)
+    url_gs_geojson <- get_dir_json_region(reg)
     
+    gjson <- jsonlite::fromJSON(url_gs_geojson)
+    
+    # str(gjson)
+    
+    df <- gjson$features$properties
+    # df %>% glimpse()
+    df <- df %>% 
+      left_join(d, by = c("codigo_comuna" = "Codigo comuna"))
+    #d %>% tail(10)
+    
+    gjson <- geojsonio::as.json(gjson)
+    
+    highchart(type = "map") %>%
+      hc_add_series(
+        mapData = gjson,
+        data = list_parse(df),
+        # "COMUNA" es la key en el geojson, "code" es la key en nuestros datos: dvar
+        joinBy = c("codigo_comuna", "codigo_comuna"),
+        showInLegend = FALSE,
+        name = "Numero de Fallecidos",
+        dataLabels = list(enabled = TRUE, format = "{point.Comuna}", color = "white")
+      ) %>% 
+      hc_colorAxis(
+        stops = color_stops(n = 10, colors = viridis_pal(option = "B")(10)),
+        startOnTick = FALSE,
+        endOnTick =  FALSE
+      ) %>%
+      hc_legend(
+        align = "right",
+        layout = "vertical",
+        verticalAlign = "middle",
+        symbolHeight = 500
+      ) %>% 
+      hc_tooltip(
+        shared = TRUE,
+        valueDecimals = 0
+      )
   })
   
 })
