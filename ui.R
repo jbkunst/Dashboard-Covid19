@@ -89,7 +89,12 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(width = 6, DT::dataTableOutput("tbl_chile")),
+                            column(
+                                width = 6,
+                                includeMarkdown("md/geografico.md"),
+                                tags$hr(),
+                                DT::dataTableOutput("tbl_chile")
+                                ),
                             column(width = 6, bs4CardHC(addSpinner(highchartOutput("hc_map", height = "100%"))))
                         )
                     )

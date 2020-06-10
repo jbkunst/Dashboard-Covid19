@@ -86,13 +86,15 @@ shinyServer(function(input, output, session) {
       caption = "Click sobre una fila para ver detalles en el mapa",
       rownames = FALSE, # para negrita formatStyle
       selection = "single",
+      callback =   JS("table.on('click.dt', 'td', function() {
+            var data = table.row(this).data();
+            Shiny.onInputChange('click_tbl_chile',data);});"),
       options = list(
         searching = FALSE,
         bPaginate = FALSE,
         bInfo = FALSE,
         columnDefs = list(list(className = 'dt-right', targets = 1:5))
-        )
-      ) %>% 
+        )) %>% 
       DT::formatRound(2:6, mark = ".", digits = 0)
       
       
@@ -100,8 +102,13 @@ shinyServer(function(input, output, session) {
   
   output$hc_map <- renderHighchart({
     
-    grafico_map_chile("variable") 
-  
-    })
+    print(input$click_tbl_chile)
+    
+    reg <- input$click_tbl_chile[1]
+    
+    grafico_map_chile("variable") %>% 
+      hc_title(text = reg)
+    
+  })
   
 })
