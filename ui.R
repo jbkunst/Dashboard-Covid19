@@ -32,6 +32,7 @@ bs4DashPage(
             )
         ),
     body = bs4DashBody(
+        tags$head(tags$link(rel="shortcut icon", href="fa.png")),
         tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")),
         tags$script(src = "js/custom.js"),
         bs4TabItems(
@@ -89,13 +90,12 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(
-                                width = 6,
-                                includeMarkdown("md/geografico.md"),
-                                tags$hr(),
-                                DT::dataTableOutput("tbl_chile")
-                                ),
-                            column(width = 6, bs4CardHC(addSpinner(highchartOutput("hc_map", height = "100%"))))
+                            column(6, includeMarkdown("md/geografico.md"))
+                        ),
+                        tags$hr(),
+                        fluidRow(
+                            column(6, DT::dataTableOutput("tbl_chile")),
+                            column(6, bs4CardHC(addSpinner(highchartOutput("hc_map", height = "600px"))))
                         )
                     )
                 )

@@ -7,6 +7,7 @@ library(RcppRoll)
 library(scales)
 library(shinyWidgets) # spinner
 library(geojsonio)
+library(scales)
 
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")
@@ -45,8 +46,13 @@ options(
   highcharter.google_fonts = FALSE,
   highcharter.theme = 
     hc_theme_smpl(
-      title = list(style = list(fontSize = "1.2em", fontFamily = PARS$font)),
-      subtitle = list(style = list(fontFamily = PARS$font, fontSize = "0.85em")),
+      title = list(
+        style = list(fontSize = "1.2em", fontFamily = PARS$font)
+        ),
+      
+      subtitle = list(
+        style = list(fontFamily = PARS$font, fontSize = "0.85em")
+        ),
       
       xAxis = list(
         title = list(
@@ -102,7 +108,6 @@ options(
         useHTML = TRUE
       ),
       
-
       legend = list(
         verticalAlign = "top",
         align = "left",

@@ -66,11 +66,10 @@ grafico_casos_confirmados_diarios <- function(){
       y notificados por el sistema de vigilancia epidemiológica EPIVIGILA 
       del Ministerio de Salud. Esta corresponde a la famosa curva de contagios,
       que considera sólo a las personas activamente afectadas por el virus <br><br>",
-                    "La cifra mas reciente es de ", peak[1,]$casos_nuevos, " (al ", peak[1,]$texto, "), mientras que ",
-                    "el máximo registrado es de ", peak[2,]$casos_nuevos," el ", peak[2,]$texto,".")
+                    "La cifra mas reciente es de ", comma(peak[1,]$casos_nuevos), " (al ", peak[1,]$texto, "), mientras que ",
+                    "el máximo registrado es de ", comma(peak[2,]$casos_nuevos)," el ", peak[2,]$texto,".")
       ) %>% 
-    hc_exporting(enabled = TRUE) %>% 
-    hc_navigator(enabled = TRUE)
+    hc_exporting(enabled = TRUE)
   
 }
 
@@ -831,56 +830,120 @@ grafico_ventiladores <- function(){
     ) %>%
     hc_subtitle(
       text =  "El número de <b>ventiladores disponibles</b> y número de ventiladores ocupados para
-      cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19.
-      Los datos oficiales son publicados por el Ministerio de Salud."
+      cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19."
     ) %>% 
     hc_exporting(enabled = TRUE)
   
 }
 
-grafico_map_chile <- function(variable = "variable"){
+grafico_map <- function(reg = "Tarapacá"){
   
-  dta <- download_map_data("https://code.highcharts.com/mapdata/countries/cl/cl-all.js")
+  d <- serie_nro_casos_comuna()
   
-  daux <- get_data_from_map(dta) %>% 
-    mutate(value = row_number())
+  cod_region <- d %>% distinct(Region, `Codigo region`)
   
-  daux <- daux %>% 
-    # select(name) %>% 
-    mutate(
-      name_fmt = name,
-      name_fmt = str_replace(name_fmt, "General ", "General<br>"),
-      name_fmt = str_replace(name_fmt, "y ", "y<br>"),
-      name_fmt = str_remove(name_fmt, " de Santiago")
-      )
+  d <- d %>% 
+    filter(Region == reg) %>% 
+    group_by(Comuna, `Codigo comuna`) %>% 
+    summarise(value = sum(`Casos confirmados`)) %>% 
+    ungroup()
   
-  # glimpse(daux)
+  cod_reg <- cod_region %>% 
+      filter(Region == reg) %>% 
+      select(`Codigo region`) %>% 
+      pull()
+    
+  ruta_geojson <-  dir("data/geojson/", full.names = TRUE, pattern = cod_reg)
   
-  hcmap(
-    map = "countries/cl/cl-all",
-    data = daux,
-    joinBy = "hc-a2",
-    value = "value",
-    name = "Variable",
-    borderWidth = 0,
-    dataLabels = list(
-      enabled = FALSE,
-      format = "{point.name_fmt}", 
-      align = "center",
-      x = -100,
-      style = list(fontSize = "0.6em"))
+  gjson <- jsonlite::fromJSON(ruta_geojson)
+  
+  if(reg == "Valparaíso") {
+    
+    ids <- which(gjson$features$properties$codigo_comuna %in% c("05201", "05104"))
+    
+    gjson$features <- gjson$features[-ids,]
+    
+    id <- which(gjson$features$properties$codigo_comuna == "05101")
+    
+    # str(gjson$features, max.level = 1)
+    
+    # as_tibble(gjson$features)
+    
+    gjson$features$geometry$coordinates[[id]] <- gjson$features$geometry$coordinates[[id]][2]
+    
+    # str(gjson$features$geometry$coordinates[[id]])
+    # str(gjson$features$geometry$coordinates[[id]][2])
+    # gjson$features$type <- gjson$features$type[-ids]
+    # gjson$features$properties <- gjson$features$properties[-ids]
+    # gjson$features$geometry   <- gjson$features$geometry  [-ids]
+    
+  }
+
+  df <- gjson$features$properties
+  
+  df <- df %>% 
+    left_join(d, by = c("codigo_comuna" = "Codigo comuna"))
+  
+  gjson <- geojsonio::as.json(gjson)
+  
+  highchart(type = "map") %>%
+    hc_add_series(
+      mapData = gjson,
+      data = list_parse(df),
+      joinBy = c("codigo_comuna", "codigo_comuna"),
+      showInLegend = FALSE,
+      name = "Numero de Fallecidos",
+      borderColor = "gray",
+      borderWidth = 0.5,
+      tooltip = list(
+        headerFormat = "",
+        pointFormat = "<b>{point.Comuna}</b><br>{point.value} casos"
+      ),
+      dataLabels = list(
+        enabled = TRUE, 
+        format = "{point.Comuna}",
+        color =  "white",
+        style = list(fontSize = "12px", textOutline = "2px gray")
+        )
     ) %>% 
     hc_colorAxis(
-      stops = color_stops(n = 10, colors = viridis_pal(option = "B")(10)),
-      startOnTick = FALSE,
+      stops = color_stops(n = 100, colors = viridis_pal(option = "B", begin = 0.0, end = 0.9, direction = -1)(10)),
+      startOnTick = TRUE,
+      min = 0,
       endOnTick =  FALSE
-      ) %>%
+    ) %>%
     hc_legend(
       align = "right",
       layout = "vertical",
       verticalAlign = "middle",
-      symbolHeight = 500
+      symbolHeight = 400
+    ) %>% 
+    hc_responsive(
+      rules = list(
+        # remove legend if there is no much space
+        list(
+          condition = list(maxWidth  = 300),
+          chartOptions = list(
+            legend = list(enabled = FALSE)
+            )
+        ),
+        list(
+          condition = list(minWidth = 301, maxWidth  = 499),
+          chartOptions = list(
+            legend = list(enabled = TRUE, symbolWidth = 400, symbolHeight = 10, align = "center", layout = "horizontal", verticalAlign = "top")
+          )
+        ),
+        # put legend on the right when there is much space
+        list(
+          condition = list(minWidth  = 500),
+          chartOptions = list(
+            legend = list(enabled = TRUE, symbolWidth = 10, symbolHeight = 400, align = "right", layout = "vertical", verticalAlign = "middle")
+            )
+        )
+      )
     )
+    
+    
   
 }
 

@@ -73,19 +73,21 @@ shinyServer(function(input, output, session) {
         `Pacientes UCI` = nro_pacientes_uci
         )
     
-    total <- d %>% 
-      summarise_if(is.numeric, sum) %>% 
-      mutate(Region = "Chile")
+    # total <- d %>% 
+    #   summarise_if(is.numeric, sum) %>% 
+    #   mutate(Region = "Chile")
+    # 
+    # d <- bind_rows(total, d)
     
-    d <- bind_rows(total, d) %>% 
+    d <- d %>% 
       select(-`Codigo region`) %>% 
       select(Region, everything())
     
     DT::datatable(
       d, 
-      caption = "Click sobre una fila para ver detalles en el mapa",
-      rownames = FALSE, # para negrita formatStyle
+      rownames = FALSE,
       selection = "single",
+      extensions = "Responsive",
       callback =   JS("table.on('click.dt', 'td', function() {
             var data = table.row(this).data();
             Shiny.onInputChange('click_tbl_chile',data);});"),
@@ -93,7 +95,14 @@ shinyServer(function(input, output, session) {
         searching = FALSE,
         bPaginate = FALSE,
         bInfo = FALSE,
-        columnDefs = list(list(className = 'dt-right', targets = 1:5))
+        columnDefs = list(list(className = 'dt-right', targets = 1:5)),
+        initComplete = JS(
+          "function(settings, json) {",
+          "$('td').css({'cursor': 'pointer'});",
+          "$('th').css({'cursor': 'pointer'});",
+          # "$(this.api().tables().header()).css({'font-family': 'Alegreya Sans SC', sans-serif'});",
+          "$(this.api().tables().body()).css({'font-size': '0.9em'});",
+          "}")
         )) %>% 
       DT::formatRound(2:6, mark = ".", digits = 0)
       
@@ -102,72 +111,15 @@ shinyServer(function(input, output, session) {
   
   output$hc_map <- renderHighchart({
     
-    print(input$click_tbl_chile)
+    # print(input$click_tbl_chile)
     
     reg <- input$click_tbl_chile[1]
+    
     if(is.null(reg)) reg <- "Metropolitana"
-    # reg <- "Tarapacá"
     
-    d <- serie_nro_casos_comuna()
+    grafico_map(reg)
     
-    cod_region <- d %>% distinct(Region, `Codigo region`)
-    
-    d <- d %>% 
-      filter(Region == reg) %>% 
-      group_by(Comuna, `Codigo comuna`) %>% 
-      summarise(value = sum(`Casos confirmados`)) %>% 
-      ungroup()
-    
-    get_dir_json_region<- function(reg = "Metropolitana"){
-      
-      cod_reg <- cod_region %>% 
-        filter(Region == reg) %>% 
-        select(`Codigo region`) %>% 
-        pull()
-
-      dir("data/geojson/", full.names = TRUE) %>% 
-        str_subset(cod_reg)
-    }
-    
-    url_gs_geojson <- get_dir_json_region(reg)
-    
-    gjson <- jsonlite::fromJSON(url_gs_geojson)
-    
-    # str(gjson)
-    
-    df <- gjson$features$properties
-    # df %>% glimpse()
-    df <- df %>% 
-      left_join(d, by = c("codigo_comuna" = "Codigo comuna"))
-    #d %>% tail(10)
-    
-    gjson <- geojsonio::as.json(gjson)
-    
-    highchart(type = "map") %>%
-      hc_add_series(
-        mapData = gjson,
-        data = list_parse(df),
-        # "COMUNA" es la key en el geojson, "code" es la key en nuestros datos: dvar
-        joinBy = c("codigo_comuna", "codigo_comuna"),
-        showInLegend = FALSE,
-        name = "Numero de Fallecidos",
-        dataLabels = list(enabled = TRUE, format = "{point.Comuna}", color = "white")
-      ) %>% 
-      hc_colorAxis(
-        stops = color_stops(n = 10, colors = viridis_pal(option = "B")(10)),
-        startOnTick = FALSE,
-        endOnTick =  FALSE
-      ) %>%
-      hc_legend(
-        align = "right",
-        layout = "vertical",
-        verticalAlign = "middle",
-        symbolHeight = 500
-      ) %>% 
-      hc_tooltip(
-        shared = TRUE,
-        valueDecimals = 0
-      )
+  
   })
   
 })
