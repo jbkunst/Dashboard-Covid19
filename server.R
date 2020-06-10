@@ -106,7 +106,7 @@ shinyServer(function(input, output, session) {
     
     reg <- input$click_tbl_chile[1]
     
-    get_comuna_region <- function(reg){
+    get_region_comuna <- function(reg){
       d <- serie_nro_casos_comuna()
       d %>% 
         filter(Region == reg)
