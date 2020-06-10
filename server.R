@@ -106,7 +106,7 @@ shinyServer(function(input, output, session) {
     
     reg <- input$click_tbl_chile[1]
     if(is.null(reg)) reg <- "Metropolitana"
-    # reg <- "Ñuble"
+    # reg <- "Tarapacá"
     
     d <- serie_nro_casos_comuna()
     
@@ -114,7 +114,6 @@ shinyServer(function(input, output, session) {
     
     d <- d %>% 
       filter(Region == reg) %>% 
-      mutate(`Codigo comuna` = as.character(as.numeric(`Codigo comuna`))) %>% 
       group_by(Comuna, `Codigo comuna`) %>% 
       summarise(value = sum(`Casos confirmados`)) %>% 
       ungroup()
