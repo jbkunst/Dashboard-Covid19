@@ -393,9 +393,23 @@ grafico_tasa_letalidad <- function(){
     pull(dia)
   
   evento <- tibble(
-    fecha = c(ymd(evento_100fallecidos), ymd(evento_1000fallecidos), ymd("2020-04-29")),
-    texto = c("Primeros 100<br>fallecidos", "Primeros 1000<br>fallecidos", "Se suman casos<br>asintomáticos")
-  )
+    fecha = c(ymd(evento_100fallecidos), ymd(evento_1000fallecidos), ymd("2020-04-29"), ymd("2020-06-07")),
+    text = c("<br>Primeros 100 fallecidos", "<br>Primeros 1000 fallecidos", "<br>Se suman casos asintomáticos", "<br>Se suman 631 casos")
+  ) %>% 
+    left_join(
+      dfallecidos_contagiados %>% 
+        select(dia, porc),
+      by = c("fecha"="dia")
+    ) %>% 
+    mutate(
+      x = datetime_to_timestamp(fecha),
+      y = porc
+    ) %>% 
+    mutate(text = str_c(format(fecha, "%d")," de ",format(fecha, "%B: "), text)) %>% 
+    rowwise() %>% 
+    mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
+    select(-x, -y)
+    
   
   peak <- dfallecidos_contagiados %>% 
     filter(porc == max(porc)) %>% 
@@ -406,15 +420,13 @@ grafico_tasa_letalidad <- function(){
 
   texto <- str_c("La mayor tasa de letalidad registrada ocurrió el ", peak$texto, " con una tasa de ", round(peak$porc,2), "%.")
   
-  
-  data_plotLine <- evento %>% 
-    transmute(
-      value = datetime_to_timestamp(fecha),
-      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
-    ) %>% 
-    mutate(color = "gray", width = 1, zIndex = 5)
-  
-  
+  # data_plotLine <- evento %>% 
+  #   transmute(
+  #     value = datetime_to_timestamp(fecha),
+  #     label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+  #   ) %>% 
+  #   mutate(color = "gray", width = 1, zIndex = 5)
+
   hchart(
     dfallecidos_contagiados, 
     "line",
@@ -443,8 +455,8 @@ grafico_tasa_letalidad <- function(){
       max = 3.5
     ) %>% 
     hc_xAxis(
-      title = list(text = "Fecha"),
-      plotLines = list_parse(data_plotLine)
+      title = list(text = "Fecha")#,
+      #plotLines = list_parse(data_plotLine)
     ) %>% 
     hc_tooltip(
       # pointFormat = " {series.name}: <b>{point.y}</b> ({point.nro_fallecidos}/{point.nro_casos}) <br/>",
@@ -454,12 +466,23 @@ grafico_tasa_letalidad <- function(){
     ) %>% 
     hc_subtitle(
       text =  str_c("La <b>Tasa de Letalidad</b> corresponde a la razón entre el número de fallecidos totales registrados
-      hasta la fecha, sobre el número de casos totales reportados hasta la fecha. Ambas informaciones son 
-      entregadas por Ministerio de Salud y extraídas a partir del repositorio de MinCiencia. <br>",
-                    texto)
-    ) %>% 
-    hc_exporting(enabled = TRUE)
-  
+      hasta la fecha, sobre el número de casos totales reportados hasta la fecha.",
+                    texto)) %>% 
+    hc_exporting(enabled = TRUE) %>% 
+    hc_annotations(
+      list(
+        labelOptions = list(
+          shape = "connector",
+          align = "right",
+          y = -50,
+          x = 3,
+          justify = FALSE,
+          crop = TRUE,
+          style = list(fontSize = "0.60em", textOutline = "1px white")
+        ),
+        labels = list_parse(evento)
+      )
+    )
 }
 
 grafico_examenes_realizados <- function(){
@@ -512,11 +535,9 @@ grafico_examenes_realizados <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. <br>",
+      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. ",
       texto,
-      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.",
-      " <br>La información es
-      provista por el Ministerio de Salud y extraída a partir del repositorio de MinCiencia.")
+      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.")
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -610,11 +631,9 @@ grafico_examenes_realizados_establecimiento <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. <br>",
+      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. ",
       texto,
-      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.",
-      " <br>La información es
-      provista por el Ministerio de Salud y extraída a partir del repositorio de MinCiencia.")
+      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.")
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -676,10 +695,7 @@ grafico_fallecidos_diarios <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  str_c("Total de fallecidos diarios reportados a nivel nacional. ",
-                    texto,
-                    "\nLa información es
-      provista por el Ministerio de Salud, y extraídos a partir del repositorio de MinCiencia. ")
+      text =  str_c("Total de fallecidos diarios reportados a nivel nacional. ", texto)
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -765,10 +781,7 @@ grafico_pacientes_uci <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "Número diario de pacientes en <b>UCI</b> a nivel nacional. Los reportes diarios 
-      son generados por el Ministerio de Salud y la información es extraída a partir del repositorio
-      de MinCiencia."
-    ) %>% 
+      text =  "Número diario de pacientes en <b>UCI</b> a nivel nacional.") %>% 
     hc_exporting(enabled = TRUE)
   
 }
@@ -817,7 +830,7 @@ grafico_ventiladores <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "El número de ventiladores disponibles y número de ventiladores ocupados para
+      text =  "El número de <b>ventiladores disponibles</b> y número de ventiladores ocupados para
       cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19.
       Los datos oficiales son publicados por el Ministerio de Salud."
     ) %>% 
