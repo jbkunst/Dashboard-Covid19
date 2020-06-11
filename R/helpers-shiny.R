@@ -1,4 +1,4 @@
-covpal <- function(n = 16, begin = 0.1, end = 0.90) {
+covpal <- function(n = 16, begin = 0.05, end = 0.95) {
   
   viridis_pal(option = "B", begin = begin, end = end, direction = -1)(n)
   

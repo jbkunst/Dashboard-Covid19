@@ -122,4 +122,10 @@ shinyServer(function(input, output, session) {
   
   })
   
+  output$hc_map_gs <- renderHighchart({
+    
+    grafico_map_gs()
+    
+  })
+  
 })

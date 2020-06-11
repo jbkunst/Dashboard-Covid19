@@ -44,6 +44,7 @@ bs4DashPage(
             bs4TabItem(
                 tabName = "inicio",
                 tags$h2(icon("tachometer-alt"), "Inicio", tags$small(" · datos al ", textOutput("fecha1", inline = TRUE))),
+                tags$hr(),
                 fluidRow(
                     
                     htmltools::tagAppendAttributes(valueBoxOutput("vb_confirmados", 12), class  = PARS$classcol),
@@ -92,15 +93,22 @@ bs4DashPage(
             bs4TabItem(
                 tabName = "geografico",
                 tags$h2(icon("map-marker-alt"), "Geográfico"),
+                tags$hr(),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
                             column(6, includeMarkdown("md/geografico_region.md"))
                         ),
-                        tags$hr(),
+                        tags$br(),
                         fluidRow(
                             column(6, DT::dataTableOutput("tbl_chile")),
                             column(6, bs4CardHC(addSpinner(highchartOutput("hc_map", height = "600px"))))
+                        )
+                    ),
+                    bs4CardCustom(
+                        fluidRow(
+                            column(3, includeMarkdown("md/geografico_gs.md")),
+                            column(9, bs4CardHC(addSpinner(highchartOutput("hc_map_gs", height = "800px"))))
                         )
                     )
                 )
@@ -108,6 +116,7 @@ bs4DashPage(
             bs4TabItem(
                 tabName = "fallecidos",
                 tags$h2(icon("skull"), "Fallecidos"),
+                tags$hr(),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
@@ -126,6 +135,7 @@ bs4DashPage(
             bs4TabItem(
                 tabName = "acerca",
                 tags$h2(icon("question-circle"), "Acerca de esta aplicación"),
+                tags$hr(),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(

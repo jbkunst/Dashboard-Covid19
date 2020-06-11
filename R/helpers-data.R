@@ -2,6 +2,7 @@ descargar_datos <- function(){
   
   suppressWarnings({
     dir.create("data")
+    dir.create("data/producto1")
     dir.create("data/producto3")
     dir.create("data/producto4")
     dir.create("data/producto5")
@@ -16,6 +17,19 @@ descargar_datos <- function(){
     dir.create("data/producto32")
   })
   
+  saveRDS(
+    read_csv(
+      "https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto1/Covid-19.csv",
+      col_types =  cols(
+        .default = col_double(),
+        Region = col_character(),
+        `Codigo region` = col_character(),
+        Comuna = col_character(),
+        `Codigo comuna` = col_character()
+        )
+      ),
+    "data/producto1/Covid-19.rds"
+    )
   
   saveRDS(
     read_csv(

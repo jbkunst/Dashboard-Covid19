@@ -840,7 +840,8 @@ grafico_map <- function(reg = "Tarapacá"){
   
   d <- serie_nro_casos_comuna()
   
-  cod_region <- d %>% distinct(Region, `Codigo region`)
+  cod_region <- d %>%
+    distinct(Region, `Codigo region`)
   
   d <- d %>% 
     filter(Region == reg) %>% 
@@ -942,6 +943,125 @@ grafico_map <- function(reg = "Tarapacá"){
         )
       )
     )
+  
+}
+
+grafico_map_gs <- function() {
+  
+  file_gs <- "data/geojson/gran_santiago.geojson"
+  
+  if(!file.exists(file_gs)) {
+    
+    download.file(
+      "https://raw.githubusercontent.com/robsalasco/precenso_2016_geojson_chile/87bc72ea23ad19a116ae9af02fa1cb5ae06f29f3/Extras/GRAN_SANTIAGO.geojson",
+      file_gs
+    )
+    
+  }
+  
+  gransantiago <- jsonlite::fromJSON(file_gs, simplifyVector = FALSE)
+  
+  dcomuna <- gransantiago$features %>% 
+    purrr::map_df("properties") %>% 
+    rename_all(stringr::str_to_lower) %>% 
+    select(comuna, nom_comuna) %>% 
+    mutate(
+      comuna = as.numeric(comuna),
+      nom_comuna = stringr::str_to_title(nom_comuna)
+    )
+  
+  gransantiago_geojson <- geojsonio::as.json(gransantiago)
+  
+  dcovid <- readRDS("data/producto1/Covid-19.rds")
+  
+  dcovid_largo <- dcovid %>% 
+    filter(`Codigo region` == 13) %>% 
+    rename(comuna = `Codigo comuna`) %>% 
+    select(comuna, matches("[0-9]{4}")) %>% 
+    gather(fecha, casos, -comuna) %>% 
+    mutate(fecha = lubridate::ymd(fecha))
+  
+  dcovid_ultimo <- dcovid_largo %>% 
+    group_by(comuna) %>% 
+    filter(fecha == max(fecha)) %>% 
+    ungroup()
+  
+  dcovid_largo <- dcovid_largo %>% 
+    rename(x = fecha, y = casos) %>% 
+    mutate(x = datetime_to_timestamp(x)) %>% 
+    group_by(comuna) %>% 
+    nest() %>% 
+    rename(ttdata = data) %>% 
+    mutate(ttdata = purrr::map(ttdata, list_parse))
+  
+  dcovid <- left_join(
+    dcovid_ultimo,
+    dcovid_largo,
+    by = "comuna"
+  ) %>% 
+    mutate(comuna = as.numeric(comuna)) %>% 
+    inner_join(dcomuna, by = "comuna") %>% 
+    rename(value = casos)
+  
+  dcovid
+  
+  maxfecha <- dcovid %>% 
+    pull(fecha) %>% 
+    max() %>% 
+    format("%A %e de %B")
+  
+  highchart(type = "map") %>%
+    hc_add_series(
+      mapData = gransantiago_geojson,
+      data = list_parse(dcovid),
+      # "COMUNA" es la key en el geojson, "code" es la key en nuestros datos: dvar
+      joinBy = c("COMUNA", "comuna"),
+      showInLegend = FALSE,
+      name = "Covid",
+      borderColor = 'transparent',
+      borderWidth = 0.1,     
+      dataLabels = list(
+        enabled = TRUE, 
+        format = "{point.nom_comuna}",
+        color =  "white",
+        style = list(fontSize = "12px", textOutline = "2px gray")
+        )
+      ) %>% 
+    hc_colorAxis(
+      stops = color_stops(n = 100, colors = covpal(30)),
+      startOnTick = FALSE,
+      # min = 0,
+      endOnTick =  FALSE
+    ) %>%
+    hc_tooltip(
+      useHTML = TRUE,
+      hideDelay = 500,
+      delayForDisplay = 500,
+      headerFormat = "{point.key}",
+      pointFormatter = tooltip_chart(
+        accesor = "ttdata",
+        hc_opts = list(
+          subtitle = list(text = "point.nom_comuna"),
+          chart = list(backgroundColor = "white"),
+          xAxis = list(type = "datetime", showLastLabel = TRUE, endOnTick = FALSE),
+          yAxis = list(showLastLabel = TRUE, endOnTick = FALSE),
+          credits = list(enabled = FALSE)
+        ),
+        height = 225,
+        width = 400
+      )
+    ) %>% 
+    # hc_title(
+    #   text = "Casos COVID-19 en el Gran Santiago",
+    #   align = "center"
+    # ) %>% 
+    # hc_subtitle(
+    #   text = paste("Datos Ministerio de Ciencia; con última actualización el", maxfecha),
+    #   align = "center"
+    # ) %>% 
+    hc_legend(symbolWidth = 500, align = "center", verticalAlign = "top") %>% 
+    hc_add_dependency("plugins/tooltip-delay.js")
+  
   
 }
 
