@@ -20,15 +20,20 @@ bs4DashPage(
                 icon = "map-marker-alt"
                 ),
             bs4SidebarMenuItem(
-                text = "Exceso de Muertes",
-                tabName = "exceso_muerte",
+                text = "Fallecidos",
+                tabName = "fallecidos",
                 icon = "skull"
             ),
             bs4SidebarMenuItem(
                 text = "Acerca de",
                 tabName = "acerca",
                 icon = "question-circle"
-                )
+                ),
+            bs4SidebarMenuItem(
+                text = textOutput("fecha2", inline = TRUE),
+                tabName = "",
+                icon = "calendar"
+            )
             )
         ),
     body = bs4DashBody(
@@ -38,7 +43,7 @@ bs4DashPage(
         bs4TabItems(
             bs4TabItem(
                 tabName = "inicio",
-                tags$h2(icon("tachometer-alt"), "Inicio"),
+                tags$h2(icon("tachometer-alt"), "Inicio", tags$small(" · datos al ", textOutput("fecha1", inline = TRUE))),
                 fluidRow(
                     
                     htmltools::tagAppendAttributes(valueBoxOutput("vb_confirmados", 12), class  = PARS$classcol),
@@ -90,7 +95,7 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(6, includeMarkdown("md/geografico.md"))
+                            column(6, includeMarkdown("md/geografico_region.md"))
                         ),
                         tags$hr(),
                         fluidRow(
@@ -101,16 +106,22 @@ bs4DashPage(
                 )
             ),
             bs4TabItem(
-                tabName = "exceso_muerte",
-                tags$h2(icon("skull"), "Exceso de Muerte"),
+                tabName = "fallecidos",
+                tags$h2(icon("skull"), "Fallecidos"),
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(width = 4, includeMarkdown("md/descripcion_grafico_exceso_mortalidad.md")),
-                            column(width = 8, bs4CardHC(addSpinner(highchartOutput("hc_defunciones_esperadas"))))
+                            column(width = 3, includeMarkdown("md/fallecidos_region.md")),
+                            column(width = 9, bs4CardHC(addSpinner(highchartOutput("hc_fallecidos_por_region", height = 600))))
+                        )
+                    ),
+                    bs4CardCustom(
+                        fluidRow(
+                            column(width = 4, includeMarkdown("md/fallecidos_exceso_mortalidad.md")),
+                            column(width = 8, bs4CardHC(addSpinner(highchartOutput("hc_defunciones_esperadas")))),
                             )
                         )
-                    )
+                    ),
                 ),
             bs4TabItem(
                 tabName = "acerca",

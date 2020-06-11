@@ -2,6 +2,12 @@ shinyServer(function(input, output, session) {
   
   descargar_datos()
   
+  fecha <- reactive({ format(Sys.Date(), "%d de %B, %Y") })
+  
+  output$fecha1 <- renderText({ fecha() })
+  output$fecha2 <- renderText({ fecha() })
+  
+  
   observeEvent(input$vb_chart,{
     
     tab <- switch(input$vb_chart,
@@ -61,27 +67,21 @@ shinyServer(function(input, output, session) {
 
   output$tbl_chile <- DT::renderDataTable({ 
     
-    d <- serie_consolidado_region() %>% 
-      group_by(Region, `Codigo region`, Poblacion) %>% 
+    d <- serie_consolidado_region() 
+    
+    d <- d %>% 
+      group_by(Region, Poblacion) %>% 
       summarise_if(is.numeric, sum) %>% 
       ungroup() %>% 
+      select(Region, casos_nuevos, examenes, fallecidos, nro_pacientes_uci, Poblacion) %>% 
       arrange(desc(casos_nuevos)) %>% 
       rename(
         `Exámenes` = examenes,
-        `Casos Nuevos` = casos_nuevos,
+        `Confirmados` = casos_nuevos,
         Fallecidos = fallecidos, 
         `Pacientes UCI` = nro_pacientes_uci
         )
-    
-    # total <- d %>% 
-    #   summarise_if(is.numeric, sum) %>% 
-    #   mutate(Region = "Chile")
-    # 
-    # d <- bind_rows(total, d)
-    
-    d <- d %>% 
-      select(-`Codigo region`) %>% 
-      select(Region, everything())
+
     
     DT::datatable(
       d, 

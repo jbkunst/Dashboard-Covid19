@@ -907,7 +907,7 @@ grafico_map <- function(reg = "Tarapacá"){
         )
     ) %>% 
     hc_colorAxis(
-      stops = color_stops(n = 100, colors = viridis_pal(option = "B", begin = 0.0, end = 0.9, direction = -1)(10)),
+      stops = color_stops(n = 100, colors = covpal(30)),
       startOnTick = TRUE,
       min = 0,
       endOnTick =  FALSE
@@ -942,8 +942,6 @@ grafico_map <- function(reg = "Tarapacá"){
         )
       )
     )
-    
-    
   
 }
 
@@ -951,11 +949,22 @@ grafico_fallecidos_por_region <- function(){
   
   d <- serie_consolidado_region()
   
+  d <- d %>% 
+    select(Region, Fecha, fallecidos)
+  
+  d <- d %>% 
+    mutate(
+      Region = fct_reorder(Region, fallecidos, max),
+      Region = fct_rev(Region)
+      )
+  
   hchart(
     d,
     "line",
-    hcaes(Fecha, fallecidos, group = Region)
-         ) %>% 
+    hcaes(Fecha, fallecidos, group = Region),
+    visible = c(rep(TRUE, 5), rep(FALSE, 16 - 5))
+    ) %>% 
+    hc_colors(rev(covpal(4, end = 0.8))) %>% 
     hc_tooltip(
       table = TRUE,
       sort = TRUE,
@@ -974,25 +983,29 @@ grafico_fallecidos_por_region <- function(){
         list(
           from = 100,
           to = 1000,
-          color = "rgba(100, 0, 0, 0.1)",
+          color = hex_to_rgba("#B22222", 0.15),
+          zIndex = 1,
           label = list(
             text = "Primeros 100 fallecidos",
             verticalAlign = "bottom",
             y = -10,
-            style = list(zIndex = 5))
+            style = list(color = "white", fontSize = "0.8em")
+          )
         ),
         list(
           from = 1000,
           to = 10000,
-          color = "rgba(100, 0, 0, 0.2)",
+          color = hex_to_rgba("#8B0000", 0.35),
+          zIndex = 1,
           label = list(
             text = "Primeros 1000 fallecidos",
             verticalAlign = "bottom",
             y = -10,
-            style = list(zIndex = 5))
+            style = list(color = "white", fontSize = "0.8em")
+            )
+          )
         )
-      )
-    ) %>%
+      ) %>%
     hc_xAxis(
       title = list(text = "Fecha")
     ) 

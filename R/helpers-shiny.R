@@ -1,3 +1,9 @@
+covpal <- function(n = 16, begin = 0.1, end = 0.90) {
+  
+  viridis_pal(option = "B", begin = begin, end = end, direction = -1)(n)
+  
+}
+
 bs4CardCustom <- purrr::partial(
   bs4Card,
   status = "primary",
@@ -24,7 +30,6 @@ bs4CardHC2 <- function(...) {
   x
   
 }
-
 
 valueBoxSpark <- function(value, subtitle, icon = NULL, color = "light-blue", 
                           width = 4, href = NULL, spark = NULL, height_spark = "70px",minititle = NULL) {
