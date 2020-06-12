@@ -40,7 +40,10 @@ newlang_opts$months <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", 
                          "agosto", "septiembre", "octubre", "noviembre", "diciembre")
 newlang_opts$shortMonths <- c("ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", 
                               "oct", "nov", "dic")
-newlang_opts$thousandsSep <- ","
+
+newlang_opts$thousandsSep <- "."
+
+newlang_opts$decimalPoint <- ","
 
 options(
   highcharter.lang = newlang_opts,

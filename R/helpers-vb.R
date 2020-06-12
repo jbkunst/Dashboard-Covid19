@@ -7,7 +7,7 @@ grafico_vb_confirmados <- function(){
     mutate(dia = datetime_to_timestamp(dia)) %>% 
     select(x = dia, y = nro_casos)
   
-  lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  lbl <- d %>% pull(y) %>% last() %>% commac()
   aux <- d %>% 
     tail(8) %>% 
     mutate(z = lag(y)) %>% 
@@ -15,8 +15,8 @@ grafico_vb_confirmados <- function(){
     select(v) %>% 
     filter(!is.na(v)) %>% 
     pull()
-  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
-  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  nuevos_casos <- last(aux) %>% commac()
+  total_casos_ult_7_dias <- sum(aux) %>% commac()
   
   jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'confirmados') }")
   
@@ -60,13 +60,13 @@ grafico_vb_examenes <- function(){
     mutate(dia = datetime_to_timestamp(dia)) %>% 
     select(x = dia, y = nro_examenes)
   
-  lbl <- d %>% mutate(y = cumsum(y))  %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  lbl <- d %>% mutate(y = cumsum(y))  %>% pull(y) %>% last() %>% commac()
   aux <- d %>% 
     tail(7) %>% 
     select(y) %>% 
     pull()
-  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
-  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")   
+  nuevos_casos <- last(aux) %>% commac()
+  total_casos_ult_7_dias <- sum(aux) %>% commac()   
   
   jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'examenes') }")
   
@@ -105,7 +105,7 @@ grafico_vb_fallecidos <- function(){
     mutate(dia = datetime_to_timestamp(dia)) %>% 
     select(x = dia, y = nro_fallecidos)
   
-  lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  lbl <- d %>% pull(y) %>% last() %>% commac()
   aux <- d %>% 
     tail(8) %>% 
     mutate(z = lag(y)) %>% 
@@ -113,8 +113,8 @@ grafico_vb_fallecidos <- function(){
     select(v) %>% 
     filter(!is.na(v)) %>% 
     pull()
-  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
-  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  nuevos_casos <- last(aux) %>% commac()
+  total_casos_ult_7_dias <- sum(aux) %>% commac()
   
   jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'fallecidos') }")
   
@@ -154,7 +154,7 @@ grafico_vb_uci <- function(){
     mutate(dia = datetime_to_timestamp(dia)) %>% 
     select(x = dia, y = nro_pascientes_uci)
   
-  lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  lbl <- d %>% pull(y) %>% last() %>% commac()
   aux <- d %>% 
     tail(8) %>% 
     mutate(z = lag(y)) %>% 
@@ -163,9 +163,9 @@ grafico_vb_uci <- function(){
     filter(!is.na(v)) %>% 
     pull()
   
-  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  nuevos_casos <- last(aux) %>% commac()
   
-  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  total_casos_ult_7_dias <- sum(aux) %>% commac()
   
   jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'uci') }")
   
@@ -213,7 +213,8 @@ grafico_vb_recuperados <- function(){
     mutate(dia = datetime_to_timestamp(dia)) %>% 
     select(x = dia, y = casos_recuperados)
   
-  lbl <- d %>% pull(y) %>% last() %>% comma(big.mark = ".", decimal.mark = ",")
+  lbl <- d %>% pull(y) %>% last() %>% commac()
+  
   aux <- d %>% 
     tail(8) %>% 
     mutate(z = lag(y)) %>% 
@@ -221,8 +222,10 @@ grafico_vb_recuperados <- function(){
     select(v) %>% 
     filter(!is.na(v)) %>% 
     pull()
-  nuevos_casos <- last(aux) %>% comma(big.mark = ".", decimal.mark = ",")
-  total_casos_ult_7_dias <- sum(aux) %>% comma(big.mark = ".", decimal.mark = ",")
+  
+  nuevos_casos <- last(aux) %>% commac()
+  
+  total_casos_ult_7_dias <- sum(aux) %>% commac()
   
   hc <- hchart(d, "area", color = PARS$color$primary) %>% 
     hc_xAxis(type = "datetime") %>% 
@@ -251,6 +254,7 @@ grafico_vb_recuperados <- function(){
 grafico_vb_letalidad <- function(){
   
   d <- serie_letalidad()
+  
   f <- d %>% select(dia) %>% mutate_all(date) %>% pull() %>% last()  
   
   d <- d %>%
@@ -258,13 +262,12 @@ grafico_vb_letalidad <- function(){
     mutate(dia = datetime_to_timestamp(dia)) %>% 
     select(x = dia, y = porc)
   
-  lbl <- d %>% pull(y) %>% last() %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+  lbl <- d %>% pull(y) %>% last() %>% percentc()
+  
   aux <- d %>% 
     tail(7) %>% 
     select(y) %>% 
     pull()
-  nuevos_casos <- last(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
-  total_casos_ult_7_dias <- mean(aux) %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
   
   jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'letalidad') }")
   
@@ -308,7 +311,7 @@ grafico_vb_ventiladores<- function(){
     mutate(porc = disponibles / total) %>% 
     select(x = dia, y = porc)
   
-  lbl <- d %>% pull(y) %>% last() %>% percent(big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+  lbl <- d %>% pull(y) %>% last() %>% percentc()
   
   jsev <- JS("function(){ Shiny.onInputChange('vb_chart', 'ventiladores') }")
   

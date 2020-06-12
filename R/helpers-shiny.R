@@ -1,3 +1,7 @@
+commac <- partial(comma, big.mark = ".", decimal.mark = ",")
+
+percentc <- partial(percent, big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+
 covpal <- function(n = 16, begin = 0.05, end = 0.95) {
   
   viridis_pal(option = "B", begin = begin, end = end, direction = -1)(n)

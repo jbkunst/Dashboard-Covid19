@@ -64,8 +64,8 @@ grafico_casos_confirmados_diarios <- function(){
     hc_subtitle(
       text =  str_c("Contagios por Coronavirus confirmados por exámenes. La curva de contagios
                     considera sólo a las personas activamente afectadas por el virus. ",
-                    "La cifra mas reciente es de ", comma(peak[1,]$casos_nuevos, big.mark = ".", digits = 0), " (al ", peak[1,]$texto, "), mientras que ",
-                    "el máximo registrado es de ", comma(peak[2,]$casos_nuevos, big.mark = ".", digits = 0)," el ", peak[2,]$texto,".")
+                    "La cifra mas reciente es de ", commac(peak[1,]$casos_nuevos), " (al ", peak[1,]$texto, "), mientras que ",
+                    "el máximo registrado es de ", commac(peak[2,]$casos_nuevos)," el ", peak[2,]$texto,".")
       ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -267,7 +267,7 @@ grafico_defunciones_esperadas <- function(){
     mutate(
       x = datetime_to_timestamp(fecha),
       y = nro_fallecidos,
-      text = str_c("Diferencia entre fallecimientos<br> reales y esperados en ", nro_semanas, " semanas<br><b>", comma(excestot_tot) ,"</b>")
+      text = str_c("Diferencia entre fallecimientos<br> reales y esperados en ", nro_semanas, " semanas<br><b>", commac(excestot_tot) ,"</b>")
     ) %>% 
     rowwise() %>% 
     mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
@@ -512,7 +512,7 @@ grafico_examenes_realizados <- function(){
     mean
   
   texto <- str_c("El mayor registro en cantidad de toma de exámenes fue el ", peak$texto, " con ", 
-                 comma(peak$nro_examenes, big.mark = ".", digits = 0, decimal.mark = "," ), " test realizados")
+                 commac(peak$nro_examenes), " test realizados")
   
   d %>% 
     hchart(
@@ -536,7 +536,7 @@ grafico_examenes_realizados <- function(){
       text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. ",
       texto,
       ", mientras que en los últimos 7 días se han efectuado, en promedio, ", 
-      comma(ultimos_7_dias, big.mark = ".", digits = 0, decimal.mark = ","), " exámenes.")
+      commac(ultimos_7_dias), " exámenes.")
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -545,19 +545,24 @@ grafico_examenes_realizados <- function(){
 grafico_examenes_realizados_establecimiento <- function(){
   
   d <- serie_nro_examenes_establecimiento()
-  
-  evento <- tibble(
-    fecha = ymd("2020-05-15"),
-    texto = "Inicio cuarentena<br>en la RM"
-  )
-  
-  data_plotLine <- evento %>% 
-    transmute(
-      value = datetime_to_timestamp(fecha),
-      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+
+  df <- d %>% 
+    filter(Examenes == "informados ultimo dia") %>% 
+    mutate(
+      fecha = ymd(fecha),
+      nombre = case_when(
+        Establecimiento == "Total informados ultimo dia" ~ "Exámenes (Total)",
+        Establecimiento == "Hospitales público" ~ "Exámenes Hospitales públicos",
+        Establecimiento == "Instituto de salud pública" ~ "Exámenes Instituto Salud Pública",
+        Establecimiento == "Privados" ~ "Exámenes Privados"
+      ),
+      nombre = factor(
+        nombre, 
+        c("Exámenes (Total)", "Exámenes Hospitales públicos", "Exámenes Instituto Salud Pública", "Exámenes Privados")
+        )
     ) %>% 
-    mutate(color = "gray", width = 1, zIndex = 5)
-  
+    select(fecha, nro_examenes, nombre)
+    
   peak <- d %>% 
     filter(Establecimiento=="Total informados ultimo dia") %>% 
     filter(nro_examenes == max(nro_examenes)) %>% 
@@ -565,6 +570,7 @@ grafico_examenes_realizados_establecimiento <- function(){
     select(dia, nro_examenes, texto) %>% 
     arrange(desc(dia)) %>% 
     slice(1)
+  
   ultimos_7_dias <- d %>% 
     filter(Establecimiento=="Total informados ultimo dia") %>% 
     arrange(desc(dia)) %>% 
@@ -572,68 +578,32 @@ grafico_examenes_realizados_establecimiento <- function(){
     pull(nro_examenes) %>% 
     mean
   
-  texto <- str_c("El mayor registro en cantidad de toma de exámenes fue el ", peak$texto, " con ", peak$nro_examenes, " test realizados")
+  texto <- str_glue(
+    "Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. 
+    El mayor registro en cantidad de toma de exámenes fue el { max_ex_fec } con { max_ex } test realizados
+    , mientras que en los últimos 7 días se han efectuado, en promedio, { prom_ult_7d } exámenes.",
+    max_ex_fec = peak$texto,
+    max_ex = commac(peak$nro_examenes),
+    prom_ult_7d = commac(ultimos_7_dias)
+  )
   
-  d %>%
-    filter(Establecimiento=="Total informados ultimo dia") %>% 
-    hchart(
-      hcaes(dia, nro_examenes),
-      type = "line",
-      name = "Exámenes",
-      showInLegend = TRUE,
-      color = PARS$color$primary
-    ) %>%
-    hc_add_series(
-      d %>% 
-        filter(Establecimiento=="Hospitales público", Examenes == "informados ultimo dia"),
-      type = "line",
-      hcaes(x = dia, y = nro_examenes),
-      name = "Exámenes Hospitales públicos",
-      id = "numero_examenes_hospital_publico",
-      linkedTo = "numero_examenes_hospital_publico",
-      color = "blue",
-      showInLegend = TRUE,
-      visible = FALSE
-    ) %>%
-    hc_add_series(
-      d %>% 
-        filter(Establecimiento=="Instituto de salud pública", Examenes == "informados ultimo dia"),
-      type = "line",
-      hcaes(x = dia, y = nro_examenes),
-      name = "Exámenes Instituto Salud Pública",
-      id = "numero_examenes_hospital_publico",
-      linkedTo = "numero_examenes_hospital_publico",
-      color = "lightblue",
-      showInLegend = TRUE,
-      visible = FALSE
+  hchart(
+    df,
+    type = "line",
+    hcaes(fecha, nro_examenes, group = nombre),
+    visible = c(TRUE, rep(FALSE, 3)),
     ) %>% 
-    hc_add_series(
-      d %>% 
-        filter(Establecimiento=="Privados", Examenes == "informados ultimo dia"),
-      type = "line",
-      hcaes(x = dia, y = nro_examenes),
-      name = "Exámenes Privados",
-      id = "numero_examenes_hospital_publico",
-      linkedTo = "numero_examenes_hospital_publico",
-      color = "darkblue",
-      showInLegend = TRUE,      
-      visible = FALSE
-    ) %>% 
-    hc_tooltip(table = TRUE, valueDecimals = 0, shared = TRUE) %>% 
-    hc_xAxis(
-      plotLines = list_parse(data_plotLine)
-    ) %>% 
-    hc_yAxis(
-      title = list(text = "Número de exámenes")
-    ) %>%
+    hc_colors(c(PARS$color$primary, covpal(3, begin = 0.2, end = 0.8))) %>%
+    hc_tooltip(
+      table = TRUE,
+      valueDecimals = 0, 
+      shared = TRUE
+      ) %>% 
+    hc_yAxis(title = list(text = "Número de exámenes")) %>%
     hc_xAxis(
       title = list(text = "Fecha")
-    ) %>%
-    hc_subtitle(
-      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. ",
-      texto,
-      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.")
-    ) %>% 
+      ) %>%
+    hc_subtitle(text = texto) %>% 
     hc_exporting(enabled = TRUE)
   
 }
@@ -675,13 +645,13 @@ grafico_fallecidos_diarios <- function(){
     text_cond1[1],
     text_cond2)
   
-  d %>% 
-    hchart(
-      hcaes(dia, nro_fallecidos),
-      type = "line",
-      name = "Fallecidos",
-      showInLegend = TRUE,
-      color = PARS$color$primary
+  hchart(
+    d,
+    hcaes(dia, nro_fallecidos),
+    type = "line",
+    name = "Fallecidos",
+    showInLegend = TRUE,
+    color = PARS$color$primary
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
     hc_xAxis(
@@ -1154,8 +1124,11 @@ grafico_tasa_desempleo <- function(){
     tooltip = list(valueDecimals = 2)
     ) %>% 
     hc_yAxis(
-      min = 5,
+      # min = 5,
+      # maxStaggerLines = 500,
+      # tickamount = 5,
       tickPositions = c(5:12),
+      labels = list(format = "{value:.1f}%"),
       title = list(text = "Tasa de desempleo")
     )
   
