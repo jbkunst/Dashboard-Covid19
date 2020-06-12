@@ -62,12 +62,10 @@ grafico_casos_confirmados_diarios <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  str_c("Contagios por Coronavirus confirmados por exámenes de laboratorio 
-      y notificados por el sistema de vigilancia epidemiológica EPIVIGILA 
-      del Ministerio de Salud. Esta corresponde a la famosa curva de contagios,
-      que considera sólo a las personas activamente afectadas por el virus <br><br>",
-                    "La cifra mas reciente es de ", comma(peak[1,]$casos_nuevos), " (al ", peak[1,]$texto, "), mientras que ",
-                    "el máximo registrado es de ", comma(peak[2,]$casos_nuevos)," el ", peak[2,]$texto,".")
+      text =  str_c("Contagios por Coronavirus confirmados por exámenes. La curva de contagios
+                    considera sólo a las personas activamente afectadas por el virus. ",
+                    "La cifra mas reciente es de ", comma(peak[1,]$casos_nuevos, big.mark = ".", digits = 0), " (al ", peak[1,]$texto, "), mientras que ",
+                    "el máximo registrado es de ", comma(peak[2,]$casos_nuevos, big.mark = ".", digits = 0)," el ", peak[2,]$texto,".")
       ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -513,7 +511,8 @@ grafico_examenes_realizados <- function(){
     pull(nro_examenes) %>% 
     mean
   
-  texto <- str_c("El mayor registro en cantidad de toma de exámenes fue el ", peak$texto, " con ", peak$nro_examenes, " test realizados")
+  texto <- str_c("El mayor registro en cantidad de toma de exámenes fue el ", peak$texto, " con ", 
+                 comma(peak$nro_examenes, big.mark = ".", digits = 0, decimal.mark = "," ), " test realizados")
   
   d %>% 
     hchart(
@@ -536,11 +535,13 @@ grafico_examenes_realizados <- function(){
     hc_subtitle(
       text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. ",
       texto,
-      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", round(ultimos_7_dias), " exámenes.")
+      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", 
+      comma(ultimos_7_dias, big.mark = ".", digits = 0, decimal.mark = ","), " exámenes.")
     ) %>% 
     hc_exporting(enabled = TRUE)
   
 }
+
 
 grafico_examenes_realizados_establecimiento <- function(){
   
