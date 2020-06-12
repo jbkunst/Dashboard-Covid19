@@ -25,6 +25,11 @@ bs4DashPage(
                 icon = "skull"
             ),
             bs4SidebarMenuItem(
+                text = "Economía",
+                tabName = "economia",
+                icon = "money-check-alt"
+            ),
+            bs4SidebarMenuItem(
                 text = "Acerca de",
                 tabName = "acerca",
                 icon = "question-circle"
@@ -41,6 +46,9 @@ bs4DashPage(
         tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "css/custom.css")),
         tags$script(src = "js/custom.js"),
         bs4TabItems(
+            
+# inicio ------------------------------------------------------------------
+            
             bs4TabItem(
                 tabName = "inicio",
                 tags$h2(icon("tachometer-alt"), "Inicio", tags$small(" · datos al ", textOutput("fecha1", inline = TRUE))),
@@ -90,6 +98,9 @@ bs4DashPage(
                         )
                     )
                 ),
+
+# geografico --------------------------------------------------------------
+
             bs4TabItem(
                 tabName = "geografico",
                 tags$h2(icon("map-marker-alt"), "Geográfico"),
@@ -113,6 +124,10 @@ bs4DashPage(
                     )
                 )
             ),
+
+
+# fallecido ---------------------------------------------------------------
+
             bs4TabItem(
                 tabName = "fallecidos",
                 tags$h2(icon("skull"), "Fallecidos"),
@@ -132,6 +147,25 @@ bs4DashPage(
                         )
                     ),
                 ),
+
+# economia ----------------------------------------------------------------
+
+            bs4TabItem(
+                tabName = "economia",
+                tags$h2(icon("money-check-alt"), "Economia"),
+                tags$hr(),
+                fluidRow(
+                    bs4CardCustom(
+                        fluidRow(
+                            column(width = 3, includeMarkdown("md/economia_desempleo.md")),
+                            column(width = 9, bs4CardHC(addSpinner(highchartOutput("hc_tasa_desempleo", height = 600))))
+                        )
+                    )
+                ),
+            ),
+
+# acerca ------------------------------------------------------------------
+
             bs4TabItem(
                 tabName = "acerca",
                 tags$h2(icon("question-circle"), "Acerca de esta aplicación"),

@@ -542,7 +542,6 @@ grafico_examenes_realizados <- function(){
   
 }
 
-
 grafico_examenes_realizados_establecimiento <- function(){
   
   d <- serie_nro_examenes_establecimiento()
@@ -1134,8 +1133,31 @@ grafico_fallecidos_por_region <- function(){
   
 }
 
-
-
-
-
+grafico_tasa_desempleo <- function(){
+  
+  d <- readRDS("data/tasa_desempleo.rds") %>% 
+    mutate(tasa_desempleo = 100 * tasa_desempleo)
+  
+  d2 <- mindicador::mindicador_importar_datos("tasa_desempleo", 2020) %>% 
+    select(fecha, tasa_desempleo = valor)
+  
+  d <- bind_rows(d, d2) %>% 
+    arrange(fecha) %>% 
+    filter(year(fecha) >= 2007)
+  
+  hchart(
+    d, 
+    "line",
+    hcaes(fecha, tasa_desempleo),
+    name = "Tasa de desempleo",
+    showInLegend = TRUE,
+    tooltip = list(valueDecimals = 2)
+    ) %>% 
+    hc_yAxis(
+      min = 5,
+      tickPositions = c(5:12),
+      title = list(text = "Tasa de desempleo")
+    )
+  
+}
 

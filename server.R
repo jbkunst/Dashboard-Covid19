@@ -7,7 +7,6 @@ shinyServer(function(input, output, session) {
   output$fecha1 <- renderText({ fecha() })
   output$fecha2 <- renderText({ fecha() })
   
-  
   observeEvent(input$vb_chart,{
     
     tab <- switch(input$vb_chart,
@@ -22,7 +21,6 @@ shinyServer(function(input, output, session) {
     updatebs4TabItems(session, inputId = "tabcard", selected = tab)
     
   })
-  
 
   # valueBoxes --------------------------------------------------------------
   output$vb_confirmados <- renderValueBox(grafico_vb_confirmados())
@@ -127,5 +125,15 @@ shinyServer(function(input, output, session) {
     grafico_map_gs()
     
   })
+  
+
+  # economia ----------------------------------------------------------------
+  
+  output$hc_tasa_desempleo <- renderHighchart({
+    
+    grafico_tasa_desempleo()
+    
+  })
+  
   
 })

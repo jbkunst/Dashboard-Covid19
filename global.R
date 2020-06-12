@@ -8,6 +8,7 @@ library(scales)
 library(shinyWidgets) # spinner
 library(geojsonio)
 library(scales)
+library(mindicador) # insta
 
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")
@@ -80,7 +81,7 @@ options(
       plotOptions = list(
         series = list(
           dataLabels = list(color = "#222d32", style = list(fontWeight = "normal", textShadow = FALSE, textOutline = FALSE)),
-          animation = list(duration = 2000)
+          animation = list(duration = 3000)
           ),
         line = list(
           lineWidth = 4
