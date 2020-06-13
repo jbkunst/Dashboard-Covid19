@@ -22,6 +22,7 @@ PARS <- list(
   color = list(
     sparkline = "#F4F6F9", # color de fondo de value boxes "blancos"
     primary = "#007bff",
+    danger = "#DC3545",
     gray = "#C0C0C0"
   ),
   font = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'

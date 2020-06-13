@@ -283,7 +283,7 @@ grafico_defunciones_esperadas <- function(){
     d,
     hcaes(fecha, nro_fallecidos_adj),
     type = "line", 
-    color = "red",
+    color = PARS$color$danger,
     name = "Fallecimientos semanales 2020",
     showInLegend = TRUE,
     states = list(inactive= list(opacity = 1)),
@@ -295,7 +295,7 @@ grafico_defunciones_esperadas <- function(){
       hcaes(x = fecha, y = nro_fallecidos_esperados),
       name = "Número de fallecidos esperados en año normal",
       id = "numero_fallecidos_esperados",
-      color = "blue",
+      color = PARS$color$primary,
       showInLegend = TRUE
     ) %>% 
     hc_add_series(
@@ -814,7 +814,7 @@ grafico_ventiladores <- function(){
       type = "line",
       name = "Ventiladores Totales",
       showInLegend = TRUE,
-      color = "red"
+      color = PARS$color$danger
     ) %>% 
     hc_tooltip(
       table = TRUE, 
@@ -1056,8 +1056,8 @@ grafico_map_gs <- function() {
     #   text = paste("Datos Ministerio de Ciencia; con última actualización el", maxfecha),
     #   align = "center"
     # ) %>% 
-    hc_legend(symbolWidth = 500, align = "center", verticalAlign = "top") %>% 
-    hc_add_dependency("plugins/tooltip-delay.js")
+    hc_legend(symbolWidth = 500, align = "center", verticalAlign = "top") # %>% 
+    # hc_add_dependency("plugins/tooltip-delay.js")
   
   
 }
@@ -1148,6 +1148,7 @@ grafico_tasa_desempleo <- function(){
     hcaes(fecha, tasa_desempleo),
     name = "Tasa de desempleo",
     showInLegend = TRUE,
+    color = PARS$color$danger,
     tooltip = list(valueDecimals = 2)
     ) %>% 
     hc_yAxis(
