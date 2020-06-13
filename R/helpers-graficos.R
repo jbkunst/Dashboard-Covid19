@@ -33,6 +33,15 @@ grafico_casos_confirmados_diarios <- function(){
     ) %>% 
     mutate(color = "gray", width = 1, zIndex = 5)
   
+  texto <- str_glue("Contagios por Coronavirus confirmados por exámenes. La curva de contagios
+                    considera sólo a las personas activamente afectadas por el virus. ",
+                    "La cifra mas reciente es de { cifra_mas_reciente } (al { fecha_mas_reciente }), mientras que 
+                    el máximo registrado es de { maximo_registrado } el { fecha_maximo_registrado}.",
+                    cifra_mas_reciente = commac(peak[1,]$casos_nuevos),
+                    fecha_mas_reciente =  peak[1,]$texto,
+                    maximo_registrado = commac(peak[2,]$casos_nuevos),
+                    fecha_maximo_registrado = peak[2,]$texto)
+  
   hchart(
     dcasos_totales_cumulativos,
     type = "line",
@@ -62,10 +71,7 @@ grafico_casos_confirmados_diarios <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  str_c("Contagios por Coronavirus confirmados por exámenes. La curva de contagios
-                    considera sólo a las personas activamente afectadas por el virus. ",
-                    "La cifra mas reciente es de ", commac(peak[1,]$casos_nuevos), " (al ", peak[1,]$texto, "), mientras que ",
-                    "el máximo registrado es de ", commac(peak[2,]$casos_nuevos)," el ", peak[2,]$texto,".")
+      text =  texto
       ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -391,7 +397,7 @@ grafico_tasa_letalidad <- function(){
   
   evento <- tibble(
     fecha = c(ymd(evento_100fallecidos), ymd(evento_1000fallecidos), ymd("2020-04-29"), ymd("2020-06-07")),
-    text = c("<br>Primeros 100 fallecidos", "<br>Primeros 1000 fallecidos", "<br>Se suman casos asintomáticos", "<br>Se suman 631 casos")
+    text = c("<br>Primeros 100 fallecidos", "<br>Primeros 1.000 fallecidos", "<br>Se suman casos asintomáticos", "<br>Se suman 631 casos")
   ) %>% 
     left_join(
       dfallecidos_contagiados %>% 
@@ -410,13 +416,21 @@ grafico_tasa_letalidad <- function(){
   
   peak <- dfallecidos_contagiados %>% 
     filter(porc == max(porc)) %>% 
+    # mutate(texto = str_glue("{ dia } { num_dia } de {mes}",
+    #                         dia = format(dia, "%A"),
+    #                         num_dia = format(dia, "%d"),
+    #                         mes = format(dia, "%B"))
+    # )
     mutate(texto = str_c(format(dia, "%A"), " ",format(dia, "%d")," de ",format(dia, "%B"))) %>% 
     select(dia, porc, texto) %>% 
     arrange(desc(dia)) %>% 
     slice(1)
 
-  texto <- str_c("La mayor tasa de letalidad registrada ocurrió el ", peak$texto, " con una tasa de ", round(peak$porc,2), "%.")
-  
+  texto <- str_glue("La <b>Tasa de Letalidad</b> corresponde a la razón entre el número de fallecidos totales registrados
+      hasta la fecha, sobre el número de casos totales reportados hasta la fecha. La mayor tasa de letalidad regisrada ocurrió
+       el { peak_texto } con una tasa de { peak }%",
+                    peak_texto = peak$texto,
+                    peak = round(peak$porc,2))
   # data_plotLine <- evento %>% 
   #   transmute(
   #     value = datetime_to_timestamp(fecha),
@@ -462,9 +476,8 @@ grafico_tasa_letalidad <- function(){
       shared = TRUE
     ) %>% 
     hc_subtitle(
-      text =  str_c("La <b>Tasa de Letalidad</b> corresponde a la razón entre el número de fallecidos totales registrados
-      hasta la fecha, sobre el número de casos totales reportados hasta la fecha.",
-                    texto)) %>% 
+      text =  texto
+    ) %>% 
     hc_exporting(enabled = TRUE) %>% 
     hc_annotations(
       list(
@@ -485,7 +498,6 @@ grafico_tasa_letalidad <- function(){
 grafico_examenes_realizados <- function(){
   
   d <- serie_nro_examenes()
-  
   
   evento <- tibble(
     fecha = ymd("2020-05-15"),
@@ -511,8 +523,12 @@ grafico_examenes_realizados <- function(){
     pull(nro_examenes) %>% 
     mean
   
-  texto <- str_c("El mayor registro en cantidad de toma de exámenes fue el ", peak$texto, " con ", 
-                 commac(peak$nro_examenes), " test realizados")
+  texto <- str_glue("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. El mayor registro en cantidad de toma de exámenes 
+                    fue el { peak_texto } con { peak_nro_examenes } test realizados, mientras que en los últimos 7 días se han efectuado,
+                    en promedio { ultimos_7_dias } exámenes.",
+                 peak_texto = peak$texto,
+                 peak_nro_examenes = commac(peak$nro_examenes),
+                 ultimos_7_dias = commac(ultimos_7_dias))
   
   d %>% 
     hchart(
@@ -533,10 +549,7 @@ grafico_examenes_realizados <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  str_c("Total de exámenes <b>PCR diarios</b> reportados a nivel nacional. ",
-      texto,
-      ", mientras que en los últimos 7 días se han efectuado, en promedio, ", 
-      commac(ultimos_7_dias), " exámenes.")
+      text = texto
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -637,13 +650,22 @@ grafico_fallecidos_diarios <- function(){
     filter(row_number()==n() | row_number()==1) %>% 
     arrange(desc(dia))
   
-  text_cond1 <- str_c("La mayor cifra de fallecidos registrada es de ", peak$nro_fallecidos, ", correspondiente a la última actualización informada.")
-  text_cond2 <- str_c("La mayor cantidad de fallecidos registrada a la fecha es de ", peak[2,]$nro_fallecidos, ", que ocurrió el ", peak[2,]$texto,".",
-                      " La última cifra informada al ",peak[1,]$texto, " corresponde a ", peak[1,]$nro_fallecidos, " fallecidos.")
+  text_cond1 <- str_glue("La mayor cifra de fallecidos registrada es de { peak_nro_fallecidos }, correspondiente a la última actualización informada.",
+                         peak_nro_fallecidos = peak$nro_fallecidos
+                         )
+  text_cond2 <- str_glue("La mayor cantidad de fallecidos registrada a la fecha es de { peak_nro_fallecidos }, que ocurrió el { fecha_peak }.
+                      La última cifra informada al { ultima_fecha } corresponde a { peak_ultima_fecha } fallecidos.",
+                      peak_nro_fallecidos = peak[2,]$nro_fallecidos,
+                      fecha_peak = peak[2,]$texto,
+                      ultima_fecha = peak[1,]$texto,
+                      peak_ultima_fecha = peak[1,]$nro_fallecidos)
   texto <- if_else(
     nrow(peak) == 1,
     text_cond1[1],
     text_cond2)
+  
+  texto <- str_glue("Total de fallecidos diarios reportados a nivel nacional. { texto }",
+                    texto = texto)
   
   hchart(
     d,
@@ -664,7 +686,7 @@ grafico_fallecidos_diarios <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  str_c("Total de fallecidos diarios reportados a nivel nacional. ", texto)
+      text =  texto
     ) %>% 
     hc_exporting(enabled = TRUE)
   
@@ -730,6 +752,8 @@ grafico_pacientes_uci <- function(){
     ) %>% 
     mutate(color = "gray", width = 1, zIndex = 5)
   
+  texto <- "Número diario de pacientes en <b>UCI</b> a nivel nacional."
+  
   d %>% 
     mutate(dia = ymd(dia)) %>% 
     hchart(
@@ -750,7 +774,8 @@ grafico_pacientes_uci <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "Número diario de pacientes en <b>UCI</b> a nivel nacional.") %>% 
+      text =  texto
+    ) %>% 
     hc_exporting(enabled = TRUE)
   
 }
@@ -771,6 +796,9 @@ grafico_ventiladores <- function(){
   #     label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
   #   ) %>% 
   #   mutate(color = "gray", width = 1, zIndex = 5)
+  
+  texto <- "El número de <b>ventiladores disponibles</b> y número de ventiladores ocupados para
+      cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19."
   
   hchart(
     d,
@@ -799,8 +827,7 @@ grafico_ventiladores <- function(){
       title = list(text = "Fecha")
     ) %>%
     hc_subtitle(
-      text =  "El número de <b>ventiladores disponibles</b> y número de ventiladores ocupados para
-      cada día reportado. Se consideran todos los ventiladores presentes en el Sistema Integrado Covid 19."
+      text =  texto
     ) %>% 
     hc_exporting(enabled = TRUE)
   
