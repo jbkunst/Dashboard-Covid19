@@ -893,6 +893,7 @@ grafico_map <- function(reg = "Tarapacá"){
       name = "Numero de Fallecidos",
       borderColor = "gray",
       borderWidth = 0.5,
+      animation = list(duration = PARS$hc$duration),
       tooltip = list(
         headerFormat = "",
         pointFormat = "<b>{point.Comuna}</b><br>{point.value} casos"
@@ -910,36 +911,7 @@ grafico_map <- function(reg = "Tarapacá"){
       min = 0,
       endOnTick =  FALSE
     ) %>%
-    hc_legend(
-      align = "right",
-      layout = "vertical",
-      verticalAlign = "middle",
-      symbolHeight = 400
-    ) %>% 
-    hc_responsive(
-      rules = list(
-        # remove legend if there is no much space
-        list(
-          condition = list(maxWidth  = 300),
-          chartOptions = list(
-            legend = list(enabled = FALSE)
-            )
-        ),
-        list(
-          condition = list(minWidth = 301, maxWidth  = 499),
-          chartOptions = list(
-            legend = list(enabled = TRUE, symbolWidth = 400, symbolHeight = 10, align = "center", layout = "horizontal", verticalAlign = "top")
-          )
-        ),
-        # put legend on the right when there is much space
-        list(
-          condition = list(minWidth  = 500),
-          chartOptions = list(
-            legend = list(enabled = TRUE, symbolWidth = 10, symbolHeight = 400, align = "right", layout = "vertical", verticalAlign = "middle")
-            )
-        )
-      )
-    )
+    hc_legend(symbolWidth = 400, align = "center", verticalAlign = "top")
   
 }
 
@@ -1007,6 +979,7 @@ grafico_map_gs <- function() {
     max() %>% 
     format("%A %e de %B")
   
+
   highchart(type = "map") %>%
     hc_add_series(
       mapData = gransantiago_geojson,
@@ -1016,7 +989,8 @@ grafico_map_gs <- function() {
       showInLegend = FALSE,
       name = "Covid",
       borderColor = 'transparent',
-      borderWidth = 0.1,     
+      borderWidth = 0.1,
+      animation = list(duration = PARS$hc$duration),
       dataLabels = list(
         enabled = TRUE, 
         format = "{point.nom_comuna}",
@@ -1056,7 +1030,7 @@ grafico_map_gs <- function() {
     #   text = paste("Datos Ministerio de Ciencia; con última actualización el", maxfecha),
     #   align = "center"
     # ) %>% 
-    hc_legend(symbolWidth = 500, align = "center", verticalAlign = "top") # %>% 
+    hc_legend(symbolWidth = 400, align = "center", verticalAlign = "top") # %>% 
     # hc_add_dependency("plugins/tooltip-delay.js")
   
   

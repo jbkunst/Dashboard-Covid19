@@ -25,6 +25,9 @@ PARS <- list(
     danger = "#DC3545",
     gray = "#C0C0C0"
   ),
+  hc = list(
+    duration = 2500
+  ),
   font = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'
 )
 
@@ -85,7 +88,7 @@ options(
       plotOptions = list(
         series = list(
           dataLabels = list(color = "#222d32", style = list(fontWeight = "normal", textShadow = FALSE, textOutline = FALSE)),
-          animation = list(duration = 3000)
+          animation = list(duration = PARS$hc$duration)
           ),
         line = list(
           lineWidth = 4
@@ -99,7 +102,7 @@ options(
       exporting = list(
         buttons = list(
           contextButton = list(
-            symbol = 'url(https://cdn.icon-icons.com/icons2/936/PNG/512/download-to-storage-drive_icon-icons.com_73590.png)',
+            symbol = 'url(https://www.iconsdb.com/icons/preview/gray/download-2-xxl.png)',
             symbolSize = 18,
             symbolX = 21,
             symbolY = 20,
