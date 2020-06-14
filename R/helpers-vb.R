@@ -50,6 +50,7 @@ grafico_vb_confirmados <- function(){
 grafico_vb_examenes <- function(){
   
   d <- serie_nro_examenes_establecimiento()
+  
   d <- d %>% 
     filter(Establecimiento=="Total informados ultimo dia") %>% 
     select(dia, nro_examenes)
@@ -98,7 +99,9 @@ grafico_vb_examenes <- function(){
 }
 
 grafico_vb_fallecidos <- function(){
+  
   d <- serie_nro_fallecidos()
+  
   f <- d %>% select(dia) %>% pull() %>% last()  
   
   d <- d %>% 
@@ -146,7 +149,9 @@ grafico_vb_fallecidos <- function(){
 }
 
 grafico_vb_uci <- function(){
+  
   d <- serie_nro_pascientes_UCI()
+  
   f <- d %>% select(dia) %>% mutate_all(date) %>% pull() %>% last()  
   
   d <- d %>%
@@ -303,7 +308,7 @@ grafico_vb_letalidad <- function(){
 
 grafico_vb_ventiladores<- function(){
   
-  d <- readRDS("data/producto20/NumeroVentiladores_T.rds")
+  d <- serie_ventiladores()
   
   d <- d %>%
     mutate(dia = ymd(Ventiladores)) %>% 

@@ -77,7 +77,7 @@ serie_recuperados <- function(){
 
 serie_consolidado_region <- function(){
   
-  examenes <- readRDS("data/producto7/PCR.rds")
+  examenes <- readRDS(here::here("data/producto7/PCR.rds"))
   
   examenes_nuevos <- examenes %>% 
     mutate_if(is.numeric, replace_na, 0) %>% 
@@ -86,18 +86,18 @@ serie_consolidado_region <- function(){
     group_by(Region, Poblacion) %>% 
     mutate(examenes = cumsum(examenes))
   
-  fallecidos <- readRDS("data/producto14/FallecidosCumulativo_T.rds")
+  fallecidos <- readRDS(here::here("data/producto14/FallecidosCumulativo_T.rds"))
   
   fallecidos_nuevos <- fallecidos %>% 
     select(-Total) %>% 
     rename(Fecha = Region) %>% 
     gather(Region, fallecidos, - Fecha)
   
-  casos_nuevos <- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
+  casos_nuevos <- readRDS(here::here("data/producto13/CasosNuevosCumulativo_std.rds"))
   
   casos_nuevos <- casos_nuevos %>% rename(casos_nuevos = Total)
   
-  dpascientes_UCI <- readRDS('data/producto8/UCI_T.rds')
+  dpascientes_UCI <- readRDS(here::here("data/producto8/UCI_T.rds"))
   
   uci_nuevos <- dpascientes_UCI %>% 
     filter(!Region %in% c("Codigo region", "Poblacion")) %>% 
@@ -125,6 +125,12 @@ serie_nro_casos_comuna <- function(){
       `Semana Epidemiologica` = as.numeric(
         str_remove(`Semana Epidemiologica`, "SE"))) %>% 
     mutate(fecha = ymd("2020-01-01") + weeks(`Semana Epidemiologica` - 1))
+  
+}
+
+serie_ventiladores <- function(){
+  
+  readRDS("data/producto20/NumeroVentiladores_T.rds")
   
 }
 

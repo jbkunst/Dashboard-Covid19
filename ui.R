@@ -108,7 +108,7 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(6, includeMarkdown("md/geografico_region.md"))
+                            column(6, uiOutput("rmd_geografico_region"))
                         ),
                         tags$br(),
                         fluidRow(

@@ -1,6 +1,7 @@
 shinyServer(function(input, output, session) {
   
   descargar_datos()
+  generar_datos()
   
   fecha <- reactive({ format(Sys.Date(), "%d de %B, %Y") })
   
@@ -61,14 +62,19 @@ shinyServer(function(input, output, session) {
 
 
   # geografico --------------------------------------------------------------
+  
+  output$rmd_geografico_region <- renderUI({
+    
+    RMD_to_HTML("md/geografico_region.Rmd")
+    
+  })
 
   output$tbl_chile <- DT::renderDataTable({ 
     
     d <- serie_consolidado_region() 
     
     d <- d %>% 
-      group_by(Region, Poblacion) %>% 
-      summarise_if(is.numeric, sum) %>% 
+      filter(Fecha == max(Fecha)) %>% 
       ungroup() %>% 
       select(Region, casos_nuevos, examenes, fallecidos, nro_pacientes_uci, Poblacion) %>% 
       arrange(desc(casos_nuevos)) %>% 

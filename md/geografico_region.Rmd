@@ -1,0 +1,24 @@
+### Región
+
+```{r, include=FALSE}
+source(here::here("R/helpers-series.R"))
+
+d <- serie_consolidado_region() 
+
+tot <- d %>% 
+  filter(Fecha == max(Fecha)) %>% 
+  summarise_if(is.numeric, sum) %>% 
+  as.list()
+
+reg <- d %>% 
+  filter(Fecha == max(Fecha)) %>% 
+  arrange(desc(casos_nuevos)) %>% 
+  group_by(Region) %>% 
+  nest() %>% 
+  mutate(data = map(data, as.list)) %>% 
+  deframe()
+```
+
+El total de casos en Chile son `r commac(tot$casos_nuevos)`
+
+

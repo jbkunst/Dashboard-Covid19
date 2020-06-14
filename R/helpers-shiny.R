@@ -8,6 +8,20 @@ covpal <- function(n = 16, begin = 0.05, end = 0.95) {
   
 }
 
+RMD_to_HTML <- function(file) {
+  
+  HTML(
+    markdown::markdownToHTML(
+      text = knitr::knit(
+        text =  readLines(file, encoding = "UTF-8"),
+        quiet = TRUE
+      ),
+      fragment.only = TRUE
+    )  
+  )
+  
+}
+
 bs4CardCustom <- purrr::partial(
   bs4Card,
   status = "primary",
