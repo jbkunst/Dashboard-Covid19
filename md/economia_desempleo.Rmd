@@ -1,5 +1,4 @@
-### Corona Virus
-
+### Tasa de Desempleo
 ```{r, include=FALSE}
 d <- serie_tasa_desempleo()
 
@@ -9,13 +8,34 @@ ult <- d %>%
   pull() %>% 
   { ./100} %>% 
   percentc()
+
+ultimo <- d %>% 
+  tail(1) %>% 
+  select(tasa_desempleo) %>% 
+  pull()
+
+inicio <- d %>% 
+  filter(fecha %in% c(ymd(20200101))) %>% 
+  select(tasa_desempleo) %>% 
+  pull()
+
+var <- ultimo - inicio 
+
+var <- var %>% 
+  { ./100} %>% 
+  percentc()
+
+peak <- d %>% 
+  filter(tasa_desempleo == max(tasa_desempleo)) %>% 
+  distinct(tasa_desempleo) %>% 
+  pull() %>% 
+  { ./100} %>% 
+  percentc()
 ```
 
-La tasa de desempleo actual es de un`r ult`. 
+La tasa de desempleo actual es de un `r ult`. Desde inicios de año se observa un incremento del `r var`.
 
-Los **peaks** más altos registrados en Chile en los últimos 20 años fueron en el año 2009 produtos de la **Crisis Subprime**. A partir de enero 2020 notamos fuertemente el efecto **Covid-19**, teniendo una apariencia similar al alza que en la ocurrida hace una década. 
-
-
+A partir de octubre 2019 notamos fuertemente un alza de este indicador efecto de dos hítos importantes: _Estallido Social_ y _Corona Virus_, incremento que no se observaba desde hace una década, **Crisis Subprime**, donde nuestro país alzanzo el peak mas alto de desempleo correspondiente a un `r peak`
 
 **Definicion**: La _tasa de desempleo_ mide el nivel de desocupación en relación con la población activa.
 En otras palabras, es la parte de la población que estando en edad, condiciones y disposición de trabajar (población activa), no tiene puesto de trabajo.
