@@ -139,3 +139,13 @@ serie_ventiladores <- function(){
 #   casos_nuevos<- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
 #   
 # }
+
+
+ultima_tasa_desempleo <- function(){
+  d <- readRDS("data/tasa_desempleo.rds")
+  d %>% 
+    tail(1) %>% 
+    select(tasa_desempleo) %>% 
+    pull() %>% 
+    percent(accuracy = 0.01)
+}
