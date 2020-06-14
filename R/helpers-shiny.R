@@ -13,7 +13,7 @@ RMD_to_HTML <- function(file) {
   HTML(
     markdown::markdownToHTML(
       text = knitr::knit(
-        text =  readLines(file, encoding = "UTF-8"),
+        text = readLines(file, encoding = "UTF-8"),
         quiet = TRUE
       ),
       fragment.only = TRUE

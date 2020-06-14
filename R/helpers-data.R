@@ -218,18 +218,4 @@ descargar_datos <- function(){
 
 }
 
-generar_datos <- function() {
-  
-  suppressWarnings({
-    dir.create("data")
-    dir.create("data/producto1001")
-  })
-  
-  serie_nro_casos()
-  serie_nro_fallecidos()
-  serie_nro_pascientes_UCI()
-  serie_letalidad
-  
-}
-
 # system.time(descargar_datos())

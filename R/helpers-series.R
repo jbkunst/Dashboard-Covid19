@@ -63,7 +63,9 @@ serie_nro_pascientes_UCI <- function(){
     filter(!Region %in% c("Codigo region", "Poblacion")) %>% 
     gather(ciudad, valor, -Region) %>% 
     group_by(dia = Region) %>% 
-    summarise(nro_pascientes_uci = sum(as.numeric(valor))) 
+    summarise(nro_pascientes_uci = sum(as.numeric(valor))) %>% 
+    mutate(dia = ymd(dia))
+  
 }
 
 serie_recuperados <- function(){
@@ -77,7 +79,7 @@ serie_recuperados <- function(){
 
 serie_consolidado_region <- function(){
   
-  examenes <- readRDS(here::here("data/producto7/PCR.rds"))
+  examenes <- readRDS("data/producto7/PCR.rds")
   
   examenes_nuevos <- examenes %>% 
     mutate_if(is.numeric, replace_na, 0) %>% 
@@ -86,18 +88,18 @@ serie_consolidado_region <- function(){
     group_by(Region, Poblacion) %>% 
     mutate(examenes = cumsum(examenes))
   
-  fallecidos <- readRDS(here::here("data/producto14/FallecidosCumulativo_T.rds"))
+  fallecidos <- readRDS("data/producto14/FallecidosCumulativo_T.rds")
   
   fallecidos_nuevos <- fallecidos %>% 
     select(-Total) %>% 
     rename(Fecha = Region) %>% 
     gather(Region, fallecidos, - Fecha)
   
-  casos_nuevos <- readRDS(here::here("data/producto13/CasosNuevosCumulativo_std.rds"))
+  casos_nuevos <- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
   
   casos_nuevos <- casos_nuevos %>% rename(casos_nuevos = Total)
   
-  dpascientes_UCI <- readRDS(here::here("data/producto8/UCI_T.rds"))
+  dpascientes_UCI <- readRDS("data/producto8/UCI_T.rds")
   
   uci_nuevos <- dpascientes_UCI %>% 
     filter(!Region %in% c("Codigo region", "Poblacion")) %>% 
@@ -130,22 +132,25 @@ serie_nro_casos_comuna <- function(){
 
 serie_ventiladores <- function(){
   
-  readRDS("data/producto20/NumeroVentiladores_T.rds")
+  readRDS("data/producto20/NumeroVentiladores_T.rds") %>% 
+    mutate(dia = ymd(Ventiladores)) %>% 
+    mutate(porc = disponibles / total) 
   
 }
 
-# serie_consolidado_comunas <- function(){
-# 
-#   casos_nuevos<- readRDS("data/producto13/CasosNuevosCumulativo_std.rds")
-#   
-# }
-
-
-ultima_tasa_desempleo <- function(){
-  d <- readRDS("data/tasa_desempleo.rds")
-  d %>% 
-    tail(1) %>% 
-    select(tasa_desempleo) %>% 
-    pull() %>% 
-    percent(accuracy = 0.01)
+serie_tasa_desempleo <- function() {
+  
+  d <- readRDS("data/tasa_desempleo.rds") %>% 
+    mutate(tasa_desempleo = 100 * tasa_desempleo)
+  
+  d2 <- mindicador::mindicador_importar_datos("tasa_desempleo", 2020) %>% 
+    select(fecha, tasa_desempleo = valor)
+  
+  d <- bind_rows(d, d2) %>% 
+    arrange(fecha) %>% 
+    filter(year(fecha) >= 2007)
+  
+  d
+  
 }
+

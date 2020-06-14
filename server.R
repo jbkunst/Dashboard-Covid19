@@ -1,7 +1,6 @@
 shinyServer(function(input, output, session) {
   
   descargar_datos()
-  generar_datos()
   
   fecha <- reactive({ format(Sys.Date(), "%d de %B, %Y") })
   
@@ -65,7 +64,7 @@ shinyServer(function(input, output, session) {
   
   output$rmd_geografico_region <- renderUI({
     
-    RMD_to_HTML("md/geografico_region.Rmd")
+    RMD_to_HTML(file = "md/geografico_region.Rmd")
     
   })
 
@@ -129,6 +128,12 @@ shinyServer(function(input, output, session) {
   
 
   # economia ----------------------------------------------------------------
+  
+  output$rmd_economia_desempleo <- renderUI({
+    
+    RMD_to_HTML(file = "md/economia_desempleo.Rmd")
+    
+  })
   
   output$hc_tasa_desempleo <- renderHighchart({ grafico_tasa_desempleo() })
   

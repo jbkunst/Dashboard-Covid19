@@ -1,6 +1,7 @@
 grafico_vb_confirmados <- function(){
   
   d <- serie_nro_casos()
+  
   f <- d %>% select(dia) %>% pull() %>% last()  
   
   d <- d %>% 
@@ -308,12 +309,8 @@ grafico_vb_letalidad <- function(){
 
 grafico_vb_ventiladores<- function(){
   
-  d <- serie_ventiladores()
-  
-  d <- d %>%
-    mutate(dia = ymd(Ventiladores)) %>% 
+  d <- serie_ventiladores() %>% 
     mutate(dia = datetime_to_timestamp(dia)) %>% 
-    mutate(porc = disponibles / total) %>% 
     select(x = dia, y = porc)
   
   lbl <- d %>% pull(y) %>% last() %>% percentc()

@@ -1106,15 +1106,7 @@ grafico_fallecidos_por_region <- function(){
 
 grafico_tasa_desempleo <- function(){
   
-  d <- readRDS("data/tasa_desempleo.rds") %>% 
-    mutate(tasa_desempleo = 100 * tasa_desempleo)
-  
-  d2 <- mindicador::mindicador_importar_datos("tasa_desempleo", 2020) %>% 
-    select(fecha, tasa_desempleo = valor)
-  
-  d <- bind_rows(d, d2) %>% 
-    arrange(fecha) %>% 
-    filter(year(fecha) >= 2007)
+  d <- serie_tasa_desempleo()
   
   hchart(
     d, 
@@ -1126,9 +1118,6 @@ grafico_tasa_desempleo <- function(){
     tooltip = list(valueDecimals = 2)
     ) %>% 
     hc_yAxis(
-      # min = 5,
-      # maxStaggerLines = 500,
-      # tickamount = 5,
       tickPositions = c(5:12),
       labels = list(format = "{value:.1f}%"),
       title = list(text = "Tasa de desempleo")

@@ -157,7 +157,7 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(width = 3, includeMarkdown("md/economia_desempleo.rmd")),
+                            column(width = 3, uiOutput("rmd_economia_desempleo")),
                             column(width = 9, bs4CardHC(addSpinner(highchartOutput("hc_tasa_desempleo", height = 600))))
                         )
                     )

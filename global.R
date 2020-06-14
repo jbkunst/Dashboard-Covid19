@@ -10,6 +10,7 @@ library(geojsonio)
 library(scales)
 library(mindicador) # insta
 library(markdown)
+# library(here)
 
 source("R/helpers-shiny.R", encoding = "utf-8")
 source("R/helpers-data.R", encoding = "utf-8")
