@@ -3,22 +3,9 @@
 ```{r, include=FALSE}
 d <- serie_consolidado_region() 
 
-tot <- d %>% 
-  filter(Fecha == max(Fecha)) %>% 
-  summarise_if(is.numeric, sum) %>% 
-  as.list()
 
-reg <- d %>% 
-  filter(Fecha == max(Fecha)) %>% 
-  arrange(desc(casos_nuevos)) %>% 
-  group_by(Region) %>% 
-  nest() %>% 
-  mutate(data = map(data, as.list)) %>% 
-  deframe()
 ```
 
-El total de casos en Chile son `r commac(tot$casos_nuevos)`, la región con
-más casos es `r names(reg)[1]` con `r reg[[1]]$casos_nuevos` que corresponden
-al `r percentc(reg[[1]]$casos_nuevos/tot$casos_nuevos)`.
+
 
 

@@ -118,7 +118,7 @@ bs4DashPage(
                     ),
                     bs4CardCustom(
                         fluidRow(
-                            column(3, includeMarkdown("md/geografico_gs.md")),
+                            column(3, uiOutput("rmd_geografico_gs")),
                             column(9, bs4CardHC(addSpinner(highchartOutput("hc_map_gs", height = "800px"))))
                         )
                     )

@@ -64,6 +64,8 @@ shinyServer(function(input, output, session) {
     RMD_to_HTML(file = "md/fallecidos_region.Rmd")
     
   })
+  
+  
 
 
   # geografico --------------------------------------------------------------
@@ -71,6 +73,12 @@ shinyServer(function(input, output, session) {
   output$rmd_geografico_region <- renderUI({
     
     RMD_to_HTML(file = "md/geografico_region.Rmd")
+    
+  })
+  
+  output$rmd_geografico_gs <- renderUI({
+    
+    RMD_to_HTML(file = "md/geografico_gs.Rmd")
     
   })
 

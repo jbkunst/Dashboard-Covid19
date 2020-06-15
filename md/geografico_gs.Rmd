@@ -1,0 +1,42 @@
+### Gran Santiago
+
+```{r, include=FALSE}
+
+
+d <- serie_nro_casos_comuna() %>% 
+  group_by(Comuna) %>% 
+  mutate(`Casos confirmados` = sum(`Casos confirmados`)) %>% 
+  ungroup() %>% 
+  filter(fecha == max(fecha)) %>% 
+  arrange(desc(`Casos confirmados`)) %>% 
+  rename(casos_confirmados = `Casos confirmados`) 
+
+total_casos <- sum(d$casos_confirmados)
+
+total_top5_comunas <- d %>% 
+  filter(Region == "Metropolitana") %>% 
+  head(5) %>% 
+  select(casos_confirmados) %>% 
+  pull() %>% 
+  sum()
+
+total_tail3_comunas <- d %>% 
+  filter(Region == "Metropolitana") %>% 
+  tail(3) 
+```
+
+Las cinco comunas con más casos confirmados son: 
+
+- `r d$Comuna[1]`: `r commac(d$casos_confirmados[1])`
+- `r d$Comuna[2]`: `r commac(d$casos_confirmados[2])`
+- `r d$Comuna[3]`: `r commac(d$casos_confirmados[3])` 
+- `r d$Comuna[4]`: `r commac(d$casos_confirmados[4])`
+- `r d$Comuna[5]`: `r commac(d$casos_confirmados[5])`
+
+que corresponden al `r percentc(total_top5_comunas/total_casos)`
+
+Las comunas con menos casos son: `r total_tail3_comunas$Comuna[1]` (`r commac(total_tail3_comunas$casos_confirmados[1])`), 
+`r total_tail3_comunas$Comuna[2]` (`r commac(total_tail3_comunas$casos_confirmados[2])`) y 
+`r total_tail3_comunas$Comuna[3]` (`r commac(total_tail3_comunas$casos_confirmados[3])`)
+
+Particularmente notamos que estos datos están agrupados por semana epidemiológica y corresponden a la semana del `r datec(d$fecha[1])`
