@@ -19,12 +19,24 @@ sum_top3_fallecidos <- max_fallecidos %>%
   pull() %>% 
   sum()
 
-peak <- d %>% 
-  filter(fallecidos == max(fallecidos)) %>% 
-  filter(Fecha == max(Fecha))
+sum_tail3_fallecidos <- max_fallecidos %>% 
+  tail(3) %>% 
+  select(fallecidos) %>% 
+  pull() %>% 
+  sum()
+
+crecimiento_rm <- d %>% 
+  filter(Fecha %in% c(max(d$Fecha), max(d$Fecha)-7), Region == "Metropolitana") %>% 
+  select(Region, Fecha, fallecidos) %>% 
+  mutate(Fecha = ifelse(Fecha == max(d$Fecha), "w", "w-1")) %>% 
+  spread(Fecha, fallecidos) %>% 
+  mutate(var = (w - `w-1`)/(`w-1`)) 
+
+text_crecimiento_rm <- ifelse(crecimiento_rm$var > 0, "crecimiento", "decrecimiento")
+
 ```
 
-Chile registra un total de `r commac(total_chile)` fallecidos al `r datec(max_fallecidos$Fecha[1])`. Las 3 regiones con más casos fallecidos son:
+Chile registra un total de `r commac(total_chile)` fallecidos al `r datec(max_fallecidos$Fecha[1])`. Las tres regiones con más casos acumulados de fallecidos son:
 
 - `r max_fallecidos$Region[1]`: `r commac(max_fallecidos$fallecidos[1])`
 - `r max_fallecidos$Region[2]`: `r commac(max_fallecidos$fallecidos[2])`
@@ -32,6 +44,6 @@ Chile registra un total de `r commac(total_chile)` fallecidos al `r datec(max_fa
 
 Observamos que estas 3 regiones corresponden al `r percentc(sum_top3_fallecidos/total_chile)` de los casos totales.
 
-El peak más altos de fallecidos se registro en la región `r peak$Region` con `r commac(peak$fallecidos)` casos el `r datec(peak$Fecha)`.
+En los últimos 7 días la **Región Metropolitana** registra un `r text_crecimiento_rm`  porcentual del `r percentc(crecimiento_rm$var)` de número de fallecidos.
 
-Por otro lado la región  de `r max_fallecidos$Region[16]` es la que registra menos casos, con un total de  `r commac(max_fallecidos$fallecidos[16])`
+Por otro lado las regiones con menos casos son: `r max_fallecidos$Region[14]` (`r commac(max_fallecidos$fallecidos[14])`), `r max_fallecidos$Region[15]` (`r commac(max_fallecidos$fallecidos[15])`) y `r max_fallecidos$Region[16]` (`r commac(max_fallecidos$fallecidos[16])`).
