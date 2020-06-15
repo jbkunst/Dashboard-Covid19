@@ -532,11 +532,6 @@ grafico_tasa_letalidad <- function(){
   
   peak <- dfallecidos_contagiados %>% 
     filter(porc == max(porc)) %>% 
-    # mutate(texto = str_glue("{ dia } { num_dia } de {mes}",
-    #                         dia = format(dia, "%A"),
-    #                         num_dia = format(dia, "%d"),
-    #                         mes = format(dia, "%B"))
-    # )
     mutate(texto = str_c(format(dia, "%A"), " ",format(dia, "%d")," de ",format(dia, "%B"))) %>% 
     select(dia, porc, texto) %>% 
     arrange(desc(dia)) %>% 
@@ -547,12 +542,6 @@ grafico_tasa_letalidad <- function(){
        el { peak_texto } con una tasa de { peak }%",
                     peak_texto = peak$texto,
                     peak = round(peak$porc,2))
-  # data_plotLine <- evento %>% 
-  #   transmute(
-  #     value = datetime_to_timestamp(fecha),
-  #     label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
-  #   ) %>% 
-  #   mutate(color = "gray", width = 1, zIndex = 5)
 
   hchart(
     dfallecidos_contagiados, 
@@ -578,8 +567,7 @@ grafico_tasa_letalidad <- function(){
       allowDecimals = TRUE,
       labels = list(format = "{value}%"),
       title = list(text = "Tasa de Letalidad"),
-      min = 0,
-      max = 3.5
+      min = 0
     ) %>% 
     hc_xAxis(
       title = list(text = "Fecha")#,
@@ -601,7 +589,7 @@ grafico_tasa_letalidad <- function(){
           shape = "connector",
           align = "right",
           y = -50,
-          x = 3,
+          x = -50,
           justify = FALSE,
           crop = TRUE,
           style = list(fontSize = "0.60em", textOutline = "1px white")
