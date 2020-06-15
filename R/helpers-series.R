@@ -51,7 +51,7 @@ serie_nro_fallecidos <- function(){
   
   dfallecidos <- readRDS('data/producto14/FallecidosCumulativo_T.rds')
   dfallecidos %>% 
-    select(dia = Region, nro_fallecidos  =Total)
+    select(dia = Region, nro_fallecidos = Total)
   
 }
 
@@ -149,6 +149,26 @@ serie_tasa_desempleo <- function() {
   d <- bind_rows(d, d2) %>% 
     arrange(fecha) %>% 
     filter(year(fecha) >= 2007)
+  
+  d
+  
+}
+
+serie_fallecidos_anio_semana <- function(){
+  
+  dcasos_fallecidos <- readRDS("data/producto32/Defunciones.rds")
+  
+  d <- dcasos_fallecidos %>% 
+    gather(dia, nro_fallecidos, -Region, -`Codigo region`, -Comuna, -`Codigo comuna`) %>% 
+    mutate(
+      dia = ymd(dia),
+      nro_semana = week(dia),
+      anio = year(dia)) %>% 
+    group_by(nro_semana, anio) %>% 
+    summarise(nro_fallecidos = sum(nro_fallecidos)) %>% 
+    ungroup() %>% 
+    arrange(-anio) %>% 
+    mutate(anio = as.character(anio))
   
   d
   

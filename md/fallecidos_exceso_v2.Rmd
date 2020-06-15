@@ -1,0 +1,14 @@
+### Metodología ARIMA
+
+```{r, include=FALSE}
+mod <- readRDS("data/arima_mod.rds")
+modtxt <- str_replace(forecast:::arima.string(mod), "with", "con")
+
+```
+
+Usando otra metodologìa obtenemos similares resultados. En este caso...
+..
+.. `r modtxt`
+
+... Seguimos
+

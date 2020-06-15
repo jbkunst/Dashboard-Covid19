@@ -143,6 +143,11 @@ bs4DashPage(
                         fluidRow(
                             column(width = 4, includeMarkdown("md/fallecidos_exceso_mortalidad.md")),
                             column(width = 8, bs4CardHC(addSpinner(highchartOutput("hc_defunciones_esperadas")))),
+                            ),
+                        tags$hr(),
+                        fluidRow(
+                            column(width = 8, bs4CardHC(addSpinner(highchartOutput("hc_defunciones_esperadas_v2")))),
+                            column(width = 4, uiOutput("rmd_fallecidos_exceso_v2"))
                             )
                         )
                     ),
