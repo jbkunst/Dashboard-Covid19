@@ -1,3 +1,21 @@
+meses <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", 
+                         "agosto", "septiembre", "octubre", "noviembre", "diciembre")
+
+datec <- function(fecha = ymd(20200601)) {
+  
+  d <- day(fecha) %>% 
+    as.numeric()
+  
+  m <- month(fecha) %>% 
+    as.numeric()
+  
+  m <- meses[m]
+  
+  y <- year(fecha)
+  
+  paste0(d, " de ", m, " del ", y)
+}
+
 commac <- partial(comma, big.mark = ".", decimal.mark = ",")
 
 percentc <- partial(percent, big.mark = ".", decimal.mark = ",", accuracy = 0.01)

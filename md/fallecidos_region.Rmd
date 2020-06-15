@@ -1,0 +1,37 @@
+### Fallecidos por  Región
+
+```{r, include = FALSE}
+d <- serie_consolidado_region()
+
+total_chile <- d %>% 
+  filter(Fecha == max(Fecha)) %>% 
+  select(fallecidos) %>% 
+  pull() %>% 
+  sum()
+
+max_fallecidos <- d %>% 
+  filter(Fecha == max(Fecha)) %>% 
+  arrange(desc(fallecidos)) 
+
+sum_top3_fallecidos <- max_fallecidos %>% 
+  head(3) %>% 
+  select(fallecidos) %>% 
+  pull() %>% 
+  sum()
+
+peak <- d %>% 
+  filter(fallecidos == max(fallecidos)) %>% 
+  filter(Fecha == max(Fecha))
+```
+
+Chile registra un total de `r commac(total_chile)` fallecidos al `r datec(max_fallecidos$Fecha[1])`. Las 3 regiones con más casos fallecidos son:
+
+- `r max_fallecidos$Region[1]`: `r commac(max_fallecidos$fallecidos[1])`
+- `r max_fallecidos$Region[2]`: `r commac(max_fallecidos$fallecidos[2])`
+- `r max_fallecidos$Region[3]`: `r commac(max_fallecidos$fallecidos[3])`
+
+Observamos que estas 3 regiones corresponden al `r percentc(sum_top3_fallecidos/total_chile)` de los casos totales.
+
+El peak más altos de fallecidos se registro en la región `r peak$Region` con `r commac(peak$fallecidos)` casos el `r datec(peak$Fecha)`.
+
+Por otro lado la región  de `r max_fallecidos$Region[16]` es la que registra menos casos, con un total de  `r commac(max_fallecidos$fallecidos[16])`

@@ -135,7 +135,7 @@ bs4DashPage(
                 fluidRow(
                     bs4CardCustom(
                         fluidRow(
-                            column(width = 3, includeMarkdown("md/fallecidos_region.md")),
+                            column(width = 3, uiOutput("rmd_fallecidos_region")),
                             column(width = 9, bs4CardHC(addSpinner(highchartOutput("hc_fallecidos_por_region", height = 600))))
                         )
                     ),

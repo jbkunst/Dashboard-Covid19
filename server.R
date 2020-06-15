@@ -58,6 +58,12 @@ shinyServer(function(input, output, session) {
   output$hc_defunciones_esperadas <- renderHighchart(grafico_defunciones_esperadas())
   
   output$hc_fallecidos_por_region <- renderHighchart(grafico_fallecidos_por_region())
+  
+  output$rmd_fallecidos_region <- renderUI({
+    
+    RMD_to_HTML(file = "md/fallecidos_region.Rmd")
+    
+  })
 
 
   # geografico --------------------------------------------------------------
