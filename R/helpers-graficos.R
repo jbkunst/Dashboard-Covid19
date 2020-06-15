@@ -189,19 +189,7 @@ grafico_casos_confirmados_rango_edad <- function(){
 
 grafico_defunciones_esperadas <- function(){
   
-  dcasos_fallecidos <- readRDS("data/producto32/Defunciones.rds")
-  
-  d <- dcasos_fallecidos %>% 
-    gather(dia, nro_fallecidos, -Region, -`Codigo region`, -Comuna, -`Codigo comuna`) %>% 
-    mutate(
-      dia = ymd(dia),
-      nro_semana = week(dia),
-      anio = year(dia)) %>% 
-    group_by(nro_semana, anio) %>% 
-    summarise(nro_fallecidos = sum(nro_fallecidos)) %>% 
-    ungroup() %>% 
-    arrange(-anio) %>% 
-    mutate(anio = as.character(anio))
+  d <- serie_fallecidos_anio_semana()
   
   gr <- d %>% 
     group_by(anio) %>% 
@@ -219,7 +207,8 @@ grafico_defunciones_esperadas <- function(){
   
   d <- d %>% 
     group_by(anio) %>% 
-    filter(nro_semana != max(nro_semana)) %>% 
+    # esto quita las 53
+    filter(nro_semana != 53) %>% 
     ungroup()
   
   d <- d %>% 
@@ -241,13 +230,18 @@ grafico_defunciones_esperadas <- function(){
     mutate(fecha = ymd("2020-01-01") + weeks(nro_semana - 1)) %>% 
     filter(anio == 2020) 
   
+  # fix tito
+  if(as.numeric((ymd(20200101) + weeks(max(d$nro_semana)) - Sys.Date())) != 0) {
+    
+    d <- d %>% 
+      filter(nro_semana != max(nro_semana))
+    
+  }
+  
   dexc <- d %>%
     left_join(desp, by = c("nro_semana", "fecha")) %>%
-    filter(nro_semana >= 18) %>% 
-    # filter(nro_fallecidos > nro_fallecidos_esperados) %>% 
+    filter(nro_semana >= 18) %>%  
     mutate(
-      # limlow = pmin(nro_fallecidos, nro_fallecidos_esperados),
-      # limhigh = pmax(nro_fallecidos, nro_fallecidos_esperados),
       limlow = nro_fallecidos,
       limhigh = nro_fallecidos_esperados,
       diff = nro_fallecidos - nro_fallecidos_esperados,
@@ -306,7 +300,7 @@ grafico_defunciones_esperadas <- function(){
       linkedTo = "numero_fallecidos_esperados",
       zIndex = -3,
       showInLegend = FALSE,
-      name = "Itervalo de 2 desviaciones estándar"
+      name = "Intervalo de 2 desviaciones estándar"
       ) %>% 
     hc_add_series(
       dexc,
@@ -347,6 +341,128 @@ grafico_defunciones_esperadas <- function(){
     )
   
 }
+
+grafico_defunciones_esperadas_v_arima <- function(){
+  
+  mod <- readRDS("data/arima_mod.rds")
+  
+  d <- serie_fallecidos_anio_semana()
+  
+  d <- d %>% 
+    mutate(fecha = ymd(as.numeric(anio)*10000 + 101) + weeks(nro_semana - 1))
+  
+  dnormal <- d %>% 
+    arrange(anio, nro_semana) %>% 
+    filter(nro_semana != 53) %>% 
+    filter(anio <= 2019)
+  
+  d2020 <- d %>% 
+    arrange(anio, nro_semana) %>% 
+    filter(anio >= 2020) 
+  
+  # fix tito
+  if(as.numeric((ymd(20200101) + weeks(max(d2020$nro_semana)) - Sys.Date())) != 0) {
+    
+    d2020 <- d2020 %>% 
+      filter(nro_semana != max(nro_semana))
+    
+  }
+  
+  dfct <- forecast(mod, h = 52, level = 95) %>% 
+    as.data.frame() %>% 
+    as_tibble() %>% 
+    janitor::clean_names() %>% 
+    mutate(nro_semana = row_number()) 
+  
+  d2020 <- d2020 %>% 
+    full_join(dfct, by = "nro_semana") %>% 
+    fill(anio)
+  
+  d2020 <- d2020 %>% 
+    mutate(fecha = ymd(as.numeric(anio)*10000 + 101) + weeks(nro_semana - 1))
+  
+  hchart(
+    d2020 %>% select(fecha, nro_fallecidos) %>% filter(complete.cases(.)),
+    "line",
+    hcaes(fecha, nro_fallecidos),
+    name = "Fallecimientos semanales 2020",
+    color = PARS$color$danger,
+    showInLegend = TRUE
+  ) %>% 
+    hc_add_series(
+      d2020 %>% select(fecha, point_forecast),
+      "line",
+      hcaes(fecha, point_forecast),
+      name = "Número de fallecidos esperados en año normal",
+      id = "numero_fallecidos_esperados",
+      color = PARS$color$primary,
+      showInLegend = TRUE
+    ) %>% 
+    hc_add_series(
+      d2020 %>% select(fecha, lo_95, hi_95),
+      type = "arearange",
+      hcaes(x = fecha, low = lo_95, high = hi_95),
+      color = PARS$color$gray,
+      linkedTo = "numero_fallecidos_esperados",
+      zIndex = -3,
+      showInLegend = FALSE,
+      name = "Intervalo 95% confianza"
+    ) %>% 
+    # hc_add_series(
+    #   dexc,
+    #   type = "arearange",
+    #   hcaes(x = fecha, low = limlow, high = limhigh),
+    #   color = "black",
+    #   zIndex = -2,
+    #   showInLegend = TRUE,
+    #   fillOpacity = 0.35,
+    #   name = "Exceso de fallecidos",
+    #   tooltip = list(pointFormat = "<span style='color:{point.color};'>&#9679;</span> {series.name}: <b>{point.diffacum:,.0f}</b><br/>")
+    # ) %>% 
+    hc_add_series(
+      dnormal %>% filter(year(fecha) %in% 2019) %>% select(fecha, nro_fallecidos),
+      "line",
+      hcaes(fecha, nro_fallecidos),
+      name = "Fallecimientos 2019",
+      showInLegend = TRUE
+    ) %>% 
+    hc_add_series(
+      dnormal %>% filter(year(fecha) %in% 2010:2018) %>% select(fecha, nro_fallecidos),
+      "line",
+      hcaes(fecha, nro_fallecidos),
+      name = "Fallecimientos 2010-2018",
+      showInLegend = TRUE,
+      visible = FALSE
+    ) %>% 
+    hc_tooltip(
+      shared = TRUE,
+      valueDecimals = 0
+    ) %>% 
+    hc_yAxis(
+      title = list(text = "Número de fallecidos"),
+      min = 0
+    ) %>%
+    hc_xAxis(
+      title = list(text = "Fecha")
+    ) %>%
+    hc_exporting(enabled = TRUE) # %>% 
+    # hc_annotations(
+    #   list(
+    #     labelOptions = list(
+    #       shape = "connector",
+    #       align = "right",
+    #       y = 200,
+    #       x = 125,
+    #       justify = FALSE,
+    #       crop = TRUE,
+    #       style = list(fontSize = "0.75em", textOutline = "1px white")
+    #     ),
+    #     labels = list_parse(dexclbl)
+    #   )
+    # )
+  
+}
+
 
 grafico_tasa_letalidad <- function(){
   

@@ -55,16 +55,23 @@ shinyServer(function(input, output, session) {
 
   # fallecidos --------------------------------------------------------------
   
-  output$hc_defunciones_esperadas <- renderHighchart(grafico_defunciones_esperadas())
-  
-  output$hc_fallecidos_por_region <- renderHighchart(grafico_fallecidos_por_region())
-  
   output$rmd_fallecidos_region <- renderUI({
     
     RMD_to_HTML(file = "md/fallecidos_region.Rmd")
     
   })
-
+  
+  output$hc_fallecidos_por_region <- renderHighchart(grafico_fallecidos_por_region())
+  
+  output$hc_defunciones_esperadas <- renderHighchart(grafico_defunciones_esperadas())
+  
+  output$hc_defunciones_esperadas_v2 <- renderHighchart(grafico_defunciones_esperadas_v_arima())
+  
+  output$rmd_fallecidos_exceso_v2 <- renderUI({
+    
+    RMD_to_HTML(file = "md/fallecidos_exceso_v2.Rmd")
+    
+  })
 
   # geografico --------------------------------------------------------------
   
