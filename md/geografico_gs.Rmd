@@ -33,9 +33,9 @@ Las cinco comunas con más casos confirmados son:
 - `r d$Comuna[4]`: `r commac(d$casos_confirmados[4])`
 - `r d$Comuna[5]`: `r commac(d$casos_confirmados[5])`
 
-que corresponden al `r percentc(total_top5_comunas/total_casos)`
+que corresponden al `r percentc(total_top5_comunas/total_casos)` del total.
 
-Las comunas con menos casos son: `r total_tail3_comunas$Comuna[1]` (`r commac(total_tail3_comunas$casos_confirmados[1])`), 
+Por otro lado, las comunas donde tenemos la menor cantidad de casos confirmados son: `r total_tail3_comunas$Comuna[1]` (`r commac(total_tail3_comunas$casos_confirmados[1])`), 
 `r total_tail3_comunas$Comuna[2]` (`r commac(total_tail3_comunas$casos_confirmados[2])`) y 
 `r total_tail3_comunas$Comuna[3]` (`r commac(total_tail3_comunas$casos_confirmados[3])`)
 
