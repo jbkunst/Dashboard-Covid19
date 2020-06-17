@@ -28,6 +28,7 @@ PARS <- list(
     danger = "#DC3545",
     gray = "#C0C0C0"
   ),
+  top = 5,
   hc = list(
     duration = 2500
   ),

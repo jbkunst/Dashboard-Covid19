@@ -1,42 +1,47 @@
 ### Gran Santiago
 
 ```{r, include=FALSE}
+gransantiago <- jsonlite::fromJSON( "data/geojson/gran_santiago.geojson", simplifyVector = FALSE)
 
+dcomuna <- gransantiago$features %>% 
+  purrr::map_df("properties") %>% 
+  rename_all(stringr::str_to_lower) %>% 
+  select(comuna, nom_comuna) %>% 
+  mutate(
+    comuna = as.character(comuna),
+    nom_comuna = stringr::str_to_title(nom_comuna)
+  )
 
 d <- serie_nro_casos_comuna() %>% 
-  group_by(Comuna) %>% 
-  mutate(`Casos confirmados` = sum(`Casos confirmados`)) %>% 
+  janitor::clean_names() %>% 
+  semi_join(dcomuna, by = c("codigo_comuna" = "comuna")) %>% 
+  arrange(fecha, comuna) %>% 
+  group_by(comuna) %>% 
+  mutate(casos_confirmados_acum = cumsum(casos_confirmados)) %>% 
   ungroup() %>% 
   filter(fecha == max(fecha)) %>% 
-  arrange(desc(`Casos confirmados`)) %>% 
-  rename(casos_confirmados = `Casos confirmados`) 
+  arrange(desc(casos_confirmados_acum)) %>% 
+  mutate(p_acum = cumsum(casos_confirmados_acum/sum(casos_confirmados_acum)))
 
-total_casos <- sum(d$casos_confirmados)
+text_fecha <- d %>% 
+  head(1) %>% 
+  transmute(txt = str_glue("24 ({datec(fecha)})")) %>% 
+  pull()
 
-total_top5_comunas <- d %>% 
-  filter(Region == "Metropolitana") %>% 
-  head(5) %>% 
-  select(casos_confirmados) %>% 
-  pull() %>% 
-  sum()
+text_top <- d %>% 
+  head(PARS$top) %>% 
+  select(comuna, casos_confirmados_acum) %>% 
+  mutate(txt = str_glue("<b>{comuna}</b> ({commac(casos_confirmados_acum)})")) %>% 
+  summarise(txt_c(txt)) %>% 
+  pull()
 
-total_tail3_comunas <- d %>% 
-  filter(Region == "Metropolitana") %>% 
-  tail(3) 
+text_acum <- d %>% 
+  filter(row_number() == PARS$top) %>% 
+  pull(p_acum) %>% 
+  percentc()
 ```
 
-Las cinco comunas con más casos confirmados son: 
+En el _Gran Santiago_, las `r spanish::to_words(PARS$top)` comunas con más casos
+confirmados hasta la semana epidemiológica `r text_fecha` son  `r text_top`, 
+las que en conjunto representan `r text_acum` del total de contagios en estas comunas.
 
-- `r d$Comuna[1]`: `r commac(d$casos_confirmados[1])`
-- `r d$Comuna[2]`: `r commac(d$casos_confirmados[2])`
-- `r d$Comuna[3]`: `r commac(d$casos_confirmados[3])` 
-- `r d$Comuna[4]`: `r commac(d$casos_confirmados[4])`
-- `r d$Comuna[5]`: `r commac(d$casos_confirmados[5])`
-
-que corresponden al `r percentc(total_top5_comunas/total_casos)` del total.
-
-Por otro lado, las comunas donde tenemos la menor cantidad de casos confirmados son: `r total_tail3_comunas$Comuna[1]` (`r commac(total_tail3_comunas$casos_confirmados[1])`), 
-`r total_tail3_comunas$Comuna[2]` (`r commac(total_tail3_comunas$casos_confirmados[2])`) y 
-`r total_tail3_comunas$Comuna[3]` (`r commac(total_tail3_comunas$casos_confirmados[3])`)
-
-Particularmente notamos que estos datos están agrupados por semana epidemiológica y corresponden a la semana del `r datec(d$fecha[1])`

@@ -1,24 +1,49 @@
-meses <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", 
-                         "agosto", "septiembre", "octubre", "noviembre", "diciembre")
-
 datec <- function(fecha = ymd(20200601)) {
   
-  d <- day(fecha) %>% 
-    as.numeric()
+  d <- as.numeric(day(fecha))
   
-  m <- month(fecha) %>% 
-    as.numeric()
+  m <- as.numeric(month(fecha))
   
-  m <- meses[m]
+  m <- c("enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", 
+         "agosto", "septiembre", "octubre", "noviembre", "diciembre")[m]
   
   y <- year(fecha)
   
   paste0(d, " de ", m, " del ", y)
+  
 }
 
 commac <- partial(comma, big.mark = ".", decimal.mark = ",")
 
 percentc <- partial(percent, big.mark = ".", decimal.mark = ",", accuracy = 0.01)
+
+txt_separadores <- function(n = 3) {
+  
+  stopifnot(is.integer(as.integer(n)))
+  
+  if(n == 1) return("")
+  
+  if(n == 2) return(c("", "y"))
+  
+  idx <- 1:n
+  
+  case_when(
+    idx == 1 ~ "",
+    idx == n ~ " y ",
+    TRUE     ~ ", "
+  )
+  
+}
+
+txt_c <- function(x = c("a", "b", "c")) {
+  
+  str_c(
+    txt_separadores(length(x)),
+    x,
+    collapse = ""
+  )
+  
+}
 
 covpal <- function(n = 16, begin = 0.05, end = 0.95) {
   
@@ -57,15 +82,6 @@ bs4CardHC <- purrr::partial(
   width = 12,
   collapsible = FALSE
 )
-
-bs4CardHC2 <- function(...) {
-  
-  x <- bs4CardHC(addSpinner(...))
-  x <- tagAppendAttributes(x, style = "height:99%")
-  x$children[[1]] <- tagAppendAttributes(x$children[[1]], style = "height:99%")
-  x
-  
-}
 
 valueBoxSpark <- function(value, subtitle, icon = NULL, color = "light-blue", 
                           width = 4, href = NULL, spark = NULL, height_spark = "70px",minititle = NULL) {
