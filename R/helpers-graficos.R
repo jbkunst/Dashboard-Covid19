@@ -20,18 +20,23 @@ grafico_casos_confirmados_diarios <- function(){
     filter(row_number()==n() | row_number()==1) %>% 
     arrange(desc(fecha))
   
-  
   evento <- tibble(
-    fecha = c(ymd("2020-04-29"), ymd("2020-05-15")),
-    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM")
-  )
-  
-  data_plotLine <- evento %>% 
-    transmute(
-      value = datetime_to_timestamp(fecha),
-      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    fecha = c(ymd("2020-04-29"), ymd("2020-05-15"), ymd("2020-06-17")),
+    texto = c("Se suman casos<br>asintomáticos", "Inicio cuarentena<br>en la RM", "Se agregan 31.422<br>casos PCR positivo")
+  ) %>% 
+    left_join(
+      dcasos_totales_cumulativos %>% 
+        select(fecha, casos_nuevos),
+      by = c("fecha" = "fecha")
     ) %>% 
-    mutate(color = "gray", width = 1, zIndex = 5)
+    mutate(
+      x = datetime_to_timestamp(fecha),
+      y = casos_nuevos
+    ) %>% 
+    mutate(text = str_c(format(fecha, "%d")," de ",format(fecha, "%B: "),"<br>", texto)) %>% 
+    rowwise() %>% 
+    mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
+    select(text, point)
   
   texto <- str_glue("Contagios por Coronavirus confirmados por exámenes. La curva de contagios
                     considera sólo a las personas activamente afectadas por el virus. ",
@@ -61,9 +66,7 @@ grafico_casos_confirmados_diarios <- function(){
       visible = FALSE
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
-    hc_xAxis(
-      plotLines = list_parse(data_plotLine)
-    ) %>% 
+    # hc_xAxis(plotLines = list_parse(data_plotLine)) %>% 
     hc_yAxis(
       title = list(text = "Número de casos")
     ) %>%
@@ -73,7 +76,21 @@ grafico_casos_confirmados_diarios <- function(){
     hc_subtitle(
       text =  texto
       ) %>% 
-    hc_exporting(enabled = TRUE)
+    hc_exporting(enabled = TRUE) %>% 
+    hc_annotations(
+      list(
+        labelOptions = list(
+          shape = "connector",
+          align = "right",
+          y = -00,
+          x = -100,
+          justify = FALSE,
+          crop = TRUE,
+          style = list(fontSize = "0.60em", textOutline = "1px white")
+        ),
+        labels = list_parse(evento)
+      )
+    )
   
 }
 
@@ -271,7 +288,7 @@ grafico_defunciones_esperadas <- function(){
     ) %>% 
     rowwise() %>% 
     mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
-    select(-x, -y)
+    select(text, point)
   
   hchart(
     d,
@@ -463,7 +480,6 @@ grafico_defunciones_esperadas_v_arima <- function(){
   
 }
 
-
 grafico_tasa_letalidad <- function(){
   
   dfallecidos <- serie_nro_fallecidos()
@@ -513,7 +529,7 @@ grafico_tasa_letalidad <- function(){
   
   evento <- tibble(
     fecha = c(ymd(evento_100fallecidos), ymd(evento_1000fallecidos), ymd("2020-04-29"), ymd("2020-06-07")),
-    text = c("<br>Primeros 100 fallecidos", "<br>Primeros 1.000 fallecidos", "<br>Se suman casos asintomáticos", "<br>Se suman 631 casos")
+    text = c("Primeros 100 fallecidos", "Primeros 1.000 fallecidos", "Se suman casos asintomáticos", "Se suman 631 casos")
   ) %>% 
     left_join(
       dfallecidos_contagiados %>% 
@@ -524,10 +540,10 @@ grafico_tasa_letalidad <- function(){
       x = datetime_to_timestamp(fecha),
       y = porc
     ) %>% 
-    mutate(text = str_c(format(fecha, "%d")," de ",format(fecha, "%B: "), text)) %>% 
+    mutate(text = str_c(format(fecha, "%d")," de ",format(fecha, "%B: "), "<br>", text)) %>% 
     rowwise() %>% 
     mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
-    select(-x, -y)
+    select(text, point)
     
   
   peak <- dfallecidos_contagiados %>% 
@@ -736,16 +752,21 @@ grafico_fallecidos_diarios <- function(){
     select(-v)
   
   evento <- tibble(
-    fecha = ymd("2020-05-15"),
-    texto = "Inicio cuarentena<br>en la RM"
-  )
-  
-  data_plotLine <- evento %>% 
-    transmute(
-      value = datetime_to_timestamp(fecha),
-      label = purrr::map(texto, ~ list(text = .x, style = list(fontSize = 13)))
+    fecha = ymd("2020-06-07"),
+    text = "Se suman 631 casos"
+  ) %>% 
+    left_join(
+      d %>%  select(dia, nro_fallecidos),
+      by = c("fecha" = "dia")
     ) %>% 
-    mutate(color = "gray", width = 1, zIndex = 5)
+    mutate(
+      x = datetime_to_timestamp(fecha),
+      y = nro_fallecidos
+    ) %>% 
+    mutate(text = str_c(format(fecha, "%d")," de ",format(fecha, "%B: "), "<br>", text)) %>% 
+    rowwise() %>% 
+    mutate(point = list(list(x = x, y = y, xAxis = 0, yAxis = 0))) %>% 
+    select(text, point)
   
   peak <- d %>% 
     filter(nro_fallecidos == max(nro_fallecidos) | dia==max(dia)) %>% 
@@ -780,9 +801,7 @@ grafico_fallecidos_diarios <- function(){
     color = PARS$color$primary
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
-    hc_xAxis(
-      plotLines = list_parse(data_plotLine)
-    ) %>% 
+    # hc_xAxis(plotLines = list_parse(data_plotLine)) %>% 
     hc_yAxis(
       title = list(text = "Número de fallecidos")
     ) %>%
@@ -792,7 +811,21 @@ grafico_fallecidos_diarios <- function(){
     hc_subtitle(
       text =  texto
     ) %>% 
-    hc_exporting(enabled = TRUE)
+    hc_exporting(enabled = TRUE) %>% 
+    hc_annotations(
+      list(
+        labelOptions = list(
+          shape = "connector",
+          align = "right",
+          y =  100,
+          x = -100,
+          justify = FALSE,
+          crop = TRUE,
+          style = list(fontSize = "0.60em", textOutline = "1px white")
+        ),
+        labels = list_parse(evento)
+      )
+    )
   
 }
 
@@ -868,9 +901,7 @@ grafico_pacientes_uci <- function(){
       color = PARS$color$primary
     ) %>% 
     hc_tooltip(table = TRUE, valueDecimals = 0) %>% 
-    hc_xAxis(
-      plotLines = list_parse(data_plotLine)
-    ) %>% 
+    # hc_xAxis(plotLines = list_parse(data_plotLine)) %>% 
     hc_yAxis(
       title = list(text = "Número de pacientes UCI")
     ) %>%
